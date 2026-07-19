@@ -130,6 +130,25 @@ h1 em, .about-statement em {
   font-size: 1.02rem;
   line-height: 1.55;
 }
+.work-project-link {
+  grid-column: 4;
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  justify-self: start;
+  margin-top: -14px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.86rem;
+  font-weight: 600;
+  transition: border-color 200ms ease;
+}
+.work-project-link span {
+  color: var(--clay);
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.work-project-link:hover, .work-project-link:focus-visible { border-color: var(--ink); }
+.work-project-link:hover span, .work-project-link:focus-visible span { transform: translate(3px, -3px); }
 .experience-section, .about-section { padding: 0 0 148px; }
 .experience-grid, .about-grid, .contact-grid {
   display: grid;
@@ -268,7 +287,8 @@ footer a:hover, footer a:focus-visible { color: var(--paper); }
   .hero-aside { max-width: 520px; margin: 58px 0 0 auto; }
   .work-item { grid-template-columns: 52px 1fr; }
   .work-type { text-align: right; }
-  .work-item h3, .work-description { grid-column: 2; }
+  .work-item h3, .work-description, .work-project-link { grid-column: 2; }
+  .work-project-link { margin-top: 0; }
   .experience-grid, .about-grid, .contact-grid { display: block; padding-top: 56px; }
   .section-intro { max-width: 420px; margin-bottom: 64px; }
   .experience-item { grid-template-columns: 1fr 2fr; }
