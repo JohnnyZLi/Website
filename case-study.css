@@ -1,5 +1,21 @@
 .case-header { position: relative; }
-.case-hero { padding: clamp(74px, 9vw, 132px) 0 96px; }
+.case-hero {
+  padding: clamp(74px, 9vw, 132px) 0 96px;
+  position: relative;
+  isolation: isolate;
+}
+.case-hero::before {
+  width: min(70vw, 960px);
+  aspect-ratio: 1;
+  position: absolute;
+  z-index: -1;
+  top: -48%;
+  right: -24%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(217, 184, 165, 0.4), rgba(165, 93, 69, 0.1) 38%, transparent 70%);
+  content: "";
+  pointer-events: none;
+}
 .case-hero-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -149,13 +165,20 @@
   .process-list li,
   .decision-grid article,
   .metric-grid div {
-    transition: background-color 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: background-color 320ms var(--ease-out), transform 320ms var(--ease-out);
   }
   .process-list li:hover,
   .decision-grid article:hover,
   .metric-grid div:hover {
     background-color: rgba(165, 93, 69, 0.045);
+    transform: translateY(-3px);
   }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .case-hero::before { animation: warm-light 14s ease-in-out infinite alternate; }
+  .case-hero h1 { animation: soft-enter 850ms var(--ease-out) 130ms both; }
+  .case-summary { animation: soft-enter 850ms var(--ease-out) 260ms both; }
 }
 
 @media (max-width: 900px) {
