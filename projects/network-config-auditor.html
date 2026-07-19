@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A case study of Johnny Li's Cisco IOS configuration auditing CLI.">
+    <meta name="theme-color" content="#f2efe8">
+    <meta property="og:title" content="Network Config Auditor — Johnny Li">
+    <meta property="og:description" content="A line-aware Cisco IOS configuration auditor with evidence, remediation, tests, and CI.">
+    <meta property="og:type" content="article">
+    <title>Network Config Auditor — Johnny Li</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../case-study.css">
+  </head>
+  <body>
+    <header class="site-header shell case-header">
+      <a class="wordmark" href="../index.html" aria-label="Johnny Li, home">Johnny Li</a>
+      <nav aria-label="Case study navigation">
+        <a href="../index.html#work">All work</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="case-hero shell" aria-labelledby="case-title">
+        <p class="eyebrow">Case study 01 / Network automation</p>
+        <div class="case-hero-grid">
+          <h1 id="case-title">Network Config<br><em>Auditor</em></h1>
+          <div class="case-summary">
+            <p>A dependency-free Python CLI for reviewing Cisco IOS-style configurations before they reach a device.</p>
+            <div class="case-actions">
+              <a class="case-action case-action-primary" href="https://github.com/JohnnyZLi/Network-Configurator-Auditor" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a>
+              <a class="case-action" href="https://github.com/JohnnyZLi/Network-Configurator-Auditor/blob/main/docs/sample-report.md" target="_blank" rel="noreferrer">Sample report <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+        </div>
+
+        <dl class="case-facts">
+          <div><dt>Role</dt><dd>Design and implementation</dd></div>
+          <div><dt>Stack</dt><dd>Python · Cisco IOS · GitHub Actions</dd></div>
+          <div><dt>Output</dt><dd>Text · JSON · Markdown</dd></div>
+          <div><dt>Status</dt><dd>Tested · Public</dd></div>
+        </dl>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="problem-heading">
+        <div class="case-section-label"><span>01</span><h2 id="problem-heading">The problem</h2></div>
+        <div class="case-section-content case-copy-grid">
+          <p class="case-lead">Configuration reviews are easy to make vague: a warning without the command, location, or remediation leaves the engineer to repeat the investigation.</p>
+          <div class="case-body-copy">
+            <p>This project treats every finding as a reviewable claim. The analyzer preserves line numbers, identifies the exact command that triggered a rule, assigns a severity, and gives a concrete next step.</p>
+            <p>It stays offline and read-only. No device credentials are needed, and the tool never attempts to modify a running configuration.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="flow-heading">
+        <div class="case-section-label"><span>02</span><h2 id="flow-heading">How it works</h2></div>
+        <div class="case-section-content">
+          <ol class="process-list" aria-label="Audit processing stages">
+            <li><span>Input</span><strong>IOS configuration</strong><p>One file or a recursively discovered directory of configuration files.</p></li>
+            <li><span>Parse</span><strong>Line-aware sections</strong><p>Global commands, interfaces, VTY lines, and OSPF blocks retain source locations.</p></li>
+            <li><span>Evaluate</span><strong>Focused rules</strong><p>Deterministic checks cover management access, credentials, Layer 2, OSPF, and operations.</p></li>
+            <li><span>Report</span><strong>Usable evidence</strong><p>Terminal, JSON, and Markdown renderers share the same finding model.</p></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="decisions-heading">
+        <div class="case-section-label"><span>03</span><h2 id="decisions-heading">Engineering decisions</h2></div>
+        <div class="case-section-content decision-grid">
+          <article>
+            <p class="decision-number">A</p>
+            <h3>Evidence over scores</h3>
+            <p>The output avoids a made-up overall grade. Each rule stands on its own with a source line and recommendation.</p>
+          </article>
+          <article>
+            <p class="decision-number">B</p>
+            <h3>Small, explainable scope</h3>
+            <p>Fourteen explicit rules are more defensible than pretending to implement every IOS platform and default.</p>
+          </article>
+          <article>
+            <p class="decision-number">C</p>
+            <h3>No runtime dependencies</h3>
+            <p>The standard library handles parsing, the CLI, data models, and report generation.</p>
+          </article>
+          <article>
+            <p class="decision-number">D</p>
+            <h3>Automation-friendly exits</h3>
+            <p>Severity thresholds make the same command useful interactively or as a CI gate.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="output-heading">
+        <div class="case-section-label"><span>04</span><h2 id="output-heading">Review output</h2></div>
+        <div class="case-section-content output-grid">
+          <div>
+            <p class="case-lead">The included insecure switch configuration produces 16 findings. Its hardened counterpart produces none.</p>
+            <p class="output-note">The samples are intentionally small so each result can be traced back to a deliberate configuration choice.</p>
+          </div>
+          <pre aria-label="Example audit finding"><code>HIGH   SEC001  VTY access is not restricted to SSH
+
+line vty 0 4 may accept an unencrypted
+remote-management protocol.
+
+line 22: transport input telnet
+
+Fix: Configure 'transport input ssh'
+after validating SSH access.</code></pre>
+        </div>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="validation-heading">
+        <div class="case-section-label"><span>05</span><h2 id="validation-heading">Validation</h2></div>
+        <div class="case-section-content">
+          <div class="metric-grid" aria-label="Project validation summary">
+            <div><strong>14</strong><span>audit rules</span></div>
+            <div><strong>11</strong><span>unit tests</span></div>
+            <div><strong>3</strong><span>Python versions in CI</span></div>
+            <div><strong>0</strong><span>runtime dependencies</span></div>
+          </div>
+          <div class="validation-copy">
+            <p>Parser behavior, rule triggering, report serialization, recursive file discovery, and CI severity thresholds are covered by the test suite. GitHub Actions repeats those checks on Python 3.11, 3.12, and 3.13.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-section case-section-last shell" aria-labelledby="limits-heading">
+        <div class="case-section-label"><span>06</span><h2 id="limits-heading">Limits and next steps</h2></div>
+        <div class="case-section-content case-copy-grid">
+          <p class="case-lead">Static analysis should start a review, not replace engineering judgment.</p>
+          <div class="case-body-copy">
+            <p>IOS syntax, defaults, and inherited policy vary across platforms and releases. A production assessment must also account for AAA policy, management-plane ACLs, software versions, approved exceptions, and the device’s role.</p>
+            <p>Useful next additions are per-rule suppression with documented justification, configuration diffs, and a vendor-neutral rule interface.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-next">
+        <div class="shell case-next-inner">
+          <p>Next project</p>
+          <h2>Routing resiliency,<br><em>tested by failure.</em></h2>
+          <a href="../index.html#work">Back to selected work <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+
