@@ -331,11 +331,36 @@ footer a:hover, footer a:focus-visible { color: var(--paper); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  body { animation: surface-drift 54s linear infinite; }
   .eyebrow, h1, .hero-aside { animation: rise-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
   h1 { animation-delay: 70ms; }
   .hero-aside { animation-delay: 140ms; }
+  @supports (animation-timeline: view()) {
+    .section-kicker,
+    .work-item,
+    .experience-item,
+    .about-statement,
+    .about-copy,
+    .knowledge-block,
+    .contact-grid,
+    .case-section-label,
+    .case-section-content,
+    .case-facts,
+    .case-next-inner {
+      animation: viewport-rise 1ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 24%;
+    }
+  }
+  @keyframes surface-drift {
+    to { background-position: 10px 10px; }
+  }
   @keyframes rise-in {
     from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes viewport-rise {
+    from { opacity: 0; transform: translateY(14px); }
     to { opacity: 1; transform: translateY(0); }
   }
 }
