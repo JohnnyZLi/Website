@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A case study of Johnny Li's reliable sliding-window file transfer protocol over UDP.">
+    <meta name="theme-color" content="#f2efe8">
+    <meta property="og:title" content="Reliable Transport over UDP — Johnny Li">
+    <meta property="og:description" content="A sliding-window file transfer protocol with loss simulation, retransmission, out-of-order reassembly, and structured evidence.">
+    <meta property="og:type" content="article">
+    <title>Reliable Transport over UDP — Johnny Li</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../case-study.css">
+  </head>
+  <body>
+    <header class="site-header shell case-header">
+      <a class="wordmark" href="../index.html" aria-label="Johnny Li, home">Johnny Li</a>
+      <nav aria-label="Case study navigation">
+        <a href="../index.html#work">All work</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="case-hero shell" aria-labelledby="case-title">
+        <p class="eyebrow">Case study 04 / Transport protocols</p>
+        <div class="case-hero-grid">
+          <h1 id="case-title">Reliable Transport<br><em>over UDP</em></h1>
+          <div class="case-summary">
+            <p>A selective-repeat-style file transfer protocol that preserves ordering and delivery while packets and acknowledgements are deliberately lost.</p>
+            <div class="case-actions">
+              <a class="case-action case-action-primary" href="https://github.com/JohnnyZLi/Reliable-UDP-Transport" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a>
+              <a class="case-action" href="https://github.com/JohnnyZLi/Reliable-UDP-Transport/blob/main/doc/protocol.md" target="_blank" rel="noreferrer">Protocol design <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+        </div>
+
+        <dl class="case-facts">
+          <div><dt>Role</dt><dd>Protocol design and implementation</dd></div>
+          <div><dt>Stack</dt><dd>C++17 · POSIX sockets · Python</dd></div>
+          <div><dt>Model</dt><dd>Sliding window · Per-packet ACKs</dd></div>
+          <div><dt>Status</dt><dd>Integration tested · Public</dd></div>
+        </dl>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="problem-heading">
+        <div class="case-section-label"><span>01</span><h2 id="problem-heading">The problem</h2></div>
+        <div class="case-section-content case-copy-grid">
+          <p class="case-lead">UDP provides datagrams, not reliable delivery, ordering, congestion control, or a completed-file guarantee.</p>
+          <div class="case-body-copy">
+            <p>The application therefore has to define its own packet identity, acknowledgement behavior, retransmission policy, transfer completion, and file-reassembly rules.</p>
+            <p>The server makes the failure path observable by independently dropping received DATA packets and transmitted acknowledgements at a configured rate.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="flow-heading">
+        <div class="case-section-label"><span>02</span><h2 id="flow-heading">Transfer model</h2></div>
+        <div class="case-section-content">
+          <ol class="process-list" aria-label="Reliable UDP transfer stages">
+            <li><span>Segment</span><strong>Bounded datagrams</strong><p>The client divides the file into packets that fit the requested maximum segment size, including the protocol header.</p></li>
+            <li><span>Window</span><strong>Multiple packets in flight</strong><p>A configurable send window avoids stop-and-wait behavior while bounding memory and outstanding work.</p></li>
+            <li><span>Recover</span><strong>Timeout and retransmit</strong><p>Unacknowledged packets are retried individually until acknowledged or the retry limit is reached.</p></li>
+            <li><span>Reassemble</span><strong>Ordered output</strong><p>The server buffers out-of-order data and writes the final byte stream only in sequence.</p></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="decisions-heading">
+        <div class="case-section-label"><span>03</span><h2 id="decisions-heading">Engineering decisions</h2></div>
+        <div class="case-section-content decision-grid">
+          <article>
+            <p class="decision-number">A</p>
+            <h3>Selective recovery</h3>
+            <p>Each packet is acknowledged and retransmitted independently, so one loss does not force the whole active window to be resent.</p>
+          </article>
+          <article>
+            <p class="decision-number">B</p>
+            <h3>Integrity in the wire format</h3>
+            <p>A CRC-32 field rejects corrupted protocol datagrams before they can enter the reassembly state.</p>
+          </article>
+          <article>
+            <p class="decision-number">C</p>
+            <h3>Bounded resource use</h3>
+            <p>The client streams from disk and retains only window state rather than loading the complete input file into memory.</p>
+          </article>
+          <article>
+            <p class="decision-number">D</p>
+            <h3>Sessions over one socket</h3>
+            <p>The server distinguishes transfer state by client and transfer identifier, allowing packet streams from multiple clients to interleave.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="evidence-heading">
+        <div class="case-section-label"><span>04</span><h2 id="evidence-heading">Failure evidence</h2></div>
+        <div class="case-section-content case-copy-grid">
+          <p class="case-lead">Reliability is visible in the packet timeline rather than inferred from a successful exit code alone.</p>
+          <div class="case-body-copy">
+            <p>The client writes RFC 3339 CSV events for every DATA transmission and acknowledgement, including the current base, next sequence number, and window boundary. The server separately records every deliberate DATA or ACK drop.</p>
+            <p>A bundled Python tool converts those logs into a sequence-versus-time SVG. Retransmissions appear as repeated DATA points, while acknowledgements show when the send window can advance.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="validation-heading">
+        <div class="case-section-label"><span>05</span><h2 id="validation-heading">Validation</h2></div>
+        <div class="case-section-content">
+          <div class="metric-grid" aria-label="Reliable UDP validation summary">
+            <div><strong>32 B</strong><span>protocol header</span></div>
+            <div><strong>5</strong><span>transfer scenarios</span></div>
+            <div><strong>2</strong><span>simulated loss directions</span></div>
+            <div><strong>SHA-256</strong><span>output verification</span></div>
+          </div>
+          <div class="validation-copy">
+            <p>The integration suite covers text, empty, binary, nested-path, and lossy transfers. Each successful run compares the source and reconstructed files by SHA-256 rather than relying only on application status.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-section case-section-last shell" aria-labelledby="limits-heading">
+        <div class="case-section-label"><span>06</span><h2 id="limits-heading">Scope and provenance</h2></div>
+        <div class="case-section-content case-copy-grid">
+          <p class="case-lead">This is an application protocol experiment, not a replacement for a production transport such as TCP or QUIC.</p>
+          <div class="case-body-copy">
+            <p>The model uses a fixed retransmission policy and controlled packet loss. It does not implement congestion control, path-MTU discovery, cryptographic authentication, or Internet-scale fairness.</p>
+            <p>The project originated in CSE 156/L at UC Santa Cruz in Winter 2025. After the original university-hosted source was lost, the published implementation was reconstructed from the surviving specification and expanded with integrity checks, automated tests, and clearer documentation.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-next">
+        <div class="shell case-next-inner">
+          <p>Next project</p>
+          <h2>Clear requests,<br><em>secured upstream.</em></h2>
+          <a href="concurrent-c2s-proxy.html">Read proxy case study <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+    </main>
+    <script src="../motion.js" defer></script>
+  </body>
+</html>
