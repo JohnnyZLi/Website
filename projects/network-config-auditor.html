@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -101,7 +101,7 @@
             <p class="case-lead">The included insecure switch configuration produces 16 findings. Its hardened counterpart produces none.</p>
             <p class="output-note">The samples are intentionally small so each result can be traced back to a deliberate configuration choice.</p>
           </div>
-          <pre aria-label="Example audit finding"><code>HIGH   SEC001  VTY access is not restricted to SSH
+          <pre><code>HIGH   SEC001  VTY access is not restricted to SSH
 
 line vty 0 4 may accept an unencrypted
 remote-management protocol.
@@ -116,7 +116,7 @@ after validating SSH access.</code></pre>
       <section class="case-section shell" aria-labelledby="validation-heading">
         <div class="case-section-label"><span>05</span><h2 id="validation-heading">Validation</h2></div>
         <div class="case-section-content">
-          <div class="metric-grid" aria-label="Project validation summary">
+          <div class="metric-grid" role="group" aria-label="Project validation summary">
             <div><strong>14</strong><span>audit rules</span></div>
             <div><strong>11</strong><span>unit tests</span></div>
             <div><strong>3</strong><span>Python versions in CI</span></div>
