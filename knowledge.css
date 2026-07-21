@@ -107,6 +107,11 @@
   line-height: 1.5;
 }
 
+.section-kicker-light .folio,
+.contact-links span {
+  color: var(--clay-soft);
+}
+
 @media (max-width: 900px) {
   .knowledge-block > .micro-label {
     margin-bottom: 30px;
