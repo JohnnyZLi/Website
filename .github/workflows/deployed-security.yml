@@ -1,0 +1,72 @@
+name: Deployed web security
+
+on:
+  push:
+    branches: ["main"]
+  schedule:
+    - cron: "11 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Audit ${{ matrix.url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        url:
+          - https://johnnyli.dev
+          - https://network.johnnyli.dev
+    steps:
+      - name: Verify TLS redirects and security headers
+        shell: bash
+        env:
+          URL: ${{ matrix.url }}
+        run: |
+          set -euo pipefail
+          headers_file="$(mktemp)"
+          final_url="$(curl --fail --silent --show-error --location \
+            --proto '=https' --tlsv1.2 --max-redirs 5 --max-time 30 \
+            --dump-header "$headers_file" --output /dev/null \
+            --write-out '%{url_effective}' "$URL")"
+
+          if [[ "$final_url" != https://* ]]; then
+            echo "Final URL is not HTTPS: $final_url" >&2
+            exit 1
+          fi
+
+          echo "## $URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "Final URL: \`$final_url\`" >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          echo "| Header | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+
+          normalized="$(tr -d '\r' < "$headers_file" | awk 'BEGIN{IGNORECASE=1} /^HTTP\//{block=""} {block=block $0 "\n"} END{printf "%s", block}')"
+          required=(
+            strict-transport-security
+            content-security-policy
+            x-content-type-options
+            referrer-policy
+            permissions-policy
+          )
+
+          for header in "${required[@]}"; do
+            if grep -Eqi "^${header}:" <<< "$normalized"; then
+              echo "| \`$header\` | Present |" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "| \`$header\` | Missing |" >> "$GITHUB_STEP_SUMMARY"
+              echo "::warning title=Missing security header::$URL does not return $header"
+            fi
+          done
+
+          if grep -Eqi '^x-frame-options:' <<< "$normalized" || \
+             grep -Eqi '^content-security-policy:.*frame-ancestors' <<< "$normalized"; then
+            echo "| framing protection | Present |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "| framing protection | Missing |" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning title=Missing framing protection::$URL has neither X-Frame-Options nor CSP frame-ancestors"
+          fi
