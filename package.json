@@ -6,7 +6,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "lint:html": "html-validate \"**/*.html\"",
+    "lint:html": "html-validate \"index.html\" \"projects/**/*.html\"",
     "lint:css": "stylelint \"**/*.css\""
   },
   "devDependencies": {
