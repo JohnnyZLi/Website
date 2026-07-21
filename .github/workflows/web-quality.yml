@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  statuses: write
 
 jobs:
   validate:
@@ -82,3 +83,18 @@ jobs:
           if [[ -f /tmp/website-server.pid ]]; then
             kill "$(cat /tmp/website-server.pid)" || true
           fi
+      - name: Publish successful validation status
+        if: success() && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          SHA: ${{ github.sha }}
+          SERVER_URL: ${{ github.server_url }}
+        run: |
+          curl --fail-with-body --silent --show-error --request POST \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "X-GitHub-Api-Version: 2026-03-10" \
+            "https://api.github.com/repos/$REPOSITORY/statuses/$SHA" \
+            --data "{\"state\":\"success\",\"target_url\":\"$SERVER_URL/$REPOSITORY/actions/runs/$RUN_ID\",\"description\":\"HTML, CSS, and WCAG 2 AA checks passed\",\"context\":\"web-quality/validated\"}"
