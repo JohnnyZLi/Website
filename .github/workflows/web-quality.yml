@@ -52,14 +52,30 @@ jobs:
           cat /tmp/website-server.log
           exit 1
       - name: Run WCAG 2 AA accessibility checks
+        id: validate-wcag
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          status=0
+          : > wcag-validation.log
           while IFS= read -r -d '' page; do
             relative="${page#./}"
-            echo "Checking $relative"
-            npx pa11y --standard WCAG2AA "http://127.0.0.1:4173/$relative"
+            {
+              echo "Checking $relative"
+              npx pa11y --standard WCAG2AA "http://127.0.0.1:4173/$relative"
+            } 2>&1 | tee -a wcag-validation.log || status=1
           done < <(find . -type f -name '*.html' -not -path './node_modules/*' -print0)
+          exit "$status"
+      - name: Upload accessibility validation report
+        if: steps.validate-wcag.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: accessibility-validation-report
+          path: wcag-validation.log
+      - name: Enforce accessibility validation result
+        if: steps.validate-wcag.outcome == 'failure'
+        run: exit 1
       - name: Stop site server
         if: always()
         run: |
