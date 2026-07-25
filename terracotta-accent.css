@@ -1,0 +1,19 @@
+/* Restrained brand accents for the portfolio. */
+
+.hero-line:last-child em,
+.about-statement em:last-of-type,
+.work-number {
+  color: var(--clay);
+}
+
+@media (hover: hover) {
+  .work-item h3 {
+    transition:
+      color 240ms ease,
+      transform 420ms var(--ease-out);
+  }
+
+  .work-item:hover h3 {
+    color: var(--clay);
+  }
+}
