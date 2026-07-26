@@ -126,12 +126,14 @@
   border-color: var(--jl-color-accent);
 }
 
-.jl-site-switcher__chevron {
+.jl-site-switcher__chevron,
+.jl-site-switcher__button > [aria-hidden="true"] {
   width: 7px;
   height: 7px;
   flex: 0 0 7px;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
+  font-size: 0;
   transform: translateY(-2px) rotate(45deg);
 }
 
