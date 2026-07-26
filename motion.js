@@ -1,6 +1,19 @@
 (() => {
   const legacyCaseHeader = document.querySelector(".case-header");
   if (legacyCaseHeader instanceof HTMLElement) {
+    [
+      "../assets/design-system/tokens.css",
+      "../assets/design-system/foundations.css",
+      "../assets/design-system/site-identity.css",
+      "../design-system-migration.css"
+    ].forEach((href) => {
+      if (document.querySelector(`link[href="${href}"]`)) return;
+      const stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = href;
+      document.head.append(stylesheet);
+    });
+
     legacyCaseHeader.className = "jl-global-header";
     legacyCaseHeader.innerHTML = `
       <div class="jl-global-header__inner">
