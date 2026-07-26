@@ -21,37 +21,43 @@
   <body>
     <main>
       <section class="hero" aria-labelledby="intro-heading">
-        <header class="site-header shell">
-          <a class="wordmark" href="#top" aria-label="Johnny Li, home">Johnny Li</a>
-          <div class="site-header__actions">
-            <nav class="primary-nav" aria-label="Primary navigation">
+        <header class="jl-global-header">
+          <div class="jl-global-header__inner">
+            <div class="jl-site-identity" aria-label="Johnny Li, Portfolio">
+              <a class="jl-site-identity__owner" href="#top">Johnny Li</a>
+              <span class="jl-site-identity__separator" aria-hidden="true">/</span>
+              <a class="jl-site-identity__product" href="https://johnnyli.dev" aria-current="page">Portfolio</a>
+            </div>
+            <nav class="jl-global-header__nav" aria-label="Primary navigation">
               <a href="#work">Work</a>
               <a href="#experience">Experience</a>
               <a href="#about">About</a>
               <a href="#contact">Contact</a>
             </nav>
-            <div class="jl-site-switcher" data-site-switcher>
-              <button
-                class="jl-site-switcher__button"
-                type="button"
-                aria-expanded="false"
-                aria-controls="owned-sites-menu"
-                data-site-switcher-button
-              >
-                Sites
-                <span aria-hidden="true">⌄</span>
-              </button>
-              <nav
-                class="jl-site-menu"
-                id="owned-sites-menu"
-                aria-label="Johnny Li sites"
-                data-site-switcher-menu
-                hidden
-              >
-                <a href="https://johnnyli.dev" aria-current="page">Portfolio</a>
-                <a href="https://network.johnnyli.dev">Network Diagnostics</a>
-                <a href="https://rolepacket.johnnyli.dev">RolePacket</a>
-              </nav>
+            <div class="jl-global-header__actions">
+              <div class="jl-site-switcher" data-site-switcher>
+                <button
+                  class="jl-site-switcher__button"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="owned-sites-menu"
+                  data-site-switcher-button
+                >
+                  Sites
+                  <span aria-hidden="true">⌄</span>
+                </button>
+                <ul
+                  class="jl-site-menu"
+                  id="owned-sites-menu"
+                  aria-label="Johnny Li sites"
+                  data-site-switcher-menu
+                  hidden
+                >
+                  <li><a href="https://johnnyli.dev" aria-current="page">Portfolio</a></li>
+                  <li><a href="https://network.johnnyli.dev">Network Diagnostics</a></li>
+                  <li><a href="https://rolepacket.johnnyli.dev">RolePacket</a></li>
+                </ul>
+              </div>
             </div>
           </div>
         </header>
