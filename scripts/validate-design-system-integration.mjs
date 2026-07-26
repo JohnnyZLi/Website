@@ -56,10 +56,13 @@ for (const [url, current] of ownedSites) {
   if (current !== /aria-current="page"/.test(tag)) fail(`Incorrect current-site state for ${url}.`);
 }
 
-const requiredTokenAliases = ["--paper", "--ink", "--muted", "--clay", "--rule", "--ease-out", "--shell"];
-for (const alias of requiredTokenAliases) {
+const directTokenAliases = ["--paper", "--ink", "--muted", "--clay", "--rule", "--ease-out"];
+for (const alias of directTokenAliases) {
   const pattern = new RegExp(`${alias}:\\s*var\\(--jl-`);
   if (!pattern.test(adapter)) fail(`Legacy role ${alias} is not mapped to a shared token.`);
+}
+if (!/--shell:\s*min\(var\(--jl-layout-portfolio-max\)/.test(adapter)) {
+  fail("Portfolio shell is not derived from the shared portfolio rail.");
 }
 if (!adapter.includes("var(--jl-color-focus-ring)")) fail("Shared focus ring token is not active.");
 if (!adapter.includes("@media (max-width: 420px)")) fail("Compact header transformation is missing.");
