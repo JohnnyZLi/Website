@@ -10,132 +10,155 @@
     <meta property="og:type" content="article">
     <title>Network Diagnostics Suite — Johnny Li</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="../assets/design-system/tokens.css">
-    <link rel="stylesheet" href="../assets/design-system/foundations.css">
-    <link rel="stylesheet" href="../assets/design-system/site-identity.css">
-    <link rel="stylesheet" href="../assets/design-system/content.css">
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../case-study.css">
-    <link rel="stylesheet" href="../design-system-migration.css">
   </head>
-  <body class="jl-page">
-    <header class="jl-global-header">
-      <div class="jl-global-header__inner">
-        <div class="jl-site-identity">
-          <a class="jl-site-identity__owner" href="../index.html">Johnny Li</a>
-          <span class="jl-site-identity__separator" aria-hidden="true">/</span>
-          <a class="jl-site-identity__product" href="../index.html" aria-current="page">Portfolio</a>
-        </div>
-        <nav class="jl-global-header__nav" aria-label="Case study navigation">
-          <a href="../index.html#work">All work</a>
-          <a href="../index.html#experience">Experience</a>
-          <a href="../index.html#contact">Contact</a>
-        </nav>
-        <div class="jl-global-header__actions">
-          <div class="jl-site-switcher" data-site-switcher>
-            <button class="jl-site-switcher__button" type="button" aria-expanded="false" aria-controls="owned-sites-menu" data-site-switcher-button>Sites <span aria-hidden="true">⌄</span></button>
-            <ul class="jl-site-menu" id="owned-sites-menu" aria-label="Johnny Li sites" data-site-switcher-menu hidden>
-              <li><a href="https://johnnyli.dev" aria-current="page">Portfolio</a></li>
-              <li><a href="https://network.johnnyli.dev">Network Diagnostics</a></li>
-              <li><a href="https://rolepacket.johnnyli.dev">RolePacket</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
+  <body>
+    <header class="site-header shell case-header">
+      <a class="wordmark" href="../index.html" aria-label="Johnny Li, home">Johnny Li</a>
+      <nav aria-label="Case study navigation">
+        <a href="../index.html#work">All work</a>
+        <a href="../index.html#experience">Experience</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
     </header>
 
-    <main class="case-study">
-      <section class="case-hero jl-page-hero jl-page__inner jl-page__inner--portfolio" aria-labelledby="case-title">
-        <p class="eyebrow jl-eyebrow">Case study 03 / Network diagnostics</p>
-        <div class="case-hero-grid jl-page-hero__grid">
-          <h1 class="jl-page-title" id="case-title">Network Diagnostics<br><em>Suite</em></h1>
-          <div class="case-summary jl-stack">
-            <p class="jl-page-lede">A privacy-first connection-quality test that pairs browser measurements with an optional Windows 11 deep probe.</p>
-            <div class="case-actions jl-actions">
-              <a class="case-action case-action-primary jl-button jl-button--primary" href="https://network.johnnyli.dev">Launch tool <span aria-hidden="true">↗</span></a>
-              <a class="case-action jl-button" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a>
+    <main>
+      <section class="case-hero shell" aria-labelledby="case-title">
+        <p class="eyebrow">Case study 03 / Network diagnostics</p>
+        <div class="case-hero-grid">
+          <h1 id="case-title">Network Diagnostics<br><em>Suite</em></h1>
+          <div class="case-summary">
+            <p>A privacy-first connection-quality test that pairs browser measurements with an optional Windows 11 deep probe.</p>
+            <div class="case-actions">
+              <a class="case-action case-action-primary" href="https://network.johnnyli.dev" target="_blank" rel="noreferrer">Launch tool <span aria-hidden="true">↗</span></a>
+              <a class="case-action" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a>
             </div>
           </div>
         </div>
-        <dl class="case-facts jl-page-meta">
-          <div class="jl-meta-item"><dt>Role</dt><dd>Architecture and implementation</dd></div>
-          <div class="jl-meta-item"><dt>Web stack</dt><dd>React · TypeScript · Cloudflare Workers</dd></div>
-          <div class="jl-meta-item"><dt>Local probe</dt><dd>.NET 10 · Windows 11 x64</dd></div>
-          <div class="jl-meta-item"><dt>Status</dt><dd>44 tests · Public source</dd></div>
+
+        <dl class="case-facts">
+          <div><dt>Role</dt><dd>Architecture and implementation</dd></div>
+          <div><dt>Web stack</dt><dd>React · TypeScript · Cloudflare Workers</dd></div>
+          <div><dt>Local probe</dt><dd>.NET 10 · Windows 11 x64</dd></div>
+          <div><dt>Status</dt><dd>44 tests · Public source</dd></div>
         </dl>
       </section>
 
-      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="problem-heading">
-        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">01</span><h2 class="jl-page-section__title" id="problem-heading">The problem</h2></div>
-        <div class="case-section-content case-copy-grid jl-page-section__body jl-content-grid">
-          <p class="case-lead jl-editorial-lead jl-content-grid__lead">A single download number can look healthy while calls stall, games spike, or uploads make the connection unusable.</p>
-          <div class="case-body-copy jl-prose jl-content-grid__support"><p>This project measures the connection under three conditions: idle, saturated download, and saturated upload. It reports the distribution instead of hiding it behind one average.</p><p>The design also separates what a browser can honestly observe from what requires operating-system access. Browser timeouts remain request loss; only the local probe reports raw packet loss.</p></div>
+      <section class="case-section shell" aria-labelledby="problem-heading">
+        <div class="case-section-label"><span>01</span><h2 id="problem-heading">The problem</h2></div>
+        <div class="case-section-content case-copy-grid">
+          <p class="case-lead">A single download number can look healthy while calls stall, games spike, or uploads make the connection unusable.</p>
+          <div class="case-body-copy">
+            <p>This project measures the connection under three conditions: idle, saturated download, and saturated upload. It reports the distribution instead of hiding it behind one average.</p>
+            <p>The design also separates what a browser can honestly observe from what requires operating-system access. Browser timeouts remain request loss; only the local probe reports raw packet loss.</p>
+          </div>
         </div>
       </section>
 
-      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="model-heading">
-        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">02</span><h2 class="jl-page-section__title" id="model-heading">Two measurement layers</h2></div>
-        <div class="case-section-content jl-page-section__body jl-responsive-region">
-          <ol class="process-list jl-process-list" aria-label="Diagnostic measurement layers">
-            <li><span class="jl-process-list__step">Baseline</span><strong>Idle distribution</strong><p>Mean, median, minimum, maximum, 95th percentile, jitter, and browser request timeouts.</p></li>
-            <li><span class="jl-process-list__step">Load</span><strong>Throughput + delay</strong><p>Parallel transfers run while latency sampling continues in each direction.</p></li>
-            <li><span class="jl-process-list__step">Reach</span><strong>Service battery</strong><p>Optional, credential-free checks distinguish broad connectivity from one test edge.</p></li>
-            <li><span class="jl-process-list__step">Probe</span><strong>Operating-system path</strong><p>Internet Control Message Protocol loss, route, DNS, gateway, MTU, TCP, and TLS timing.</p></li>
+      <section class="case-section shell" aria-labelledby="model-heading">
+        <div class="case-section-label"><span>02</span><h2 id="model-heading">Two measurement layers</h2></div>
+        <div class="case-section-content">
+          <ol class="process-list" aria-label="Diagnostic measurement layers">
+            <li><span>Baseline</span><strong>Idle distribution</strong><p>Mean, median, minimum, maximum, 95th percentile, jitter, and browser request timeouts.</p></li>
+            <li><span>Load</span><strong>Throughput + delay</strong><p>Parallel transfers run while latency sampling continues in each direction.</p></li>
+            <li><span>Reach</span><strong>Service battery</strong><p>Optional, credential-free checks distinguish broad connectivity from one test edge.</p></li>
+            <li><span>Probe</span><strong>Operating-system path</strong><p>Internet Control Message Protocol loss, route, DNS, gateway, MTU, TCP, and TLS timing.</p></li>
           </ol>
         </div>
       </section>
 
-      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="profiles-heading">
-        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">03</span><h2 class="jl-page-section__title" id="profiles-heading">Test profiles</h2></div>
-        <div class="case-section-content decision-grid jl-page-section__body jl-grid-2">
-          <article class="jl-panel jl-panel--flat"><p class="decision-number">Quick</p><h3>Core signal in about 20 seconds</h3><p>Up to 100 MB down and 32 MB up, without contacting the optional common-service targets.</p></article>
-          <article class="jl-panel jl-panel--flat"><p class="decision-number">Full</p><h3>Longer sampling and reachability</h3><p>Up to 300 MB down and 96 MB up, followed by six clearly named service checks.</p></article>
-          <article class="jl-panel jl-panel--flat"><p class="decision-number">Stress</p><h3>Fast-link sustained load</h3><p>Higher caps expose longer queueing behavior and require explicit acknowledgement before starting.</p></article>
-          <article class="jl-panel jl-panel--flat"><p class="decision-number">Local</p><h3>Importable deep report</h3><p>The Windows probe writes JSON locally; the dashboard parses it in the tab without uploading the file.</p></article>
+      <section class="case-section shell" aria-labelledby="profiles-heading">
+        <div class="case-section-label"><span>03</span><h2 id="profiles-heading">Test profiles</h2></div>
+        <div class="case-section-content decision-grid">
+          <article>
+            <p class="decision-number">Quick</p>
+            <h3>Core signal in about 15 seconds</h3>
+            <p>Up to 100 MB down and 32 MB up, without contacting the optional common-service targets.</p>
+          </article>
+          <article>
+            <p class="decision-number">Full</p>
+            <h3>Longer sampling and reachability</h3>
+            <p>Up to 300 MB down and 96 MB up, followed by six clearly named service checks.</p>
+          </article>
+          <article>
+            <p class="decision-number">Stress</p>
+            <h3>Fast-link sustained load</h3>
+            <p>Higher caps expose longer queueing behavior and require explicit acknowledgement before starting.</p>
+          </article>
+          <article>
+            <p class="decision-number">Local</p>
+            <h3>Importable deep report</h3>
+            <p>The Windows probe writes JSON locally; the dashboard parses it in the tab without uploading the file.</p>
+          </article>
         </div>
       </section>
 
-      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="decisions-heading">
-        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">04</span><h2 class="jl-page-section__title" id="decisions-heading">Engineering decisions</h2></div>
-        <div class="case-section-content decision-grid jl-page-section__body jl-grid-2">
-          <article class="jl-panel jl-panel--flat"><p class="decision-number">A</p><h3>Distributions over a headline</h3><p>Mean, median, tails, jitter, and failures stay visible because each answers a different quality question.</p></article>
-          <article class="jl-panel jl-panel--flat"><p class="decision-number">B</p><h3>Loaded latency in both directions</h3><p>Download and upload saturation are tested separately so queueing pressure is attributable.</p></article>
-          <article class="jl-panel jl-panel--flat"><p class="decision-number">C</p><h3>Labels match the observed layer</h3><p>HTTP request loss is not called packet loss, and opaque browser reachability is not presented as server processing time.</p></article>
-          <article class="jl-panel jl-panel--flat"><p class="decision-number">D</p><h3>Privacy through minimization</h3><p>No accounts, analytics, cookies, result database, remote fonts, or deep-report upload path are present.</p></article>
+      <section class="case-section shell" aria-labelledby="decisions-heading">
+        <div class="case-section-label"><span>04</span><h2 id="decisions-heading">Engineering decisions</h2></div>
+        <div class="case-section-content decision-grid">
+          <article>
+            <p class="decision-number">A</p>
+            <h3>Distributions over a headline</h3>
+            <p>Mean, median, tails, jitter, and failures stay visible because each answers a different quality question.</p>
+          </article>
+          <article>
+            <p class="decision-number">B</p>
+            <h3>Loaded latency in both directions</h3>
+            <p>Download and upload saturation are tested separately so queueing pressure is attributable.</p>
+          </article>
+          <article>
+            <p class="decision-number">C</p>
+            <h3>Labels match the observed layer</h3>
+            <p>HTTP request loss is not called packet loss, and opaque browser reachability is not presented as server processing time.</p>
+          </article>
+          <article>
+            <p class="decision-number">D</p>
+            <h3>Privacy through minimization</h3>
+            <p>No accounts, analytics, cookies, result database, remote fonts, or deep-report upload path are present.</p>
+          </article>
         </div>
       </section>
 
-      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="results-heading">
-        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">05</span><h2 class="jl-page-section__title" id="results-heading">Validation</h2></div>
-        <div class="case-section-content jl-page-section__body jl-responsive-region">
-          <div class="metric-grid jl-metric-grid">
-            <div class="jl-metric"><strong class="jl-metric__value">44</strong><span class="jl-metric__label">automated tests</span></div>
-            <div class="jl-metric"><strong class="jl-metric__value">3</strong><span class="jl-metric__label">load conditions</span></div>
-            <div class="jl-metric"><strong class="jl-metric__value">6</strong><span class="jl-metric__label">service targets</span></div>
-            <div class="jl-metric"><strong class="jl-metric__value">0</strong><span class="jl-metric__label">retained results</span></div>
+      <section class="case-section shell" aria-labelledby="results-heading">
+        <div class="case-section-label"><span>05</span><h2 id="results-heading">Validation</h2></div>
+        <div class="case-section-content">
+          <div class="metric-grid">
+            <div><strong>44</strong><span>automated tests</span></div>
+            <div><strong>3</strong><span>load conditions</span></div>
+            <div><strong>6</strong><span>service targets</span></div>
+            <div><strong>0</strong><span>retained results</span></div>
           </div>
-          <div class="validation-copy jl-prose"><p>GitHub Actions type-checks and builds the web application, validates the Cloudflare Worker bundle, runs the .NET test suite, and publishes native probe packages. The complete validation matrix covers the browser app, Worker, and supported probe platforms.</p></div>
+          <div class="validation-copy">
+            <p>GitHub Actions type-checks and builds the web application, validates the Cloudflare Worker bundle, runs the .NET test suite, and publishes a self-contained Windows 11 x64 executable. The first complete run passed all three jobs.</p>
+          </div>
         </div>
       </section>
 
-      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="probe-heading">
-        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">06</span><h2 class="jl-page-section__title" id="probe-heading">Windows deep probe</h2></div>
-        <div class="case-section-content case-copy-grid jl-page-section__body jl-content-grid">
-          <p class="case-lead jl-editorial-lead jl-content-grid__lead">Some network questions are deliberately kept outside the browser.</p>
-          <div class="case-body-copy jl-prose jl-content-grid__support"><p>The local probe adds Internet Control Message Protocol (ICMP) packet loss, three samples per traceroute hop, default-gateway latency, direct Domain Name System (DNS) resolver timing, IPv4 path Maximum Transmission Unit (MTU), and separate DNS, Transmission Control Protocol (TCP), and Transport Layer Security (TLS) phases.</p><p>Private and link-local hops are redacted by default. Local interface, gateway, and resolver addresses appear only with an explicit command-line option.</p></div>
+      <section class="case-section shell" aria-labelledby="probe-heading">
+        <div class="case-section-label"><span>06</span><h2 id="probe-heading">Windows deep probe</h2></div>
+        <div class="case-section-content case-copy-grid">
+          <p class="case-lead">Some network questions are deliberately kept outside the browser.</p>
+          <div class="case-body-copy">
+            <p>The local probe adds Internet Control Message Protocol (ICMP) packet loss, three samples per traceroute hop, default-gateway latency, direct Domain Name System (DNS) resolver timing, IPv4 path Maximum Transmission Unit (MTU), and separate DNS, Transmission Control Protocol (TCP), and Transport Layer Security (TLS) phases.</p>
+            <p>Private and link-local hops are redacted by default. Local interface, gateway, and resolver addresses appear only with an explicit command-line option.</p>
+          </div>
         </div>
       </section>
 
-      <section class="case-section case-section-last jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="limits-heading">
-        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">07</span><h2 class="jl-page-section__title" id="limits-heading">Privacy and limits</h2></div>
-        <div class="case-section-content case-copy-grid jl-page-section__body jl-content-grid">
-          <p class="case-lead jl-editorial-lead jl-content-grid__lead">No retained result does not mean invisible traffic.</p>
-          <div class="case-body-copy jl-prose jl-content-grid__support"><p>Cloudflare still processes requests needed to serve the application. Full and Stress profiles contact the six named services, which may process those requests under their own policies. Quick mode avoids that battery.</p><p>Results describe one device, browser, route, edge, and moment. VPNs, Wi-Fi contention, endpoint security, browser scheduling, and test infrastructure can all affect a run, so repeated comparisons are more useful than treating one result as a permanent rating.</p></div>
+      <section class="case-section case-section-last shell" aria-labelledby="limits-heading">
+        <div class="case-section-label"><span>07</span><h2 id="limits-heading">Privacy and limits</h2></div>
+        <div class="case-section-content case-copy-grid">
+          <p class="case-lead">No retained result does not mean invisible traffic.</p>
+          <div class="case-body-copy">
+            <p>Cloudflare still processes requests needed to serve the application. Full and Stress profiles contact the six named services, which may process those requests under their own policies. Quick mode avoids that battery.</p>
+            <p>Results describe one device, browser, route, edge, and moment. VPNs, Wi-Fi contention, endpoint security, browser scheduling, and test infrastructure can all affect a run, so repeated comparisons are more useful than treating one result as a permanent rating.</p>
+          </div>
         </div>
       </section>
 
-      <section class="case-next jl-surface-inverse">
-        <div class="case-next-inner jl-page__inner jl-page__inner--portfolio">
+      <section class="case-next">
+        <div class="shell case-next-inner">
           <p>Next project</p>
           <h2>Reliability above UDP,<br><em>made visible.</em></h2>
           <a href="reliable-udp-transport.html">Read UDP transport case study <span aria-hidden="true">↗</span></a>
@@ -143,6 +166,5 @@
       </section>
     </main>
     <script src="../motion.js" defer></script>
-    <script src="../site-switcher.js" defer></script>
   </body>
 </html>
