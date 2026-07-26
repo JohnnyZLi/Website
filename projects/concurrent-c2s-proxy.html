@@ -10,140 +10,130 @@
     <meta property="og:type" content="article">
     <title>Concurrent Clear-to-Secure Proxy — Johnny Li</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../assets/design-system/tokens.css">
+    <link rel="stylesheet" href="../assets/design-system/foundations.css">
+    <link rel="stylesheet" href="../assets/design-system/site-identity.css">
+    <link rel="stylesheet" href="../assets/design-system/content.css">
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../case-study.css">
+    <link rel="stylesheet" href="../design-system-migration.css">
   </head>
-  <body>
-    <header class="site-header shell case-header">
-      <a class="wordmark" href="../index.html" aria-label="Johnny Li, home">Johnny Li</a>
-      <nav aria-label="Case study navigation">
-        <a href="../index.html#work">All work</a>
-        <a href="../index.html#experience">Experience</a>
-        <a href="../index.html#contact">Contact</a>
-      </nav>
+  <body class="jl-page">
+    <header class="jl-global-header">
+      <div class="jl-global-header__inner">
+        <div class="jl-site-identity">
+          <a class="jl-site-identity__owner" href="../index.html">Johnny Li</a>
+          <span class="jl-site-identity__separator" aria-hidden="true">/</span>
+          <a class="jl-site-identity__product" href="../index.html" aria-current="page">Portfolio</a>
+        </div>
+        <nav class="jl-global-header__nav" aria-label="Case study navigation">
+          <a href="../index.html#work">All work</a>
+          <a href="../index.html#experience">Experience</a>
+          <a href="../index.html#contact">Contact</a>
+        </nav>
+        <div class="jl-global-header__actions">
+          <div class="jl-site-switcher" data-site-switcher>
+            <button class="jl-site-switcher__button" type="button" aria-expanded="false" aria-controls="owned-sites-menu" data-site-switcher-button>Sites <span aria-hidden="true">⌄</span></button>
+            <ul class="jl-site-menu" id="owned-sites-menu" aria-label="Johnny Li sites" data-site-switcher-menu hidden>
+              <li><a href="https://johnnyli.dev" aria-current="page">Portfolio</a></li>
+              <li><a href="https://network.johnnyli.dev">Network Diagnostics</a></li>
+              <li><a href="https://rolepacket.johnnyli.dev">RolePacket</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </header>
 
-    <main>
-      <section class="case-hero shell" aria-labelledby="case-title">
-        <p class="eyebrow">Case study 05 / HTTP and TLS</p>
-        <div class="case-hero-grid">
-          <h1 id="case-title">Concurrent Clear-to-<br><em>Secure Proxy</em></h1>
-          <div class="case-summary">
-            <p>A concurrent forward proxy that accepts clear-text HTTP, establishes verified TLS upstream, applies reloadable access controls, and relays framed HTTP/1.1 responses.</p>
-            <div class="case-actions">
-              <a class="case-action case-action-primary" href="https://github.com/JohnnyZLi/Concurrent-C2S-Proxy" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a>
-              <a class="case-action" href="https://github.com/JohnnyZLi/Concurrent-C2S-Proxy/blob/main/doc/design.md" target="_blank" rel="noreferrer">Design notes <span aria-hidden="true">↗</span></a>
+    <main class="case-study">
+      <section class="case-hero jl-page-hero jl-page__inner jl-page__inner--portfolio" aria-labelledby="case-title">
+        <p class="eyebrow jl-eyebrow">Case study 05 / HTTP and TLS</p>
+        <div class="case-hero-grid jl-page-hero__grid">
+          <h1 class="jl-page-title" id="case-title">Concurrent Clear-to-<br><em>Secure Proxy</em></h1>
+          <div class="case-summary jl-stack">
+            <p class="jl-page-lede">A concurrent forward proxy that accepts clear-text HTTP, establishes verified TLS upstream, applies reloadable access controls, and relays framed HTTP/1.1 responses.</p>
+            <div class="case-actions jl-actions">
+              <a class="case-action case-action-primary jl-button jl-button--primary" href="https://github.com/JohnnyZLi/Concurrent-C2S-Proxy" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a>
+              <a class="case-action jl-button" href="https://github.com/JohnnyZLi/Concurrent-C2S-Proxy/blob/main/doc/design.md" target="_blank" rel="noreferrer">Design notes <span aria-hidden="true">↗</span></a>
             </div>
           </div>
         </div>
-
-        <dl class="case-facts">
-          <div><dt>Role</dt><dd>Architecture and implementation</dd></div>
-          <div><dt>Stack</dt><dd>C++17 · OpenSSL · POSIX sockets</dd></div>
-          <div><dt>Concurrency</dt><dd>Isolated worker threads</dd></div>
-          <div><dt>Status</dt><dd>Integration tested · Public</dd></div>
+        <dl class="case-facts jl-page-meta">
+          <div class="jl-meta-item"><dt>Role</dt><dd>Architecture and implementation</dd></div>
+          <div class="jl-meta-item"><dt>Stack</dt><dd>C++17 · OpenSSL · POSIX sockets</dd></div>
+          <div class="jl-meta-item"><dt>Concurrency</dt><dd>Isolated worker threads</dd></div>
+          <div class="jl-meta-item"><dt>Status</dt><dd>Integration tested · Public</dd></div>
         </dl>
       </section>
 
-      <section class="case-section shell" aria-labelledby="problem-heading">
-        <div class="case-section-label"><span>01</span><h2 id="problem-heading">The problem</h2></div>
-        <div class="case-section-content case-copy-grid">
-          <p class="case-lead">A proxy sits between two independently framed connections and has to remain correct when clients, origins, DNS, TLS, or policy fail.</p>
-          <div class="case-body-copy">
-            <p>The downstream side accepts ordinary HTTP proxy requests. The upstream side resolves the requested host, establishes TLS, verifies the certificate and hostname, rewrites the request, and streams the response back without losing message boundaries.</p>
-            <p>At the same time, the process must isolate concurrent clients, enforce hostname and resolved-IP rules, and produce useful HTTP errors rather than leaking socket failures to the browser.</p>
-          </div>
+      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="problem-heading">
+        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">01</span><h2 class="jl-page-section__title" id="problem-heading">The problem</h2></div>
+        <div class="case-section-content case-copy-grid jl-page-section__body jl-content-grid">
+          <p class="case-lead jl-editorial-lead jl-content-grid__lead">A proxy sits between two independently framed connections and has to remain correct when clients, origins, DNS, TLS, or policy fail.</p>
+          <div class="case-body-copy jl-prose jl-content-grid__support"><p>The downstream side accepts ordinary HTTP proxy requests. The upstream side resolves the requested host, establishes TLS, verifies the certificate and hostname, rewrites the request, and streams the response back without losing message boundaries.</p><p>At the same time, the process must isolate concurrent clients, enforce hostname and resolved-IP rules, and produce useful HTTP errors rather than leaking socket failures to the browser.</p></div>
         </div>
       </section>
 
-      <section class="case-section shell" aria-labelledby="flow-heading">
-        <div class="case-section-label"><span>02</span><h2 id="flow-heading">Request path</h2></div>
-        <div class="case-section-content">
-          <ol class="process-list" aria-label="Proxy request processing stages">
-            <li><span>Accept</span><strong>Parse the client request</strong><p>GET and HEAD are accepted in absolute proxy form or origin form with a Host header.</p></li>
-            <li><span>Authorize</span><strong>Check host and addresses</strong><p>The requested hostname and every resolved address are compared with the current forbidden-sites snapshot.</p></li>
-            <li><span>Secure</span><strong>Open verified TLS</strong><p>The proxy connects upstream with OpenSSL, validates the certificate chain, and verifies the requested hostname.</p></li>
-            <li><span>Relay</span><strong>Preserve HTTP framing</strong><p>Content-Length, chunked, HEAD, and connection-close responses are streamed using their actual termination rules.</p></li>
+      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="flow-heading">
+        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">02</span><h2 class="jl-page-section__title" id="flow-heading">Request path</h2></div>
+        <div class="case-section-content jl-page-section__body jl-responsive-region">
+          <ol class="process-list jl-process-list" aria-label="Proxy request processing stages">
+            <li><span class="jl-process-list__step">Accept</span><strong>Parse the client request</strong><p>GET and HEAD are accepted in absolute proxy form or origin form with a Host header.</p></li>
+            <li><span class="jl-process-list__step">Authorize</span><strong>Check host and addresses</strong><p>The requested hostname and every resolved address are compared with the current forbidden-sites snapshot.</p></li>
+            <li><span class="jl-process-list__step">Secure</span><strong>Open verified TLS</strong><p>The proxy connects upstream with OpenSSL, validates the certificate chain, and verifies the requested hostname.</p></li>
+            <li><span class="jl-process-list__step">Relay</span><strong>Preserve HTTP framing</strong><p>Content-Length, chunked, HEAD, and connection-close responses are streamed using their actual termination rules.</p></li>
           </ol>
         </div>
       </section>
 
-      <section class="case-section shell" aria-labelledby="decisions-heading">
-        <div class="case-section-label"><span>03</span><h2 id="decisions-heading">Engineering decisions</h2></div>
-        <div class="case-section-content decision-grid">
-          <article>
-            <p class="decision-number">A</p>
-            <h3>Verification by default</h3>
-            <p>TLS certificate and hostname checks remain enabled unless an explicit development-only environment override is set.</p>
-          </article>
-          <article>
-            <p class="decision-number">B</p>
-            <h3>Policy after resolution</h3>
-            <p>Checking both the hostname and resolved addresses prevents a permitted name from silently reaching a forbidden destination address.</p>
-          </article>
-          <article>
-            <p class="decision-number">C</p>
-            <h3>Framing-aware persistence</h3>
-            <p>Downstream keep-alive is used only when the response boundary is known; close-delimited responses end the client connection.</p>
-          </article>
-          <article>
-            <p class="decision-number">D</p>
-            <h3>Explicit HTTP failure mapping</h3>
-            <p>Malformed requests, blocked sites, unsupported methods, DNS failures, upstream errors, capacity limits, and timeouts become distinct responses.</p>
-          </article>
+      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="decisions-heading">
+        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">03</span><h2 class="jl-page-section__title" id="decisions-heading">Engineering decisions</h2></div>
+        <div class="case-section-content decision-grid jl-page-section__body jl-grid-2">
+          <article class="jl-panel jl-panel--flat"><p class="decision-number">A</p><h3>Verification by default</h3><p>TLS certificate and hostname checks remain enabled unless an explicit development-only environment override is set.</p></article>
+          <article class="jl-panel jl-panel--flat"><p class="decision-number">B</p><h3>Policy after resolution</h3><p>Checking both the hostname and resolved addresses prevents a permitted name from silently reaching a forbidden destination address.</p></article>
+          <article class="jl-panel jl-panel--flat"><p class="decision-number">C</p><h3>Framing-aware persistence</h3><p>Downstream keep-alive is used only when the response boundary is known; close-delimited responses end the client connection.</p></article>
+          <article class="jl-panel jl-panel--flat"><p class="decision-number">D</p><h3>Explicit HTTP failure mapping</h3><p>Malformed requests, blocked sites, unsupported methods, DNS failures, upstream errors, capacity limits, and timeouts become distinct responses.</p></article>
         </div>
       </section>
 
-      <section class="case-section shell" aria-labelledby="reload-heading">
-        <div class="case-section-label"><span>04</span><h2 id="reload-heading">Live access-control reload</h2></div>
-        <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Policy changes should not require stopping the service or leaving newly forbidden connections active.</p>
-          <div class="case-body-copy">
-            <p>Sending SIGINT reloads the forbidden-sites file into a new immutable snapshot while the proxy remains running. New requests immediately use the replacement rule set.</p>
-            <p>The proxy also reevaluates active upstream destinations. Connections covered by a newly loaded hostname or IP rule are shut down so the policy change applies to existing work as well as future requests.</p>
-          </div>
+      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="reload-heading">
+        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">04</span><h2 class="jl-page-section__title" id="reload-heading">Live access-control reload</h2></div>
+        <div class="case-section-content case-copy-grid jl-page-section__body jl-content-grid">
+          <p class="case-lead jl-editorial-lead jl-content-grid__lead">Policy changes should not require stopping the service or leaving newly forbidden connections active.</p>
+          <div class="case-body-copy jl-prose jl-content-grid__support"><p>Sending SIGINT reloads the forbidden-sites file into a new immutable snapshot while the proxy remains running. New requests immediately use the replacement rule set.</p><p>The proxy also reevaluates active upstream destinations. Connections covered by a newly loaded hostname or IP rule are shut down so the policy change applies to existing work as well as future requests.</p></div>
         </div>
       </section>
 
-      <section class="case-section shell" aria-labelledby="validation-heading">
-        <div class="case-section-label"><span>05</span><h2 id="validation-heading">Validation</h2></div>
-        <div class="case-section-content">
-          <div class="metric-grid">
-            <div><strong>50</strong><span>client capacity</span></div>
-            <div><strong>2</strong><span>forwarded methods</span></div>
-            <div><strong>6</strong><span>mapped HTTP errors</span></div>
-            <div><strong>TLS 1.2+</strong><span>verified upstream</span></div>
+      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="validation-heading">
+        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">05</span><h2 class="jl-page-section__title" id="validation-heading">Validation</h2></div>
+        <div class="case-section-content jl-page-section__body jl-responsive-region">
+          <div class="metric-grid jl-metric-grid">
+            <div class="jl-metric"><strong class="jl-metric__value">50</strong><span class="jl-metric__label">client capacity</span></div>
+            <div class="jl-metric"><strong class="jl-metric__value">2</strong><span class="jl-metric__label">forwarded methods</span></div>
+            <div class="jl-metric"><strong class="jl-metric__value">6</strong><span class="jl-metric__label">mapped HTTP errors</span></div>
+            <div class="jl-metric"><strong class="jl-metric__value">TLS 1.2+</strong><span class="jl-metric__label">verified upstream</span></div>
           </div>
-          <div class="validation-copy">
-            <p>The integration suite creates a locally trusted TLS origin and exercises GET, HEAD, X-Forwarded-For, unsupported methods, concurrent requests, ACL reload, blocked responses, persistent requests, chunked responses, malformed input, and structured access logging.</p>
-          </div>
+          <div class="validation-copy jl-prose"><p>The integration suite creates a locally trusted TLS origin and exercises GET, HEAD, X-Forwarded-For, unsupported methods, concurrent requests, ACL reload, blocked responses, persistent requests, chunked responses, malformed input, and structured access logging.</p></div>
         </div>
       </section>
 
-      <section class="case-section shell" aria-labelledby="logging-heading">
-        <div class="case-section-label"><span>06</span><h2 id="logging-heading">Operational evidence</h2></div>
-        <div class="case-section-content case-copy-grid">
-          <p class="case-lead">A forwarding service needs enough evidence to explain what happened without retaining response bodies.</p>
-          <div class="case-body-copy">
-            <p>Each completed request produces an RFC 3339 access-log entry with the client address, request line, returned status, and relayed byte count. X-Forwarded-For is created or extended so the origin receives the downstream address chain.</p>
-            <p>Worker cleanup is centralized so client sockets, upstream sockets, and TLS objects are released consistently across success, parse errors, access-control rejection, and connection failure.</p>
-          </div>
+      <section class="case-section jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="logging-heading">
+        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">06</span><h2 class="jl-page-section__title" id="logging-heading">Operational evidence</h2></div>
+        <div class="case-section-content case-copy-grid jl-page-section__body jl-content-grid">
+          <p class="case-lead jl-editorial-lead jl-content-grid__lead">A forwarding service needs enough evidence to explain what happened without retaining response bodies.</p>
+          <div class="case-body-copy jl-prose jl-content-grid__support"><p>Each completed request produces an RFC 3339 access-log entry with the client address, request line, returned status, and relayed byte count. X-Forwarded-For is created or extended so the origin receives the downstream address chain.</p><p>Worker cleanup is centralized so client sockets, upstream sockets, and TLS objects are released consistently across success, parse errors, access-control rejection, and connection failure.</p></div>
         </div>
       </section>
 
-      <section class="case-section case-section-last shell" aria-labelledby="limits-heading">
-        <div class="case-section-label"><span>07</span><h2 id="limits-heading">Scope and provenance</h2></div>
-        <div class="case-section-content case-copy-grid">
-          <p class="case-lead">The proxy demonstrates HTTP, TLS, concurrency, and policy mechanics; it is not intended as an anonymous or production security gateway.</p>
-          <div class="case-body-copy">
-            <p>It supports GET and HEAD rather than tunneling arbitrary HTTPS with CONNECT, uses a fixed worker capacity, and does not provide caching, authentication, content inspection, or distributed policy management.</p>
-            <p>The project originated in CSE 156/L at UC Santa Cruz in Winter 2025. After the original university-hosted source was lost, the published implementation was reconstructed from the surviving specification and expanded with stronger TLS verification, broader framing coverage, automated tests, and detailed cleanup documentation.</p>
-          </div>
+      <section class="case-section case-section-last jl-page-section jl-page__inner jl-page__inner--portfolio" aria-labelledby="limits-heading">
+        <div class="case-section-label jl-page-section__header"><span class="jl-page-section__index">07</span><h2 class="jl-page-section__title" id="limits-heading">Scope and provenance</h2></div>
+        <div class="case-section-content case-copy-grid jl-page-section__body jl-content-grid">
+          <p class="case-lead jl-editorial-lead jl-content-grid__lead">The proxy demonstrates HTTP, TLS, concurrency, and policy mechanics; it is not intended as an anonymous or production security gateway.</p>
+          <div class="case-body-copy jl-prose jl-content-grid__support"><p>It supports GET and HEAD rather than tunneling arbitrary HTTPS with CONNECT, uses a fixed worker capacity, and does not provide caching, authentication, content inspection, or distributed policy management.</p><p>The project originated in CSE 156/L at UC Santa Cruz in Winter 2025. After the original university-hosted source was lost, the published implementation was reconstructed from the surviving specification and expanded with stronger TLS verification, broader framing coverage, automated tests, and detailed cleanup documentation.</p></div>
         </div>
       </section>
 
-      <section class="case-next">
-        <div class="shell case-next-inner">
+      <section class="case-next jl-surface-inverse">
+        <div class="case-next-inner jl-page__inner jl-page__inner--portfolio">
           <p>Selected work</p>
           <h2>More systems,<br><em>built to be examined.</em></h2>
           <a href="../index.html#work">Back to all projects <span aria-hidden="true">↗</span></a>
@@ -151,5 +141,6 @@
       </section>
     </main>
     <script src="../motion.js" defer></script>
+    <script src="../site-switcher.js" defer></script>
   </body>
 </html>
