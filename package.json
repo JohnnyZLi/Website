@@ -13,7 +13,7 @@
     "lint:css": "stylelint \"**/*.css\" --ignore-pattern \"assets/design-system/**/*.css\""
   },
   "dependencies": {
-    "@johnnyzli/web-design-system": "github:JohnnyZLi/Web-Design-System#5eeb2effcffb0c11f93e683f178ab80d7456bde4"
+    "@johnnyzli/web-design-system": "github:JohnnyZLi/Web-Design-System#27f83fa7333903a38c2c5ca36ed0455fa71598fc"
   },
   "devDependencies": {
     "html-validate": "11.5.6",
