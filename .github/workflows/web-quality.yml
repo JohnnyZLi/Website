@@ -24,6 +24,24 @@ jobs:
           node-version: 24
       - name: Install validation tools
         run: npm install
+      - name: Verify design-system assets
+        run: npm run design-system:check
+      - name: Test design-system integration
+        id: validate-design-system
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run design-system:integration 2>&1 | tee design-system-integration.log
+      - name: Upload design-system diagnostics
+        if: steps.validate-design-system.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: design-system-integration-report
+          path: design-system-integration.log
+      - name: Enforce design-system integration result
+        if: steps.validate-design-system.outcome == 'failure'
+        run: exit 1
       - name: Validate HTML
         id: validate-html
         continue-on-error: true
@@ -97,4 +115,4 @@ jobs:
             --header "Authorization: Bearer $GH_TOKEN" \
             --header "X-GitHub-Api-Version: 2026-03-10" \
             "https://api.github.com/repos/$REPOSITORY/statuses/$SHA" \
-            --data "{\"state\":\"success\",\"target_url\":\"$SERVER_URL/$REPOSITORY/actions/runs/$RUN_ID\",\"description\":\"HTML, CSS, and WCAG 2 AA checks passed\",\"context\":\"web-quality/validated\"}"
+            --data "{\"state\":\"success\",\"target_url\":\"$SERVER_URL/$REPOSITORY/actions/runs/$RUN_ID\",\"description\":\"HTML, CSS, WCAG, and design-system checks passed\",\"context\":\"web-quality/validated\"}"

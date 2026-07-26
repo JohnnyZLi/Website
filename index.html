@@ -10,21 +10,50 @@
     <meta property="og:type" content="website">
     <title>Johnny Li — Network Engineer</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/design-system/tokens.css">
+    <link rel="stylesheet" href="assets/design-system/foundations.css">
+    <link rel="stylesheet" href="assets/design-system/site-identity.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="knowledge.css">
     <link rel="stylesheet" href="terracotta-accent.css">
+    <link rel="stylesheet" href="design-system-migration.css">
   </head>
   <body>
     <main>
       <section class="hero" aria-labelledby="intro-heading">
         <header class="site-header shell">
           <a class="wordmark" href="#top" aria-label="Johnny Li, home">Johnny Li</a>
-          <nav aria-label="Primary navigation">
-            <a href="#work">Work</a>
-            <a href="#experience">Experience</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
-          </nav>
+          <div class="site-header__actions">
+            <nav class="primary-nav" aria-label="Primary navigation">
+              <a href="#work">Work</a>
+              <a href="#experience">Experience</a>
+              <a href="#about">About</a>
+              <a href="#contact">Contact</a>
+            </nav>
+            <div class="jl-site-switcher" data-site-switcher>
+              <button
+                class="jl-site-switcher__button"
+                type="button"
+                aria-expanded="false"
+                aria-controls="owned-sites-menu"
+                data-site-switcher-button
+              >
+                Sites
+                <span aria-hidden="true">⌄</span>
+              </button>
+              <nav
+                class="jl-site-menu"
+                id="owned-sites-menu"
+                aria-label="Johnny Li sites"
+                data-site-switcher-menu
+                hidden
+              >
+                <a href="https://johnnyli.dev" aria-current="page">Portfolio</a>
+                <a href="https://network.johnnyli.dev">Network Diagnostics</a>
+                <a href="https://rolepacket.johnnyli.dev">RolePacket</a>
+              </nav>
+            </div>
+          </div>
         </header>
 
         <div class="hero-inner shell" id="top">
@@ -184,7 +213,7 @@
         </section>
       </section>
 
-      <section class="contact-section shell" id="contact" aria-labelledby="contact-heading">
+      <section class="contact-section shell jl-surface-inverse" id="contact" aria-labelledby="contact-heading">
         <div class="section-kicker section-kicker-light">
           <span class="folio">04</span>
           <h2 id="contact-heading">Contact</h2>
@@ -207,5 +236,6 @@
       </section>
     </main>
     <script src="motion.js" defer></script>
+    <script src="site-switcher.js" defer></script>
   </body>
 </html>
