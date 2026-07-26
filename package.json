@@ -8,6 +8,7 @@
   "scripts": {
     "design-system:sync": "node scripts/sync-design-system.mjs",
     "design-system:check": "npm run design-system:sync && git diff --exit-code -- assets/design-system",
+    "design-system:integration": "node scripts/validate-design-system-integration.mjs",
     "lint:html": "html-validate \"index.html\" \"projects/**/*.html\"",
     "lint:css": "stylelint \"**/*.css\" --ignore-pattern \"assets/design-system/**/*.css\""
   },
