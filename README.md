@@ -4,13 +4,11 @@ The source for my personal portfolio website.
 
 ## Design system
 
-The portfolio consumes `@johnnyzli/web-design-system` v1.4.0 from the exact source commit recorded in `package.json` and `assets/design-system/SOURCE.md`.
+The portfolio consumes `@johnnyzli/web-design-system` v1.3.4 from the exact source commit recorded in `package.json` and `assets/design-system/SOURCE.md`.
 
-The deployed site remains static. During development and CI, `npm run design-system:sync` copies the package's generated tokens and shared CSS into `assets/design-system/`. `npm run design-system:check` fails when those committed assets drift from the pinned package.
+The deployed site remains static. During development and CI, `npm run design-system:sync` copies the package's generated tokens and shared CSS foundations into `assets/design-system/`. `npm run design-system:check` fails when those committed assets drift from the pinned package.
 
-Shared colors, typography roles, focus behavior, canvas texture, spacing primitives, the global header, the Sites control, page rails, heroes, metadata, sections, prose, grids, panels, process steps, metrics, callouts, actions, code, media, tables, empty states, and responsive transformations come from the design-system package.
-
-The homepage and all five project case studies use these shared content roles directly in their source markup. Portfolio-specific CSS is limited to the editorial composition, decorative hero treatment, selected-work expression, and dark contact or next-project sections.
+Product-specific editorial layout remains in this repository. Shared colors, typography roles, focus behavior, canvas texture, spacing primitives, the global header, and the Sites control come from the design-system package. The homepage and project case studies use the same global-header contract.
 
 ## Local preview
 
