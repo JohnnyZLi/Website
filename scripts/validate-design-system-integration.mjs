@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 
 const root = resolve(".");
 const index = await readFile(resolve(root, "index.html"), "utf8");
+const motion = await readFile(resolve(root, "motion.js"), "utf8");
 const adapter = await readFile(resolve(root, "design-system-migration.css"), "utf8");
 const identityStyles = await readFile(
   resolve(root, "assets/design-system/site-identity.css"),
@@ -87,6 +88,9 @@ if (!/--shell:\s*min\(var\(--jl-layout-portfolio-max\)/.test(adapter)) {
   fail("Portfolio shell is not derived from the shared portfolio rail.");
 }
 if (!adapter.includes("var(--jl-color-focus-ring)")) fail("Shared focus ring token is not active.");
+if (!adapter.includes(".contact-section .contact-links a:nth-child(n)")) {
+  fail("Legacy responsive navigation must not hide portfolio contact links.");
+}
 for (const forbidden of [".jl-site-switcher__button", ".jl-site-menu,", ".site-header__actions"]) {
   if (adapter.includes(forbidden)) fail(`Portfolio must not override shared header ownership: ${forbidden}.`);
 }
@@ -109,10 +113,29 @@ for (const contract of [
   if (!identityStyles.includes(contract)) fail(`Shared Sites control contract is incomplete: ${contract}.`);
 }
 
+for (const contract of [
+  'document.querySelector(".case-header")',
+  'legacyCaseHeader.className = "jl-global-header"',
+  'class="jl-global-header__inner"',
+  'class="jl-site-identity__owner"',
+  'class="jl-site-identity__product"',
+  'class="jl-global-header__nav"',
+  'class="jl-site-switcher__button"',
+  '"../assets/design-system/tokens.css"',
+  '"../assets/design-system/foundations.css"',
+  '"../assets/design-system/site-identity.css"',
+  '"../design-system-migration.css"',
+  'switcherScript.src = "../site-switcher.js"',
+]) {
+  if (!motion.includes(contract)) fail(`Case-study global-header contract is missing: ${contract}.`);
+}
+
 const projectDirectory = resolve(root, "projects");
 const projectPages = (await readdir(projectDirectory)).filter((name) => name.endsWith(".html"));
 for (const page of projectPages) {
   const html = await readFile(resolve(projectDirectory, page), "utf8");
+  if (!html.includes('class="site-header shell case-header"')) fail(`${page} lacks the case-header enhancement target.`);
+  if (!html.includes('src="../motion.js"')) fail(`${page} does not load the shared case-study shell enhancer.`);
   if (!html.includes("../index.html")) fail(`${page} cannot return to the portfolio.`);
 }
 
