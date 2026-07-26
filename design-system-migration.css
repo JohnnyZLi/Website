@@ -61,6 +61,11 @@ body {
   content: none;
 }
 
+/* The old global nav breakpoint must never hide contact destinations. */
+.contact-section .contact-links a:nth-child(n) {
+  display: inline-flex;
+}
+
 @media (max-width: 560px) {
   :root {
     --shell: calc(100% - 32px);
