@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 
 const packageRoot = resolve("node_modules/@johnnyzli/web-design-system");
 const outputRoot = resolve("assets/design-system");
-const sourceCommit = "f197b30d5e2ffc5e19e44d0494475ab1078cf450";
+const sourceCommit = "27f83fa7333903a38c2c5ca36ed0455fa71598fc";
 const files = [
   ["tokens/tokens.css", "tokens.css"],
   ["styles/foundations.css", "foundations.css"],
