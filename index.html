@@ -13,13 +13,14 @@
     <link rel="stylesheet" href="assets/design-system/tokens.css">
     <link rel="stylesheet" href="assets/design-system/foundations.css">
     <link rel="stylesheet" href="assets/design-system/site-identity.css">
+    <link rel="stylesheet" href="assets/design-system/content.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="knowledge.css">
     <link rel="stylesheet" href="terracotta-accent.css">
     <link rel="stylesheet" href="design-system-migration.css">
   </head>
-  <body>
-    <main>
+  <body class="jl-page">
+    <main class="portfolio-home">
       <section class="hero" aria-labelledby="intro-heading">
         <header class="jl-global-header">
           <div class="jl-global-header__inner">
@@ -36,23 +37,11 @@
             </nav>
             <div class="jl-global-header__actions">
               <div class="jl-site-switcher" data-site-switcher>
-                <button
-                  class="jl-site-switcher__button"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls="owned-sites-menu"
-                  data-site-switcher-button
-                >
+                <button class="jl-site-switcher__button" type="button" aria-expanded="false" aria-controls="owned-sites-menu" data-site-switcher-button>
                   Sites
                   <span aria-hidden="true">⌄</span>
                 </button>
-                <ul
-                  class="jl-site-menu"
-                  id="owned-sites-menu"
-                  aria-label="Johnny Li sites"
-                  data-site-switcher-menu
-                  hidden
-                >
+                <ul class="jl-site-menu" id="owned-sites-menu" aria-label="Johnny Li sites" data-site-switcher-menu hidden>
                   <li><a href="https://johnnyli.dev" aria-current="page">Portfolio</a></li>
                   <li><a href="https://network.johnnyli.dev">Network Diagnostics</a></li>
                   <li><a href="https://rolepacket.johnnyli.dev">RolePacket</a></li>
@@ -62,15 +51,15 @@
           </div>
         </header>
 
-        <div class="hero-inner shell" id="top">
-          <p class="eyebrow">Network engineering / systems / support</p>
+        <div class="hero-inner shell jl-page__inner jl-page__inner--portfolio" id="top">
+          <p class="eyebrow jl-eyebrow">Network engineering / systems / support</p>
           <div class="hero-grid">
             <h1 id="intro-heading">
               <span class="hero-line">I work on</span>
               <span class="hero-line">the <em>systems</em></span>
               <span class="hero-line">people <em>rely on.</em></span>
             </h1>
-            <div class="hero-aside">
+            <div class="hero-aside jl-prose">
               <p>Network engineer based in California, with a background in systems support at UC Santa Cruz.</p>
               <a class="text-link" href="#work">View selected work <span aria-hidden="true">↘</span></a>
             </div>
@@ -78,155 +67,110 @@
         </div>
       </section>
 
-      <section class="work-section shell" id="work" aria-labelledby="work-heading">
-        <div class="section-kicker">
-          <span class="folio">01</span>
-          <h2 id="work-heading">Selected work</h2>
+      <section class="work-section shell jl-page-section jl-page__inner jl-page__inner--portfolio" id="work" aria-labelledby="work-heading">
+        <div class="section-kicker jl-page-section__header">
+          <span class="folio jl-page-section__index">01</span>
+          <h2 class="jl-page-section__title" id="work-heading">Selected work</h2>
         </div>
-        <div class="work-list">
+        <div class="work-list jl-page-section__body jl-responsive-region">
           <article class="work-item">
-            <p class="work-number">01</p>
-            <p class="work-type">IT operations</p>
-            <h3>Humanities IT operations</h3>
+            <p class="work-number">01</p><p class="work-type">IT operations</p><h3>Humanities IT operations</h3>
             <p class="work-description">Support for faculty, staff, and student employees across macOS, Windows, Apple hardware, collaboration tools, department applications, and classroom technology.</p>
           </article>
           <article class="work-item">
-            <p class="work-number">02</p>
-            <p class="work-type">Research technology</p>
-            <h3>AI machine translation platform</h3>
+            <p class="work-number">02</p><p class="work-type">Research technology</p><h3>AI machine translation platform</h3>
             <p class="work-description">A frontend and containerized workflow for a faculty-led machine translation project, using Kubernetes and Docker/Podman on Nautilus research computing.</p>
           </article>
           <article class="work-item">
-            <p class="work-number">03</p>
-            <p class="work-type">Python / network automation</p>
-            <h3>Network Config Auditor</h3>
+            <p class="work-number">03</p><p class="work-type">Python / network automation</p><h3>Network Config Auditor</h3>
             <p class="work-description">A dependency-free CLI that parses Cisco IOS-style configurations and reports security, management, switching, and routing issues with severity, line evidence, and remediation.</p>
             <a class="work-project-link" href="projects/network-config-auditor.html">Read case study <span aria-hidden="true">↗</span></a>
           </article>
           <article class="work-item">
-            <p class="work-number">04</p>
-            <p class="work-type">OSPF / failure testing</p>
-            <h3>OSPF Resiliency Lab</h3>
+            <p class="work-number">04</p><p class="work-type">OSPF / failure testing</p><h3>OSPF Resiliency Lab</h3>
             <p class="work-description">A four-router FRRouting lab that proves equal-cost paths, injects a silent core failure, measures reconvergence, verifies reachability, and preserves machine-readable recovery evidence.</p>
             <a class="work-project-link" href="projects/ospf-resiliency-lab.html">Read case study <span aria-hidden="true">↗</span></a>
           </article>
           <article class="work-item">
-            <p class="work-number">05</p>
-            <p class="work-type">Web / systems diagnostics</p>
-            <h3>Network Diagnostics Suite</h3>
+            <p class="work-number">05</p><p class="work-type">Web / systems diagnostics</p><h3>Network Diagnostics Suite</h3>
             <p class="work-description">A privacy-first browser test for throughput, latency distributions, jitter, request failures, and loaded responsiveness, paired with a Windows probe for packet loss, route, DNS, MTU, and TLS evidence.</p>
             <a class="work-project-link" href="projects/network-diagnostics-suite.html">Read case study <span aria-hidden="true">↗</span></a>
           </article>
           <article class="work-item">
-            <p class="work-number">06</p>
-            <p class="work-type">C++ / transport protocols</p>
-            <h3>Reliable Transport over UDP</h3>
+            <p class="work-number">06</p><p class="work-type">C++ / transport protocols</p><h3>Reliable Transport over UDP</h3>
             <p class="work-description">A sliding-window file-transfer protocol with per-packet acknowledgements, timeout-based retransmission, deliberate DATA and ACK loss, out-of-order reassembly, and structured packet evidence.</p>
             <a class="work-project-link" href="projects/reliable-udp-transport.html">Read case study <span aria-hidden="true">↗</span></a>
           </article>
           <article class="work-item">
-            <p class="work-number">07</p>
-            <p class="work-type">C++ / HTTP / TLS</p>
-            <h3>Concurrent Clear-to-Secure Proxy</h3>
+            <p class="work-number">07</p><p class="work-type">C++ / HTTP / TLS</p><h3>Concurrent Clear-to-Secure Proxy</h3>
             <p class="work-description">A concurrent forward proxy that accepts clear-text HTTP, establishes verified TLS upstream, enforces reloadable hostname and IP policy, preserves response framing, and records structured access logs.</p>
             <a class="work-project-link" href="projects/concurrent-c2s-proxy.html">Read case study <span aria-hidden="true">↗</span></a>
           </article>
         </div>
       </section>
 
-      <section class="experience-section shell" id="experience" aria-labelledby="experience-heading">
-        <div class="section-kicker">
-          <span class="folio">02</span>
-          <h2 id="experience-heading">Experience</h2>
+      <section class="experience-section shell jl-page-section jl-page__inner jl-page__inner--portfolio" id="experience" aria-labelledby="experience-heading">
+        <div class="section-kicker jl-page-section__header">
+          <span class="folio jl-page-section__index">02</span>
+          <h2 class="jl-page-section__title" id="experience-heading">Experience</h2>
         </div>
-        <div class="experience-grid">
-          <p class="section-intro">Practical work, mostly close to the people and systems using it.</p>
-          <div class="experience-list">
+        <div class="experience-grid jl-page-section__body jl-content-grid">
+          <p class="section-intro jl-page-lede jl-content-grid__lead">Practical work, mostly close to the people and systems using it.</p>
+          <div class="experience-list jl-content-grid__support">
             <article class="experience-item">
               <p class="period">Apr 2023 — Mar 2026</p>
-              <div>
-                <h3>IT Technician</h3>
-                <p class="organization">UC Santa Cruz · Humanities Division</p>
-              </div>
+              <div><h3>IT Technician</h3><p class="organization">UC Santa Cruz · Humanities Division</p></div>
               <p class="experience-description">Managed support work from intake through resolution in ServiceNow across hardware, software, accounts, applications, and connectivity. Also handled device deployment and migration, Jamf-supported Apple workflows, Apple GSX repairs, inventory, documentation, audiovisual support, and technician mentoring.</p>
             </article>
             <article class="experience-item">
               <p class="period">2022</p>
-              <div>
-                <h3>Technical &amp; E-commerce Intern</h3>
-                <p class="organization">Accuzone Inc.</p>
-              </div>
+              <div><h3>Technical &amp; E-commerce Intern</h3><p class="organization">Accuzone Inc.</p></div>
               <p class="experience-description">Worked between customers and technical teams, translated product information, and maintained website and marketplace content with search visibility in mind.</p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="about-section shell" id="about" aria-labelledby="about-heading">
-        <div class="section-kicker">
-          <span class="folio">03</span>
-          <h2 id="about-heading">About</h2>
+      <section class="about-section shell jl-page-section jl-page__inner jl-page__inner--portfolio" id="about" aria-labelledby="about-heading">
+        <div class="section-kicker jl-page-section__header">
+          <span class="folio jl-page-section__index">03</span>
+          <h2 class="jl-page-section__title" id="about-heading">About</h2>
         </div>
-        <div class="about-grid">
-          <p class="about-statement">Most of my work sits where <em>hardware, software, documentation,</em> and <em>people</em> meet.</p>
-          <div class="about-copy">
+        <div class="about-grid jl-page-section__body jl-content-grid">
+          <p class="about-statement jl-editorial-lead jl-content-grid__lead">Most of my work sits where <em>hardware, software, documentation,</em> and <em>people</em> meet.</p>
+          <div class="about-copy jl-prose jl-content-grid__support">
             <p>I started in hands-on support and am moving deeper into networking and infrastructure. I like work where the technical answer still has to make sense to the person using it.</p>
-            <div class="education-note">
-              <p class="micro-label">Education</p>
-              <p>University of California, Santa Cruz</p>
-              <p>B.A. in Networking and Digital Technology · 2025</p>
-            </div>
+            <div class="education-note jl-panel jl-panel--flat"><p class="micro-label">Education</p><p>University of California, Santa Cruz</p><p>B.A. in Networking and Digital Technology · 2025</p></div>
           </div>
         </div>
 
-        <section class="knowledge-block" aria-labelledby="knowledge-heading">
-          <p class="micro-label" id="knowledge-heading">Working knowledge</p>
-          <div class="knowledge-groups">
+        <section class="knowledge-block jl-page-section__body" aria-labelledby="knowledge-heading">
+          <p class="micro-label jl-eyebrow" id="knowledge-heading">Working knowledge</p>
+          <div class="knowledge-groups jl-responsive-region">
             <section class="knowledge-group knowledge-group-primary" aria-labelledby="networking-knowledge-heading">
-              <p class="knowledge-index">01</p>
-              <h3 id="networking-knowledge-heading">Networking &amp; infrastructure</h3>
-              <ul>
-                <li>TCP/IP, UDP, DNS, DHCP, and VLANs</li>
-                <li>OSPF, ECMP, Cisco IOS, FRRouting, and Containerlab</li>
-                <li>HTTP/1.1, TLS, OpenSSL, socket programming, and forward proxies</li>
-                <li>Wireshark, Packet Tracer, packet loss, latency, DNS, route, and MTU diagnostics</li>
-              </ul>
+              <p class="knowledge-index">01</p><h3 id="networking-knowledge-heading">Networking &amp; infrastructure</h3>
+              <ul><li>TCP/IP, UDP, DNS, DHCP, and VLANs</li><li>OSPF, ECMP, Cisco IOS, FRRouting, and Containerlab</li><li>HTTP/1.1, TLS, OpenSSL, socket programming, and forward proxies</li><li>Wireshark, Packet Tracer, packet loss, latency, DNS, route, and MTU diagnostics</li></ul>
             </section>
-
             <section class="knowledge-group knowledge-group-primary" aria-labelledby="development-knowledge-heading">
-              <p class="knowledge-index">02</p>
-              <h3 id="development-knowledge-heading">Automation &amp; development</h3>
-              <ul>
-                <li>Python, Bash, SQL, C/C++, and C#/.NET</li>
-                <li>HTML, CSS, JavaScript, TypeScript, React, and Vite</li>
-                <li>Cloudflare Workers, Docker, Kubernetes, Podman, and Nautilus</li>
-                <li>Git, GitHub Actions, automated testing, CI, and CLI tooling</li>
-              </ul>
+              <p class="knowledge-index">02</p><h3 id="development-knowledge-heading">Automation &amp; development</h3>
+              <ul><li>Python, Bash, SQL, C/C++, and C#/.NET</li><li>HTML, CSS, JavaScript, TypeScript, React, and Vite</li><li>Cloudflare Workers, Docker, Kubernetes, Podman, and Nautilus</li><li>Git, GitHub Actions, automated testing, CI, and CLI tooling</li></ul>
             </section>
-
             <section class="knowledge-group knowledge-group-secondary" aria-labelledby="operations-knowledge-heading">
-              <div class="knowledge-group-heading">
-                <p class="knowledge-index">03</p>
-                <h3 id="operations-knowledge-heading">Systems &amp; IT operations</h3>
-              </div>
-              <ul>
-                <li>Windows and macOS support and administration; Linux systems</li>
-                <li>ServiceNow, Jamf, Apple GSX, Google Workspace, and Microsoft 365</li>
-                <li>Device deployment, migration, repair, inventory, documentation, audiovisual support, and technician mentoring</li>
-              </ul>
+              <div class="knowledge-group-heading"><p class="knowledge-index">03</p><h3 id="operations-knowledge-heading">Systems &amp; IT operations</h3></div>
+              <ul><li>Windows and macOS support and administration; Linux systems</li><li>ServiceNow, Jamf, Apple GSX, Google Workspace, and Microsoft 365</li><li>Device deployment, migration, repair, inventory, documentation, audiovisual support, and technician mentoring</li></ul>
             </section>
           </div>
         </section>
       </section>
 
-      <section class="contact-section shell jl-surface-inverse" id="contact" aria-labelledby="contact-heading">
-        <div class="section-kicker section-kicker-light">
-          <span class="folio">04</span>
-          <h2 id="contact-heading">Contact</h2>
+      <section class="contact-section shell jl-surface-inverse jl-page-section jl-page__inner jl-page__inner--portfolio" id="contact" aria-labelledby="contact-heading">
+        <div class="section-kicker section-kicker-light jl-page-section__header">
+          <span class="folio jl-page-section__index">04</span>
+          <h2 class="jl-page-section__title" id="contact-heading">Contact</h2>
         </div>
-        <div class="contact-grid">
-          <p class="contact-title">Let’s talk.</p>
-          <div class="contact-copy">
+        <div class="contact-grid jl-page-section__body jl-content-grid">
+          <p class="contact-title jl-editorial-lead jl-content-grid__lead">Let’s talk.</p>
+          <div class="contact-copy jl-prose jl-content-grid__support">
             <p>I’m open to network engineering and infrastructure roles—and willing to relocate for the right work.</p>
             <nav class="contact-links" aria-label="Contact links">
               <a href="mailto:johnny.li2003@gmail.com">johnny.li2003@gmail.com <span aria-hidden="true">↗</span></a>
@@ -235,10 +179,7 @@
             </nav>
           </div>
         </div>
-        <footer>
-          <p>Johnny Li</p>
-          <a href="#top">Back to top ↑</a>
-        </footer>
+        <footer><p>Johnny Li</p><a href="#top">Back to top ↑</a></footer>
       </section>
     </main>
     <script src="motion.js" defer></script>
