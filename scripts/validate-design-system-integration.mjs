@@ -4,6 +4,10 @@ import { resolve } from "node:path";
 const root = resolve(".");
 const index = await readFile(resolve(root, "index.html"), "utf8");
 const adapter = await readFile(resolve(root, "design-system-migration.css"), "utf8");
+const identityStyles = await readFile(
+  resolve(root, "assets/design-system/site-identity.css"),
+  "utf8",
+);
 const version = JSON.parse(
   await readFile(resolve(root, "assets/design-system/version.json"), "utf8"),
 );
@@ -13,8 +17,8 @@ const fail = (message) => {
   throw new Error(message);
 };
 
-if (version.version !== "1.3.2") fail("Portfolio must consume Web Design System v1.3.2.");
-if (!source.includes("1999e51c5b3f340ab6360cf958ac24d77203d140")) {
+if (version.version !== "1.3.3") fail("Portfolio must consume Web Design System v1.3.3.");
+if (!source.includes("5eeb2effcffb0c11f93e683f178ab80d7456bde4")) {
   fail("Generated asset source commit is not pinned.");
 }
 
@@ -35,13 +39,30 @@ for (const stylesheet of requiredStyles) {
   previousPosition = position;
 }
 
-if (!index.includes('aria-controls="owned-sites-menu"')) fail("Site switcher button is not connected to its menu.");
-if (!index.includes('id="owned-sites-menu"')) fail("Owned-sites menu is missing.");
-if (!index.includes("data-site-switcher-button") || !index.includes("data-site-switcher-menu")) {
-  fail("Site switcher behavior hooks are missing.");
+for (const hook of [
+  'class="jl-global-header"',
+  'class="jl-global-header__inner"',
+  'class="jl-site-identity"',
+  'class="jl-site-identity__owner"',
+  'class="jl-site-identity__product"',
+  'class="jl-global-header__nav"',
+  'class="jl-global-header__actions"',
+  'aria-controls="owned-sites-menu"',
+  'id="owned-sites-menu"',
+  "data-site-switcher-button",
+  "data-site-switcher-menu",
+]) {
+  if (!index.includes(hook)) fail(`Shared global-header hook is missing: ${hook}.`);
 }
 if (!index.includes('src="site-switcher.js"')) fail("Site switcher script is not loaded.");
+for (const legacy of ["site-header shell", "wordmark", "site-header__actions", "primary-nav"]) {
+  if (index.includes(legacy)) fail(`Legacy portfolio header hook remains: ${legacy}.`);
+}
 
+const menuStart = index.indexOf('id="owned-sites-menu"');
+const menuEnd = index.indexOf("</ul>", menuStart);
+if (menuStart < 0 || menuEnd < 0) fail("Owned-sites menu markup is missing.");
+const menu = index.slice(menuStart, menuEnd);
 const ownedSites = [
   ["https://johnnyli.dev", true],
   ["https://network.johnnyli.dev", false],
@@ -49,7 +70,7 @@ const ownedSites = [
 ];
 for (const [url, current] of ownedSites) {
   const linkPattern = new RegExp(`<a[^>]*href="${url.replaceAll(".", "\\.")}"[^>]*>`, "g");
-  const links = [...index.matchAll(linkPattern)];
+  const links = [...menu.matchAll(linkPattern)];
   if (links.length !== 1) fail(`Expected exactly one site-switcher link for ${url}.`);
   const tag = links[0][0];
   if (/\btarget=/.test(tag)) fail(`Owned-site link must open in the same tab: ${url}.`);
@@ -65,7 +86,17 @@ if (!/--shell:\s*min\(var\(--jl-layout-portfolio-max\)/.test(adapter)) {
   fail("Portfolio shell is not derived from the shared portfolio rail.");
 }
 if (!adapter.includes("var(--jl-color-focus-ring)")) fail("Shared focus ring token is not active.");
-if (!adapter.includes("@media (max-width: 420px)")) fail("Compact header transformation is missing.");
+for (const forbidden of [".jl-site-switcher__button", ".jl-site-menu,", ".site-header__actions"]) {
+  if (adapter.includes(forbidden)) fail(`Portfolio must not override shared header ownership: ${forbidden}.`);
+}
+for (const contract of [
+  ".jl-global-header__inner",
+  "min-height: var(--jl-layout-header-height)",
+  "grid-template-columns: auto minmax(0, 1fr) auto",
+  "text-transform: none",
+]) {
+  if (!identityStyles.includes(contract)) fail(`Shared header contract is incomplete: ${contract}.`);
+}
 
 const projectDirectory = resolve(root, "projects");
 const projectPages = (await readdir(projectDirectory)).filter((name) => name.endsWith(".html"));
