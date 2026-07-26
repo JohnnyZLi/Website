@@ -100,5 +100,5 @@ jobs:
             --header "Accept: application/vnd.github+json" \
             --header "Authorization: Bearer $GH_TOKEN" \
             --header "X-GitHub-Api-Version: 2026-03-10" \
-            "$SERVER_URL/api/v3/repos/$REPOSITORY/statuses/$SHA" \
+            "https://api.github.com/repos/$REPOSITORY/statuses/$SHA" \
             --data "{\"state\":\"success\",\"target_url\":\"$SERVER_URL/$REPOSITORY/actions/runs/$RUN_ID\",\"description\":\"HTML, CSS, WCAG, and design-system checks passed\",\"context\":\"web-quality/validated\"}"
