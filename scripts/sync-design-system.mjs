@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 
 const packageRoot = resolve("node_modules/@johnnyzli/web-design-system");
 const outputRoot = resolve("assets/design-system");
+const sourceCommit = "5eeb2effcffb0c11f93e683f178ab80d7456bde4";
 const files = [
   ["tokens/tokens.css", "tokens.css"],
   ["styles/foundations.css", "foundations.css"],
@@ -41,7 +42,7 @@ await writeFile(
     "",
     `Package: ${packageMetadata.name}`,
     `Version: ${packageMetadata.version}`,
-    "Source commit: 1999e51c5b3f340ab6360cf958ac24d77203d140",
+    `Source commit: ${sourceCommit}`,
     "",
     "Regenerate with `npm run design-system:sync`.",
     "",
