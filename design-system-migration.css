@@ -1,5 +1,5 @@
-/* Phase 1A adapter: existing portfolio components consume the shared token source.
-   Remove the legacy aliases from styles.css when component styles are consolidated. */
+/* Portfolio expression of the shared Johnny Li design system.
+   Shared header structure and controls are owned by the design-system package. */
 
 :root {
   --paper: var(--jl-color-canvas);
@@ -49,127 +49,20 @@ body {
 .experience-description,
 .case-body-copy p,
 .validation-copy p,
-.output-note {
-  color: var(--jl-color-text);
-}
-
+.output-note,
 .knowledge-group-secondary h3,
 .knowledge-group-secondary li {
   color: var(--jl-color-text);
 }
 
-.site-header__actions {
-  display: flex;
-  gap: clamp(var(--jl-space-4), 2.2vw, var(--jl-space-8));
-  align-items: center;
-}
-
-.primary-nav {
-  flex: none;
-}
-
-.jl-site-switcher {
-  position: relative;
-  flex: none;
-}
-
-.jl-site-switcher__button {
-  min-height: var(--jl-control-height-md);
-  padding-inline: var(--jl-control-padding-inline);
-  border: 1px solid var(--jl-color-rule-strong);
-  border-radius: var(--jl-radius-md);
-  background: var(--jl-color-surface);
-  color: var(--jl-color-ink);
-  font-size: var(--jl-type-metadata-size);
-  font-weight: 700;
-}
-
-.jl-site-switcher__button:hover {
-  border-color: var(--jl-color-accent);
-}
-
-.jl-site-menu,
-.site-header .jl-site-menu {
-  width: min(280px, calc(100vw - (var(--jl-layout-gutter) * 2)));
-  position: absolute;
-  z-index: var(--jl-z-menu);
-  top: calc(100% + var(--jl-space-2));
-  right: 0;
-  display: grid;
-  gap: var(--jl-space-1);
-  margin: 0;
-  padding: var(--jl-space-2);
-  border: 1px solid var(--jl-color-rule-strong);
-  border-radius: var(--jl-radius-md);
-  background: var(--jl-color-surface);
-  box-shadow: var(--jl-shadow-high);
-  font-size: var(--jl-type-metadata-size);
-}
-
-.jl-site-menu[hidden] {
-  display: none;
-}
-
-.jl-site-menu a,
-.site-header .jl-site-menu a {
-  min-height: var(--jl-control-height-md);
-  display: flex;
-  align-items: center;
-  padding-inline: var(--jl-space-3);
-  border-radius: var(--jl-radius-sm);
-  white-space: nowrap;
-}
-
-.jl-site-menu a:hover,
-.jl-site-menu a:focus-visible,
-.jl-site-menu a[aria-current="page"] {
-  background: var(--jl-color-surface-muted);
-}
-
-.jl-site-menu a[aria-current="page"] {
-  font-weight: 700;
-}
-
-.jl-site-menu a::after {
+/* Remove the portfolio's legacy animated-nav underline from the shared header. */
+.jl-global-header a::after {
   display: none;
   content: none;
-}
-
-@media (max-width: 900px) {
-  .site-header__actions {
-    gap: var(--jl-space-4);
-  }
-
-  .jl-site-menu a:nth-child(2),
-  .jl-site-menu a:nth-child(3) {
-    display: flex;
-  }
 }
 
 @media (max-width: 560px) {
   :root {
     --shell: calc(100% - 32px);
-  }
-
-  .site-header__actions {
-    gap: var(--jl-space-3);
-  }
-
-  .jl-site-switcher__button {
-    min-height: 40px;
-    padding-inline: var(--jl-space-3);
-  }
-}
-
-@media (max-width: 420px) {
-  .primary-nav {
-    display: none;
-  }
-}
-
-@media (forced-colors: active) {
-  .jl-site-switcher__button,
-  .jl-site-menu {
-    border-color: CanvasText;
   }
 }
