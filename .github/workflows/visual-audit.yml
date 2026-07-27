@@ -1,0 +1,97 @@
+name: Visual audit
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm install --no-save playwright@1.54.1
+      - run: npx playwright install --with-deps chromium
+      - name: Start static site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/portfolio-server.log 2>&1 &
+          echo $! > /tmp/portfolio-server.pid
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:4173/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/portfolio-server.log
+          exit 1
+      - name: Capture every page
+        run: |
+          mkdir -p visual-audit
+          node <<'NODE'
+          const fs = require('node:fs');
+          const { chromium } = require('playwright');
+
+          const pages = [
+            ['home', '/'],
+            ['network-config-auditor', '/projects/network-config-auditor.html'],
+            ['ospf-resiliency-lab', '/projects/ospf-resiliency-lab.html'],
+            ['network-diagnostics-suite', '/projects/network-diagnostics-suite.html'],
+            ['reliable-udp-transport', '/projects/reliable-udp-transport.html'],
+            ['concurrent-c2s-proxy', '/projects/concurrent-c2s-proxy.html'],
+          ];
+          const viewports = [
+            ['desktop', { width: 1440, height: 1000 }],
+            ['zoom-200', { width: 720, height: 900 }],
+            ['mobile', { width: 390, height: 844 }],
+          ];
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const report = [];
+            for (const [viewportName, viewport] of viewports) {
+              const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
+              for (const [name, path] of pages) {
+                const page = await context.newPage();
+                const url = `http://127.0.0.1:4173${path}`;
+                await page.goto(url, { waitUntil: 'networkidle' });
+                await page.screenshot({ path: `visual-audit/${name}-${viewportName}.png`, fullPage: true });
+                const metrics = await page.evaluate(() => ({
+                  title: document.title,
+                  viewportWidth: window.innerWidth,
+                  documentWidth: document.documentElement.scrollWidth,
+                  overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
+                  h1Count: document.querySelectorAll('h1').length,
+                  headerHeight: document.querySelector('.jl-global-header')?.getBoundingClientRect().height ?? null,
+                  sitesButton: (() => {
+                    const element = document.querySelector('.jl-site-switcher__button');
+                    if (!(element instanceof HTMLElement)) return null;
+                    const rect = element.getBoundingClientRect();
+                    const style = getComputedStyle(element);
+                    return { width: rect.width, height: rect.height, fontSize: style.fontSize, fontWeight: style.fontWeight };
+                  })(),
+                }));
+                report.push({ name, viewportName, path, ...metrics });
+                await page.close();
+              }
+              await context.close();
+            }
+            fs.writeFileSync('visual-audit/report.json', JSON.stringify(report, null, 2));
+            const failures = report.filter((entry) => entry.overflow || entry.h1Count !== 1);
+            if (failures.length) {
+              console.error('Visual contract failures:', failures);
+              process.exitCode = 1;
+            }
+            await browser.close();
+          })();
+          NODE
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: portfolio-visual-audit
+          path: visual-audit
+          retention-days: 7

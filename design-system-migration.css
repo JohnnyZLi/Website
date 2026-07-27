@@ -66,8 +66,102 @@ body {
   display: inline-flex;
 }
 
+.portfolio-nav-toggle {
+  min-width: 58px;
+  min-height: var(--jl-control-height-sm);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--jl-space-3);
+  border: 1px solid var(--jl-color-rule-strong);
+  border-radius: var(--jl-radius-md);
+  background: var(--jl-color-surface);
+  color: var(--jl-color-ink);
+  font-family: var(--jl-font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.portfolio-nav-toggle:hover {
+  border-color: var(--jl-color-accent);
+}
+
+#work,
+#experience,
+#about,
+#contact {
+  scroll-margin-top: calc(var(--jl-layout-header-height) + var(--jl-space-6));
+}
+
+@media (max-width: 900px) {
+  .portfolio-nav-toggle {
+    display: inline-flex;
+  }
+
+  .jl-global-header__nav,
+  .jl-global-header__nav.portfolio-nav--open {
+    width: auto;
+    min-height: 0;
+    position: absolute;
+    z-index: var(--jl-z-menu);
+    top: 100%;
+    right: var(--jl-layout-gutter);
+    left: var(--jl-layout-gutter);
+    grid-column: auto;
+    grid-template-columns: 1fr;
+    gap: var(--jl-space-1);
+    margin: var(--jl-space-2) 0 0;
+    padding: var(--jl-space-2);
+    border: 1px solid var(--jl-color-rule-strong);
+    border-radius: var(--jl-radius-md);
+    background: var(--jl-color-surface);
+    box-shadow: var(--jl-shadow-high);
+    font-size: 13px;
+  }
+
+  .jl-global-header__nav {
+    display: none;
+  }
+
+  .jl-global-header__nav.portfolio-nav--open {
+    display: grid;
+  }
+
+  .jl-global-header__nav a:nth-child(n) {
+    min-height: var(--jl-control-height-md);
+    display: flex;
+    align-items: center;
+    padding-inline: var(--jl-space-3);
+    border-radius: var(--jl-radius-sm);
+  }
+
+  .jl-global-header__nav a:hover,
+  .jl-global-header__nav a:focus-visible {
+    background: var(--jl-color-surface-muted);
+    text-decoration: none;
+  }
+}
+
 @media (max-width: 560px) {
   :root {
     --shell: calc(100% - 32px);
+  }
+
+  .portfolio-nav-toggle {
+    min-height: 40px;
+  }
+
+  .jl-global-header__nav,
+  .jl-global-header__nav.portfolio-nav--open {
+    right: var(--jl-space-4);
+    left: var(--jl-space-4);
+  }
+}
+
+@media (forced-colors: active) {
+  .portfolio-nav-toggle,
+  .jl-global-header__nav.portfolio-nav--open {
+    border-color: CanvasText;
   }
 }

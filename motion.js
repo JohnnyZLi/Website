@@ -5,7 +5,8 @@
       "../assets/design-system/tokens.css",
       "../assets/design-system/foundations.css",
       "../assets/design-system/site-identity.css",
-      "../design-system-migration.css"
+      "../design-system-migration.css",
+      "../case-study-fixes.css"
     ].forEach((href) => {
       if (document.querySelector(`link[href="${href}"]`)) return;
       const stylesheet = document.createElement("link");
@@ -45,6 +46,30 @@
     const switcherScript = document.createElement("script");
     switcherScript.src = "../site-switcher.js";
     document.head.append(switcherScript);
+  }
+
+  const globalHeader = document.querySelector(".jl-global-header");
+  if (globalHeader instanceof HTMLElement) {
+    const navigation = globalHeader.querySelector(".jl-global-header__nav");
+    const actions = globalHeader.querySelector(".jl-global-header__actions");
+    if (navigation instanceof HTMLElement && actions instanceof HTMLElement) {
+      navigation.id = "portfolio-navigation";
+      navigation.dataset.portfolioNav = "";
+
+      const navButton = document.createElement("button");
+      navButton.className = "portfolio-nav-toggle";
+      navButton.type = "button";
+      navButton.setAttribute("aria-expanded", "false");
+      navButton.setAttribute("aria-controls", navigation.id);
+      navButton.setAttribute("data-portfolio-nav-button", "");
+      navButton.textContent = "Menu";
+      actions.prepend(navButton);
+
+      const navigationScript = document.createElement("script");
+      navigationScript.dataset.portfolioNavigation = "";
+      navigationScript.src = legacyCaseHeader ? "../portfolio-navigation.js" : "portfolio-navigation.js";
+      document.head.append(navigationScript);
+    }
   }
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
