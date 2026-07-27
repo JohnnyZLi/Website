@@ -1,0 +1,33 @@
+/* Targeted rendered-page corrections for the existing case-study system. */
+
+.case-hero {
+  overflow: clip;
+}
+
+.case-hero-grid,
+.case-summary,
+.case-copy-grid,
+.case-body-copy,
+.output-grid,
+.output-grid > div,
+.output-grid pre,
+.process-list,
+.decision-grid,
+.metric-grid {
+  min-width: 0;
+}
+
+.case-summary,
+.case-body-copy,
+.output-note,
+.decision-grid article,
+.process-list li,
+.case-facts dd {
+  overflow-wrap: anywhere;
+}
+
+@supports not (overflow: clip) {
+  .case-hero {
+    overflow: hidden;
+  }
+}
