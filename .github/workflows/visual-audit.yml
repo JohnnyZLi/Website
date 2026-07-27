@@ -10,7 +10,7 @@ permissions:
 jobs:
   screenshots:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
@@ -29,7 +29,7 @@ jobs:
           done
           cat /tmp/portfolio-server.log
           exit 1
-      - name: Capture every page
+      - name: Capture and verify every page
         run: |
           mkdir -p visual-audit
           node <<'NODE'
@@ -49,41 +49,105 @@ jobs:
             ['zoom-200', { width: 720, height: 900 }],
             ['mobile', { width: 390, height: 844 }],
           ];
+          const near = (actual, expected, tolerance = 0.75) =>
+            typeof actual === 'number' && Math.abs(actual - expected) <= tolerance;
 
-          (async () => {
-            const browser = await chromium.launch({ headless: true });
+          async function inspectPage(page, { name, viewportName, path, screenshotPrefix }) {
+            await page.screenshot({ path: `visual-audit/${screenshotPrefix}-${name}-${viewportName}.png`, fullPage: true });
+            const metrics = await page.evaluate(() => ({
+              title: document.title,
+              viewportWidth: window.innerWidth,
+              documentWidth: document.documentElement.scrollWidth,
+              overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
+              h1Count: document.querySelectorAll('h1').length,
+              headerHeight: document.querySelector('.jl-global-header')?.getBoundingClientRect().height ?? null,
+              headerInnerHeight: document.querySelector('.jl-global-header__inner')?.getBoundingClientRect().height ?? null,
+              sitesButton: (() => {
+                const element = document.querySelector('.jl-site-switcher__button');
+                if (!(element instanceof HTMLElement)) return null;
+                const rect = element.getBoundingClientRect();
+                const style = getComputedStyle(element);
+                return { width: rect.width, height: rect.height, fontSize: style.fontSize, fontWeight: style.fontWeight };
+              })(),
+            }));
+
+            const problems = [];
+            const compact = viewportName === 'mobile';
+            const expectedInnerHeight = compact ? 68 : 82;
+            const expectedOuterHeight = compact ? 69 : 83;
+            const expectedButtonHeight = compact ? 40 : 44;
+            if (metrics.overflow) problems.push('document overflow');
+            if (metrics.h1Count !== 1) problems.push(`expected one h1, found ${metrics.h1Count}`);
+            if (!near(metrics.headerInnerHeight, expectedInnerHeight)) problems.push(`header inner ${metrics.headerInnerHeight}, expected ${expectedInnerHeight}`);
+            if (!near(metrics.headerHeight, expectedOuterHeight)) problems.push(`header outer ${metrics.headerHeight}, expected ${expectedOuterHeight}`);
+            if (!metrics.sitesButton) {
+              problems.push('Sites button missing');
+            } else {
+              if (!near(metrics.sitesButton.width, 88)) problems.push(`Sites width ${metrics.sitesButton.width}`);
+              if (!near(metrics.sitesButton.height, expectedButtonHeight)) problems.push(`Sites height ${metrics.sitesButton.height}, expected ${expectedButtonHeight}`);
+              if (metrics.sitesButton.fontSize !== '13px') problems.push(`Sites font size ${metrics.sitesButton.fontSize}`);
+              if (metrics.sitesButton.fontWeight !== '700') problems.push(`Sites font weight ${metrics.sitesButton.fontWeight}`);
+            }
+
+            const sitesButton = page.locator('.jl-site-switcher__button');
+            const sitesMenu = page.locator('#owned-sites-menu');
+            await sitesButton.click();
+            await sitesMenu.waitFor({ state: 'visible' });
+            if ((await sitesMenu.locator('a').count()) !== 3) problems.push('Sites menu does not contain three links');
+            if ((await sitesMenu.locator('a[aria-current="page"]').count()) !== 1) problems.push('Sites menu current-page state is incorrect');
+            if ((await sitesButton.getAttribute('aria-expanded')) !== 'true') problems.push('Sites button did not expose expanded state');
+            await page.screenshot({ path: `visual-audit/${screenshotPrefix}-${name}-${viewportName}-sites-open.png` });
+            await page.keyboard.press('Escape');
+            if (await sitesMenu.isVisible()) problems.push('Sites menu did not close with Escape');
+            if (!(await sitesButton.evaluate((element) => document.activeElement === element))) problems.push('Sites button did not regain focus after Escape');
+
+            const nav = page.locator('[data-portfolio-nav]');
+            const navButton = page.locator('[data-portfolio-nav-button]');
+            await navButton.waitFor({ state: 'attached' });
+            const compactNavigation = viewportName !== 'desktop';
+            if (compactNavigation) {
+              if (!(await navButton.isVisible())) problems.push('compact Menu button is hidden');
+              await navButton.click();
+              await nav.waitFor({ state: 'visible' });
+              const expectedLinks = name === 'home' ? 4 : 3;
+              if ((await nav.locator('a').count()) !== expectedLinks) problems.push(`compact navigation has the wrong link count`);
+              if ((await navButton.getAttribute('aria-expanded')) !== 'true') problems.push('compact Menu did not expose expanded state');
+              await page.keyboard.press('Escape');
+              if (await nav.isVisible()) problems.push('compact navigation did not close with Escape');
+              if (!(await navButton.evaluate((element) => document.activeElement === element))) problems.push('compact Menu did not regain focus after Escape');
+            } else {
+              if (await navButton.isVisible()) problems.push('desktop Menu button should be hidden');
+              if (!(await nav.isVisible())) problems.push('desktop navigation should be visible');
+            }
+
+            return { name, viewportName, path, ...metrics, problems };
+          }
+
+          async function auditBase(browser, baseUrl, screenshotPrefix, viewportSet) {
             const report = [];
-            for (const [viewportName, viewport] of viewports) {
+            for (const [viewportName, viewport] of viewportSet) {
               const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
               for (const [name, path] of pages) {
                 const page = await context.newPage();
-                const url = `http://127.0.0.1:4173${path}`;
-                await page.goto(url, { waitUntil: 'networkidle' });
-                await page.screenshot({ path: `visual-audit/${name}-${viewportName}.png`, fullPage: true });
-                const metrics = await page.evaluate(() => ({
-                  title: document.title,
-                  viewportWidth: window.innerWidth,
-                  documentWidth: document.documentElement.scrollWidth,
-                  overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
-                  h1Count: document.querySelectorAll('h1').length,
-                  headerHeight: document.querySelector('.jl-global-header')?.getBoundingClientRect().height ?? null,
-                  sitesButton: (() => {
-                    const element = document.querySelector('.jl-site-switcher__button');
-                    if (!(element instanceof HTMLElement)) return null;
-                    const rect = element.getBoundingClientRect();
-                    const style = getComputedStyle(element);
-                    return { width: rect.width, height: rect.height, fontSize: style.fontSize, fontWeight: style.fontWeight };
-                  })(),
-                }));
-                report.push({ name, viewportName, path, ...metrics });
+                const response = await page.goto(`${baseUrl}${path}`, { waitUntil: 'networkidle' });
+                const entry = await inspectPage(page, { name, viewportName, path, screenshotPrefix });
+                if (!response || !response.ok()) entry.problems.push(`HTTP ${response?.status() ?? 'no response'}`);
+                report.push(entry);
                 await page.close();
               }
               await context.close();
             }
-            fs.writeFileSync('visual-audit/report.json', JSON.stringify(report, null, 2));
-            const failures = report.filter((entry) => entry.overflow || entry.h1Count !== 1);
+            return report;
+          }
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const localReport = await auditBase(browser, 'http://127.0.0.1:4173', 'local', viewports);
+            const productionReport = await auditBase(browser, 'https://johnnyli.dev', 'production', [viewports[0], viewports[2]]);
+            fs.writeFileSync('visual-audit/report.json', JSON.stringify({ local: localReport, production: productionReport }, null, 2));
+            const failures = [...localReport, ...productionReport].filter((entry) => entry.problems.length > 0);
             if (failures.length) {
-              console.error('Visual contract failures:', failures);
+              console.error('Rendered contract failures:', failures);
               process.exitCode = 1;
             }
             await browser.close();
