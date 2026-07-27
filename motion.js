@@ -5,7 +5,8 @@
       "../assets/design-system/tokens.css",
       "../assets/design-system/foundations.css",
       "../assets/design-system/site-identity.css",
-      "../design-system-migration.css"
+      "../design-system-migration.css",
+      "../case-study-fixes.css"
     ].forEach((href) => {
       if (document.querySelector(`link[href="${href}"]`)) return;
       const stylesheet = document.createElement("link");
