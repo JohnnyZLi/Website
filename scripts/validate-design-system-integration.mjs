@@ -4,6 +4,8 @@ import { resolve } from "node:path";
 const root = resolve(".");
 const index = await readFile(resolve(root, "index.html"), "utf8");
 const motion = await readFile(resolve(root, "motion.js"), "utf8");
+const navigation = await readFile(resolve(root, "portfolio-navigation.js"), "utf8");
+const caseFixes = await readFile(resolve(root, "case-study-fixes.css"), "utf8");
 const adapter = await readFile(resolve(root, "design-system-migration.css"), "utf8");
 const identityStyles = await readFile(
   resolve(root, "assets/design-system/site-identity.css"),
@@ -91,6 +93,16 @@ if (!adapter.includes("var(--jl-color-focus-ring)")) fail("Shared focus ring tok
 if (!adapter.includes(".contact-section .contact-links a:nth-child(n)")) {
   fail("Legacy responsive navigation must not hide portfolio contact links.");
 }
+for (const contract of [
+  ".portfolio-nav-toggle",
+  "@media (max-width: 900px)",
+  ".jl-global-header__nav.portfolio-nav--open",
+  ".jl-global-header__nav a:nth-child(n)",
+  "display: grid;",
+  "var(--jl-shadow-high)",
+]) {
+  if (!adapter.includes(contract)) fail(`Compact portfolio navigation styling is incomplete: ${contract}.`);
+}
 for (const forbidden of [".jl-site-switcher__button", ".jl-site-menu,", ".site-header__actions"]) {
   if (adapter.includes(forbidden)) fail(`Portfolio must not override shared header ownership: ${forbidden}.`);
 }
@@ -125,9 +137,32 @@ for (const contract of [
   '"../assets/design-system/foundations.css"',
   '"../assets/design-system/site-identity.css"',
   '"../design-system-migration.css"',
+  '"../case-study-fixes.css"',
   'switcherScript.src = "../site-switcher.js"',
+  'navigation.dataset.portfolioNav = ""',
+  'navButton.className = "portfolio-nav-toggle"',
+  'navigationScript.src = legacyCaseHeader ? "../portfolio-navigation.js" : "portfolio-navigation.js"',
 ]) {
-  if (!motion.includes(contract)) fail(`Case-study global-header contract is missing: ${contract}.`);
+  if (!motion.includes(contract)) fail(`Portfolio header enhancement contract is missing: ${contract}.`);
+}
+
+for (const contract of [
+  "portfolio-nav--open",
+  'event.key === "Escape"',
+  'document.addEventListener("pointerdown"',
+  'window.matchMedia("(min-width: 901px)")',
+  "restoreFocus",
+]) {
+  if (!navigation.includes(contract)) fail(`Compact portfolio navigation behavior is incomplete: ${contract}.`);
+}
+for (const contract of [
+  ".case-hero",
+  "overflow: clip;",
+  "@supports not (overflow: clip)",
+  "overflow: hidden;",
+  "overflow-wrap: anywhere;",
+]) {
+  if (!caseFixes.includes(contract)) fail(`Case-study rendered-page correction is incomplete: ${contract}.`);
 }
 
 const projectDirectory = resolve(root, "projects");
