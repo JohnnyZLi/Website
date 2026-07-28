@@ -32,9 +32,51 @@ body {
 :focus-visible {
   outline: 2px solid var(--jl-color-focus-ring);
   outline-offset: 3px;
-  box-shadow: 0 0 0 5px var(--_jl-focus-gap-color);
+  box-shadow: 0 0 0 5px var(--jl-color-focus-gap-light);
 }
 
+.contact-section {
+  --_jl-focus-gap-color: var(--jl-color-focus-gap-dark);
+  background: var(--jl-color-surface-inverse);
+  color: var(--jl-color-text-inverse);
+}
+
+.contact-section :focus-visible,
+.case-next :focus-visible,
+.output-grid pre :focus-visible {
+  box-shadow: 0 0 0 5px var(--jl-color-focus-gap-dark);
+}
+
+.work-description,
+.experience-description,
+.case-body-copy p,
+.validation-copy p,
+.output-note,
+.knowledge-group-secondary h3,
+.knowledge-group-secondary li {
+  color: var(--jl-color-text);
+}
+
+/* Remove the portfolio's legacy animated-nav underline from the shared header. */
+.jl-global-header a::after {
+  display: none;
+  content: none;
+}
+
+/* The old global nav breakpoint must never hide contact destinations. */
 .contact-section .contact-links a:nth-child(n) {
-  display: flex;
+  display: inline-flex;
+}
+
+#work,
+#experience,
+#about,
+#contact {
+  scroll-margin-top: calc(var(--jl-layout-header-height) + var(--jl-space-6));
+}
+
+@media (max-width: 560px) {
+  :root {
+    --shell: calc(100% - 32px);
+  }
 }
