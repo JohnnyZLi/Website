@@ -2,29 +2,37 @@ import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const root = resolve(".");
-const index = await readFile(resolve(root, "index.html"), "utf8");
-const motion = await readFile(resolve(root, "motion.js"), "utf8");
-const navigation = await readFile(resolve(root, "portfolio-navigation.js"), "utf8");
-const switcher = await readFile(resolve(root, "site-switcher.js"), "utf8");
-const siteControls = await readFile(resolve(root, "assets/design-system/site-controls.js"), "utf8");
-const caseFixes = await readFile(resolve(root, "case-study-fixes.css"), "utf8");
-const adapter = await readFile(resolve(root, "design-system-migration.css"), "utf8");
-const identityStyles = await readFile(
-  resolve(root, "assets/design-system/site-identity.css"),
-  "utf8",
-);
-const version = JSON.parse(
-  await readFile(resolve(root, "assets/design-system/version.json"), "utf8"),
-);
-const source = await readFile(resolve(root, "assets/design-system/SOURCE.md"), "utf8");
+const read = (path) => readFile(resolve(root, path), "utf8");
+const index = await read("index.html");
+const motion = await read("motion.js");
+const navigation = await read("portfolio-navigation.js");
+const switcher = await read("site-switcher.js");
+const siteControls = await read("assets/design-system/site-controls.js");
+const primitives = await read("assets/design-system/content-primitives.css");
+const caseStyles = await read("case-study.css");
+const caseFixes = await read("case-study-fixes.css");
+const adapter = await read("design-system-migration.css");
+const identityStyles = await read("assets/design-system/site-identity.css");
+const updater = await read("scripts/update-design-system.mjs");
+const sync = await read("scripts/sync-design-system.mjs");
+const syncWorkflow = await read(".github/workflows/design-system-sync.yml");
+const version = JSON.parse(await read("assets/design-system/version.json"));
+const lock = JSON.parse(await read("design-system.lock.json"));
+const packageMetadata = JSON.parse(await read("package.json"));
+const source = await read("assets/design-system/SOURCE.md");
 
-const fail = (message) => {
-  throw new Error(message);
+const expectedVersion = "1.6.1";
+const expectedCommit = "6d09e748f6fb90f822b64e266dd13ba9e60a617b";
+const fail = (message) => { throw new Error(message); };
+const requireFragments = (content, fragments, label) => {
+  for (const fragment of fragments) if (!content.includes(fragment)) fail(`${label} is incomplete: ${fragment}.`);
 };
 
-if (version.version !== "1.5.0") fail("Portfolio must consume Web Design System v1.5.0.");
-if (!source.includes("14fc1281f02d3a1fa33e6d80aae24637d93b04f7")) {
-  fail("Generated asset source commit is not pinned.");
+if (version.version !== expectedVersion) fail(`Portfolio must consume Web Design System v${expectedVersion}.`);
+if (lock.version !== expectedVersion || lock.sourceCommit !== expectedCommit) fail("Design-system lock metadata drifted.");
+if (!source.includes(expectedCommit)) fail("Generated asset source commit is not pinned.");
+if (!String(packageMetadata.dependencies?.["@johnnyzli/web-design-system"] ?? "").endsWith(`#${expectedCommit}`)) {
+  fail("Portfolio package dependency does not match the design-system lock.");
 }
 
 const requiredStyles = [
@@ -43,185 +51,115 @@ for (const stylesheet of requiredStyles) {
   if (position <= previousPosition) fail(`Stylesheet order is incorrect at ${stylesheet}.`);
   previousPosition = position;
 }
-
-for (const hook of [
-  'class="jl-global-header"',
-  'class="jl-global-header__inner"',
-  'class="jl-site-identity"',
-  'class="jl-site-identity__owner"',
-  'class="jl-site-identity__product"',
-  'class="jl-global-header__nav jl-header-menu"',
-  'class="jl-global-header__actions"',
-  'class="jl-header-menu-toggle"',
-  'class="jl-site-switcher__button"',
-  'aria-controls="portfolio-navigation"',
-  'aria-controls="owned-sites-menu"',
-  'id="owned-sites-menu"',
-  "data-header-menu",
-  "data-header-menu-button",
-  "data-site-switcher",
-  "data-site-switcher-button",
-  "data-site-switcher-menu",
-]) {
-  if (!index.includes(hook)) fail(`Shared global-header hook is missing: ${hook}.`);
+if (!adapter.startsWith('@import url("assets/design-system/content-primitives.css");')) {
+  fail("Portfolio adapter does not load the standalone content-primitives asset first.");
 }
-for (const script of [
+
+requireFragments(index, [
+  'class="jl-global-header"', 'class="jl-global-header__inner"', 'class="jl-site-identity"',
+  'class="jl-site-identity__owner"', 'class="jl-site-identity__product"',
+  'class="jl-global-header__nav jl-header-menu"', 'class="jl-global-header__actions"',
+  'class="jl-header-menu-toggle"', 'class="jl-site-switcher__button"',
+  'aria-controls="portfolio-navigation"', 'aria-controls="owned-sites-menu"',
+  'id="owned-sites-menu"', "data-header-menu", "data-header-menu-button",
+  "data-site-switcher", "data-site-switcher-button", "data-site-switcher-menu",
   '<script type="module" src="site-switcher.js"></script>',
   '<script type="module" src="portfolio-navigation.js"></script>',
-]) {
-  if (!index.includes(script)) fail(`Shared module script is not loaded: ${script}.`);
-}
+], "Portfolio shared header");
 for (const legacy of ["site-header shell", "wordmark", "site-header__actions", "primary-nav", "portfolio-nav-toggle"]) {
   if (index.includes(legacy)) fail(`Legacy portfolio header hook remains: ${legacy}.`);
 }
 
-for (const contract of [
-  "export const OWNED_SITES",
-  'id: "portfolio"',
-  'id: "network"',
-  'id: "rolepacket"',
-  'href: "https://johnnyli.dev"',
-  'href: "https://network.johnnyli.dev"',
-  'href: "https://rolepacket.johnnyli.dev"',
-  "export function installSiteSwitcher",
-  "export function installHeaderMenu",
-  'event.key === "ArrowDown"',
-  'event.key === "ArrowUp"',
-  'event.key === "Home"',
-  'event.key === "End"',
-  'event.key === "Escape"',
-  'document.addEventListener("pointerdown"',
-  'closeMediaQuery: "(min-width: 901px)"',
-]) {
-  if (!siteControls.includes(contract)) fail(`Shared site-control contract is incomplete: ${contract}.`);
-}
-for (const contract of [
+requireFragments(siteControls, [
+  "export const OWNED_SITES", 'id: "portfolio"', 'id: "network"', 'id: "rolepacket"',
+  'href: "https://johnnyli.dev"', 'href: "https://network.johnnyli.dev"',
+  'href: "https://rolepacket.johnnyli.dev"', "export function installSiteSwitcher",
+  "export function installHeaderMenu", 'event.key === "ArrowDown"', 'event.key === "ArrowUp"',
+  'event.key === "Home"', 'event.key === "End"', 'event.key === "Escape"',
+  'document.addEventListener("pointerdown"', 'closeMediaQuery: "(min-width: 901px)"',
+], "Shared site-control contract");
+requireFragments(switcher, [
   'import { installSiteSwitcher } from "./assets/design-system/site-controls.js"',
-  'document.querySelectorAll("[data-site-switcher]")',
-  'currentSite: "portfolio"',
-  "populate: true",
-  "installSiteSwitcher",
-]) {
-  if (!switcher.includes(contract)) fail(`Portfolio Sites wrapper is incomplete: ${contract}.`);
-}
-for (const contract of [
+  'document.querySelectorAll("[data-site-switcher]")', 'currentSite: "portfolio"', "populate: true",
+], "Portfolio Sites wrapper");
+requireFragments(navigation, [
   'import { installHeaderMenu } from "./assets/design-system/site-controls.js"',
-  'document.querySelectorAll(".jl-global-header")',
-  "installHeaderMenu",
-  "data-site-switcher-button",
-]) {
-  if (!navigation.includes(contract)) fail(`Portfolio navigation wrapper is incomplete: ${contract}.`);
-}
-for (const forbidden of [
-  'document.addEventListener("pointerdown"',
-  'document.addEventListener("keydown"',
-  "portfolio-nav--open",
-  'window.matchMedia("(min-width: 901px)")',
-]) {
-  if (navigation.includes(forbidden) || switcher.includes(forbidden)) {
-    fail(`Portfolio wrapper reimplements shared controller behavior: ${forbidden}.`);
-  }
+  'document.querySelectorAll(".jl-global-header")', "installHeaderMenu", "data-site-switcher-button",
+], "Portfolio navigation wrapper");
+for (const forbidden of ['document.addEventListener("pointerdown"', 'document.addEventListener("keydown"', "portfolio-nav--open", 'window.matchMedia("(min-width: 901px)")']) {
+  if (navigation.includes(forbidden) || switcher.includes(forbidden)) fail(`Portfolio wrapper reimplements shared behavior: ${forbidden}.`);
 }
 
-const directTokenAliases = ["--paper", "--ink", "--muted", "--clay", "--rule", "--ease-out"];
-for (const alias of directTokenAliases) {
-  const pattern = new RegExp(`${alias}:\\s*var\\(--jl-`);
-  if (!pattern.test(adapter)) fail(`Legacy role ${alias} is not mapped to a shared token.`);
+for (const alias of ["--paper", "--ink", "--muted", "--clay", "--rule", "--ease-out"]) {
+  if (!new RegExp(`${alias}:\\s*var\\(--jl-`).test(adapter)) fail(`Legacy role ${alias} is not mapped to a shared token.`);
 }
-if (!/--shell:\s*min\(var\(--jl-layout-portfolio-max\)/.test(adapter)) {
-  fail("Portfolio shell is not derived from the shared portfolio rail.");
-}
+if (!/--shell:\s*min\(var\(--jl-layout-portfolio-max\)/.test(adapter)) fail("Portfolio shell is not shared-token-derived.");
 if (!adapter.includes("var(--jl-color-focus-ring)")) fail("Shared focus ring token is not active.");
-if (!adapter.includes(".contact-section .contact-links a:nth-child(n)")) {
-  fail("Legacy responsive navigation must not hide portfolio contact links.");
-}
-for (const forbidden of [
-  ".portfolio-nav-toggle",
-  "@media (max-width: 900px)",
-  ".jl-global-header__nav.portfolio-nav--open",
-  ".jl-site-switcher__button",
-  ".jl-site-menu,",
-  ".site-header__actions",
-]) {
-  if (adapter.includes(forbidden)) fail(`Portfolio adapter re-owns shared header behavior or styling: ${forbidden}.`);
+if (!adapter.includes(".contact-section .contact-links a:nth-child(n)")) fail("Contact links can be hidden by legacy navigation CSS.");
+for (const forbidden of [".portfolio-nav-toggle", "@media (max-width: 900px)", ".jl-global-header__nav.portfolio-nav--open", ".jl-site-switcher__button", ".jl-site-menu,", ".site-header__actions"]) {
+  if (adapter.includes(forbidden)) fail(`Portfolio adapter re-owns shared header behavior: ${forbidden}.`);
 }
 
-if (/^\s*@layer\b/m.test(identityStyles)) {
-  fail("Shared header must remain unlayered so product resets cannot override it.");
-}
-for (const contract of [
-  ".jl-global-header__inner",
-  "grid-template-columns: auto minmax(0, 1fr) auto",
-  "width: 88px;",
-  "height: var(--jl-control-height-md);",
-  "font-family: var(--jl-font-ui);",
-  "font-size: 13px;",
-  "font-weight: 700;",
-  "line-height: 1;",
-  '.jl-site-switcher__button > [aria-hidden="true"]',
-  "border-right: 2px solid currentColor;",
-  "border-bottom: 2px solid currentColor;",
-  ".jl-header-menu-toggle",
-  ".jl-global-header__nav.jl-header-menu--open",
-  "right: var(--jl-layout-gutter);",
-  "left: var(--jl-layout-gutter);",
-  "@media (forced-colors: active)",
-]) {
-  if (!identityStyles.includes(contract)) fail(`Shared header and compact-menu contract is incomplete: ${contract}.`);
+if (/^\s*@layer\b/m.test(identityStyles)) fail("Shared header must remain unlayered.");
+requireFragments(identityStyles, [
+  ".jl-global-header__inner", "grid-template-columns: auto minmax(0, 1fr) auto", "width: 88px;",
+  "height: var(--jl-control-height-md);", "font-family: var(--jl-font-ui);", "font-size: 13px;",
+  "font-weight: 700;", "line-height: 1;", '.jl-site-switcher__button > [aria-hidden="true"]',
+  "border-right: 2px solid currentColor;", "border-bottom: 2px solid currentColor;",
+  ".jl-header-menu-toggle", ".jl-global-header__nav.jl-header-menu--open",
+  "right: var(--jl-layout-gutter);", "left: var(--jl-layout-gutter);", "@media (forced-colors: active)",
+], "Shared header and compact-menu contract");
+
+requireFragments(primitives, [
+  ".jl-actions {", "display: flex;", "flex-wrap: wrap;", ".jl-button {", "display: inline-flex;",
+  "align-items: center;", "justify-content: center;", "text-decoration: none;", "cursor: pointer;",
+  ".jl-button--primary", ".jl-callout--danger", ".jl-empty-state", ".jl-table-region",
+], "Standalone content-primitives asset");
+requireFragments(caseStyles, [
+  ".case-actions {", "--jl-actions-gap: 12px;", ".case-action {", "--jl-button-min-height: auto;",
+  "--jl-button-radius: 0;", "--jl-button-hover-background: var(--clay);", ".case-action-primary {",
+], "Case-study primitive customization");
+for (const obsolete of [".case-actions {\n  display: flex", ".case-action {\n  display: inline-flex", "padding: 12px 16px;\n  border: 1px solid var(--rule);"]) {
+  if (caseStyles.includes(obsolete)) fail(`Case-study actions still duplicate shared structure: ${obsolete}.`);
 }
 
-for (const forbidden of [
-  'document.querySelector(".case-header")',
-  "legacyCaseHeader",
-  ".innerHTML",
-  "createElement(\"link\")",
-  "createElement(\"script\")",
-  "portfolio-nav-toggle",
-]) {
+for (const forbidden of ['document.querySelector(".case-header")', "legacyCaseHeader", ".innerHTML", 'createElement("link")', 'createElement("script")', "portfolio-nav-toggle"]) {
   if (motion.includes(forbidden)) fail(`Motion script still performs header enhancement: ${forbidden}.`);
 }
-for (const contract of [
-  'window.matchMedia("(prefers-reduced-motion: reduce)")',
-  "IntersectionObserver",
-  'document.documentElement.classList.add("motion-ready")',
-  'target.classList.add("motion-reveal")',
-]) {
-  if (!motion.includes(contract)) fail(`Portfolio reveal-motion contract is incomplete: ${contract}.`);
-}
-for (const contract of [
-  ".case-hero",
-  "overflow: clip;",
-  "@supports not (overflow: clip)",
-  "overflow: hidden;",
-  "overflow-wrap: anywhere;",
-]) {
-  if (!caseFixes.includes(contract)) fail(`Case-study rendered-page correction is incomplete: ${contract}.`);
-}
+requireFragments(motion, [
+  'window.matchMedia("(prefers-reduced-motion: reduce)")', "IntersectionObserver",
+  'document.documentElement.classList.add("motion-ready")', 'target.classList.add("motion-reveal")',
+], "Portfolio reveal-motion contract");
+requireFragments(caseFixes, [".case-hero", "overflow: clip;", "@supports not (overflow: clip)", "overflow: hidden;", "overflow-wrap: anywhere;"], "Case-study correction");
+
+requireFragments(updater, [
+  "api.github.com/repos/${repository}/commits/main", "design-system.lock.json",
+  'packageMetadata.dependencies["@johnnyzli/web-design-system"]', "sourceCommit", "version",
+], "Design-system updater");
+requireFragments(sync, [
+  'readFile(resolve("design-system.lock.json")', 'styles/content-primitives.css',
+  'assets/design-system', "dependency.endsWith(`#${sourceCommit}`)",
+], "Design-system synchronizer");
+requireFragments(syncWorkflow, [
+  "workflow_dispatch:", "schedule:", "contents: write", "pull-requests: write",
+  "node scripts/update-design-system.mjs", "npm run design-system:sync",
+  "automation/design-system-update", "gh pr create --draft",
+], "Design-system update workflow");
 
 const projectDirectory = resolve(root, "projects");
 const projectPages = (await readdir(projectDirectory)).filter((name) => name.endsWith(".html"));
 for (const page of projectPages) {
   const html = await readFile(resolve(projectDirectory, page), "utf8");
-  for (const contract of [
-    'href="../assets/design-system/tokens.css"',
-    'href="../assets/design-system/foundations.css"',
-    'href="../assets/design-system/site-identity.css"',
-    'href="../design-system-migration.css"',
-    'href="../case-study-fixes.css"',
-    'class="jl-global-header"',
-    'class="jl-global-header__inner"',
-    'class="jl-global-header__nav jl-header-menu"',
-    'class="jl-header-menu-toggle"',
-    "data-header-menu",
-    "data-header-menu-button",
-    "data-site-switcher",
-    "data-site-switcher-button",
-    "data-site-switcher-menu",
-    '<script type="module" src="../site-switcher.js"></script>',
+  requireFragments(html, [
+    'href="../assets/design-system/tokens.css"', 'href="../assets/design-system/foundations.css"',
+    'href="../assets/design-system/site-identity.css"', 'href="../design-system-migration.css"',
+    'href="../case-study-fixes.css"', 'class="jl-global-header"', 'class="jl-global-header__inner"',
+    'class="jl-global-header__nav jl-header-menu"', 'class="jl-header-menu-toggle"',
+    "data-header-menu", "data-header-menu-button", "data-site-switcher", "data-site-switcher-button",
+    "data-site-switcher-menu", 'class="case-actions jl-actions"', "jl-button jl-button--primary",
+    'class="case-action jl-button"', '<script type="module" src="../site-switcher.js"></script>',
     '<script type="module" src="../portfolio-navigation.js"></script>',
-  ]) {
-    if (!html.includes(contract)) fail(`${page} lacks native shared-header contract: ${contract}.`);
-  }
+  ], `${page} shared contract`);
   for (const legacy of ['class="site-header shell case-header"', 'class="wordmark"']) {
     if (html.includes(legacy)) fail(`${page} still contains legacy header markup: ${legacy}.`);
   }
