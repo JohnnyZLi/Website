@@ -21,8 +21,8 @@ const lock = JSON.parse(await read("design-system.lock.json"));
 const packageMetadata = JSON.parse(await read("package.json"));
 const source = await read("assets/design-system/SOURCE.md");
 
-const expectedVersion = "1.6.1";
-const expectedCommit = "6d09e748f6fb90f822b64e266dd13ba9e60a617b";
+const expectedVersion = "1.7.0";
+const expectedCommit = "15d831f437785e22419765c025e7b53abd3a2c61";
 const fail = (message) => { throw new Error(message); };
 const requireFragments = (content, fragments, label) => {
   for (const fragment of fragments) if (!content.includes(fragment)) fail(`${label} is incomplete: ${fragment}.`);
@@ -114,6 +114,7 @@ requireFragments(primitives, [
   ".jl-actions {", "display: flex;", "flex-wrap: wrap;", ".jl-button {", "display: inline-flex;",
   "align-items: center;", "justify-content: center;", "text-decoration: none;", "cursor: pointer;",
   ".jl-button--primary", ".jl-callout--danger", ".jl-empty-state", ".jl-table-region",
+  ".jl-dialog {", ".jl-dialog::backdrop", ".jl-dialog__surface", ".jl-dialog__actions",
 ], "Standalone content-primitives asset");
 requireFragments(caseStyles, [
   ".case-actions {", "--jl-actions-gap: 12px;", ".case-action {", "--jl-button-min-height: auto;",
@@ -133,18 +134,19 @@ requireFragments(motion, [
 requireFragments(caseFixes, [".case-hero", "overflow: clip;", "@supports not (overflow: clip)", "overflow: hidden;", "overflow-wrap: anywhere;"], "Case-study correction");
 
 requireFragments(updater, [
-  "api.github.com/repos/${repository}/commits/main", "design-system.lock.json",
-  'packageMetadata.dependencies["@johnnyzli/web-design-system"]', "sourceCommit", "version",
-], "Design-system updater");
+  'import { resolveConsumerRelease } from "@johnnyzli/web-design-system/consumer-release.js"',
+  'resolveConsumerRelease({ packageJson: "package.json" })', "release.version", "release.sourceCommit",
+], "Shared design-system release resolver");
 requireFragments(sync, [
   'readFile(resolve("design-system.lock.json")', 'styles/content-primitives.css',
   'assets/design-system', "dependency.endsWith(`#${sourceCommit}`)",
 ], "Design-system synchronizer");
 requireFragments(syncWorkflow, [
   "workflow_dispatch:", "schedule:", "contents: write", "pull-requests: write",
-  "node scripts/update-design-system.mjs", "npm run design-system:sync",
-  "automation/design-system-update", "gh pr create --draft",
-], "Design-system update workflow");
+  `uses: JohnnyZLi/Web-Design-System/.github/workflows/consumer-design-system-sync.yml@${expectedCommit}`,
+  'node-version: "24"', "npm run design-system:integration", "assets/design-system", "product-name: portfolio",
+], "Shared design-system update workflow caller");
+if (syncWorkflow.includes("gh pr create") || syncWorkflow.includes("git push")) fail("Portfolio workflow still duplicates shared publication behavior.");
 
 const projectDirectory = resolve(root, "projects");
 const projectPages = (await readdir(projectDirectory)).filter((name) => name.endsWith(".html"));
