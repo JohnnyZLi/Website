@@ -4,11 +4,13 @@ The source for my personal portfolio website.
 
 ## Design system
 
-The portfolio consumes `@johnnyzli/web-design-system` v1.3.4 from the exact source commit recorded in `package.json` and `assets/design-system/SOURCE.md`.
+The portfolio consumes `@johnnyzli/web-design-system` v1.4.0 from the exact source commit recorded in `package.json` and `assets/design-system/SOURCE.md`.
 
-The deployed site remains static. During development and CI, `npm run design-system:sync` copies the package's generated tokens and shared CSS foundations into `assets/design-system/`. `npm run design-system:check` fails when those committed assets drift from the pinned package.
+The deployed site remains static. During development and CI, `npm run design-system:sync` copies the generated tokens, accessibility foundations, and shared site-identity CSS into `assets/design-system/`. `npm run design-system:check` fails when those committed assets drift from the pinned package.
 
-Product-specific editorial layout remains in this repository. Shared colors, typography roles, focus behavior, canvas texture, spacing primitives, the global header, and the Sites control come from the design-system package. The homepage and project case studies use the same global-header contract.
+The current production UI is the approved portfolio baseline. Product-specific editorial composition, spacing, case-study structure, and responsive behavior remain in this repository. Shared colors, typography roles, focus behavior, canvas texture, the global header, and the Sites control come from the design-system package.
+
+The design system also provides optional content utilities for future work, but stable portfolio markup does not need to be rewritten solely to adopt shared class names.
 
 ## Local preview
 
@@ -28,7 +30,7 @@ npm run lint:html
 npm run lint:css
 ```
 
-GitHub Actions also runs WCAG 2 AA checks across every HTML page.
+GitHub Actions also runs Web Content Accessibility Guidelines 2 AA checks across every HTML page.
 
 ## Hosting
 
