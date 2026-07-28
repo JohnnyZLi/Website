@@ -73,10 +73,10 @@ jobs:
             }));
 
             const problems = [];
-            const compact = viewportName !== 'desktop';
-            const expectedInnerHeight = compact ? 68 : 82;
-            const expectedOuterHeight = compact ? 69 : 83;
-            const expectedButtonHeight = compact ? 40 : 44;
+            const compactHeader = viewportName === 'mobile' || viewportName === 'minimum';
+            const expectedInnerHeight = compactHeader ? 68 : 82;
+            const expectedOuterHeight = compactHeader ? 69 : 83;
+            const expectedButtonHeight = compactHeader ? 40 : 44;
             if (metrics.overflow) problems.push('document overflow');
             if (metrics.h1Count !== 1) problems.push(`expected one h1, found ${metrics.h1Count}`);
             if (!near(metrics.headerInnerHeight, expectedInnerHeight)) problems.push(`header inner ${metrics.headerInnerHeight}, expected ${expectedInnerHeight}`);
