@@ -28,13 +28,14 @@
               <span class="jl-site-identity__separator" aria-hidden="true">/</span>
               <a class="jl-site-identity__product" href="https://johnnyli.dev" aria-current="page">Portfolio</a>
             </div>
-            <nav class="jl-global-header__nav" aria-label="Primary navigation">
+            <nav class="jl-global-header__nav jl-header-menu" id="portfolio-navigation" aria-label="Primary navigation" data-header-menu>
               <a href="#work">Work</a>
               <a href="#experience">Experience</a>
               <a href="#about">About</a>
               <a href="#contact">Contact</a>
             </nav>
             <div class="jl-global-header__actions">
+              <button class="jl-header-menu-toggle" type="button" aria-expanded="false" aria-controls="portfolio-navigation" data-header-menu-button>Menu</button>
               <div class="jl-site-switcher" data-site-switcher>
                 <button
                   class="jl-site-switcher__button"
@@ -242,6 +243,7 @@
       </section>
     </main>
     <script src="motion.js" defer></script>
-    <script src="site-switcher.js" defer></script>
+    <script type="module" src="site-switcher.js"></script>
+    <script type="module" src="portfolio-navigation.js"></script>
   </body>
 </html>
