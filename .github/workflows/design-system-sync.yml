@@ -11,14 +11,15 @@ permissions:
 
 jobs:
   update:
-    uses: JohnnyZLi/Web-Design-System/.github/workflows/consumer-design-system-sync.yml@15d831f437785e22419765c025e7b53abd3a2c61
+    uses: JohnnyZLi/Web-Design-System/.github/workflows/consumer-design-system-sync.yml@5f891a80e06a0637b2bb9901a5236b36cc9e3e9a
     with:
       node-version: "24"
       timeout-minutes: 15
       install-command: npm install --no-audit --no-fund --no-package-lock
-      validate-command: npm run design-system:integration && npm run lint:html && npm run lint:css
+      validate-command: npm run design-system:integration && npm run design-system:conformance && npm run lint:html && npm run lint:css
       tracked-paths: |
         design-system.lock.json
+        design-system.conformance.json
         package.json
         assets/design-system
       product-name: portfolio
