@@ -3,7 +3,7 @@
 Do not edit these files directly.
 
 Package: @johnnyzli/web-design-system
-Version: 1.6.0
-Source commit: 5faf9cadd4ee33cfb4de52c1fa17e1a200da112c
+Version: 1.6.1
+Source commit: 6d09e748f6fb90f822b64e266dd13ba9e60a617b
 
 Regenerate with `npm run design-system:sync`.
