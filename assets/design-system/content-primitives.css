@@ -1,15 +1,19 @@
 /* Variable-backed content shells for cross-product reuse.
-   Consumers can tune geometry through --jl-*-* custom properties without
-   reimplementing the component contract or semantic behavior. */
+   This export is standalone after tokens.css; consumers do not need content.css. */
 
 .jl-actions {
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--jl-actions-gap, var(--jl-space-3));
   align-items: var(--jl-actions-align, center);
 }
 
 .jl-button {
   min-height: var(--jl-button-min-height, var(--jl-control-height-md));
+  display: inline-flex;
   gap: var(--jl-button-gap, var(--jl-space-2));
+  align-items: center;
+  justify-content: center;
   padding: var(--jl-button-padding-block, 0) var(--jl-button-padding-inline, var(--jl-control-padding-inline));
   border: var(--jl-button-border-width, 1px) solid var(--jl-button-border-color, var(--jl-color-rule-strong));
   border-radius: var(--jl-button-radius, var(--jl-radius-md));
@@ -20,6 +24,10 @@
   font-size: var(--jl-button-font-size, inherit);
   font-weight: var(--jl-button-font-weight, 700);
   line-height: var(--jl-button-line-height, 1.2);
+  text-align: center;
+  text-decoration: none;
+  white-space: var(--jl-button-white-space, nowrap);
+  cursor: pointer;
   transition:
     border-color var(--jl-motion-fast) ease,
     background-color var(--jl-motion-fast) ease,
@@ -28,7 +36,7 @@
     transform var(--jl-motion-fast) ease;
 }
 
-.jl-button:hover:not(:disabled) {
+.jl-button:hover:not(:disabled):not([aria-disabled="true"]) {
   border-color: var(--jl-button-hover-border-color, var(--jl-color-accent));
   background: var(--jl-button-hover-background, var(--jl-button-background, var(--jl-color-surface)));
   color: var(--jl-button-hover-color, var(--jl-button-color, var(--jl-color-ink)));
@@ -66,6 +74,7 @@
 }
 
 .jl-callout {
+  min-width: 0;
   padding: var(--jl-callout-padding, var(--jl-space-6));
   border: var(--jl-callout-border-width, 1px) solid var(--jl-callout-border-color, var(--jl-color-rule-strong));
   border-radius: var(--jl-callout-radius, var(--jl-radius-md));
