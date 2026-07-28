@@ -101,8 +101,8 @@ jobs:
             if (await sitesMenu.isVisible()) problems.push('Sites menu did not close with Escape');
             if (!(await sitesButton.evaluate((element) => document.activeElement === element))) problems.push('Sites button did not regain focus after Escape');
 
-            const nav = page.locator('[data-header-menu]');
-            const navButton = page.locator('[data-header-menu-button]');
+            const nav = page.locator('[data-header-menu], [data-portfolio-nav]').first();
+            const navButton = page.locator('[data-header-menu-button], [data-portfolio-nav-button]').first();
             await navButton.waitFor({ state: 'attached' });
             const compactNavigation = viewportName !== 'desktop';
             if (compactNavigation) {
