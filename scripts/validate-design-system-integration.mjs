@@ -16,13 +16,15 @@ const identityStyles = await read("assets/design-system/site-identity.css");
 const updater = await read("scripts/update-design-system.mjs");
 const sync = await read("scripts/sync-design-system.mjs");
 const syncWorkflow = await read(".github/workflows/design-system-sync.yml");
+const conformanceWorkflow = await read(".github/workflows/design-system-conformance.yml");
+const conformanceManifest = JSON.parse(await read("design-system.conformance.json"));
 const version = JSON.parse(await read("assets/design-system/version.json"));
 const lock = JSON.parse(await read("design-system.lock.json"));
 const packageMetadata = JSON.parse(await read("package.json"));
 const source = await read("assets/design-system/SOURCE.md");
 
-const expectedVersion = "1.7.0";
-const expectedCommit = "15d831f437785e22419765c025e7b53abd3a2c61";
+const expectedVersion = "1.8.0";
+const expectedCommit = "5f891a80e06a0637b2bb9901a5236b36cc9e3e9a";
 const fail = (message) => { throw new Error(message); };
 const requireFragments = (content, fragments, label) => {
   for (const fragment of fragments) if (!content.includes(fragment)) fail(`${label} is incomplete: ${fragment}.`);
@@ -33,6 +35,15 @@ if (lock.version !== expectedVersion || lock.sourceCommit !== expectedCommit) fa
 if (!source.includes(expectedCommit)) fail("Generated asset source commit is not pinned.");
 if (!String(packageMetadata.dependencies?.["@johnnyzli/web-design-system"] ?? "").endsWith(`#${expectedCommit}`)) {
   fail("Portfolio package dependency does not match the design-system lock.");
+}
+if (packageMetadata.scripts?.["design-system:conformance"] !== "node node_modules/@johnnyzli/web-design-system/scripts/conformance-runner.mjs") {
+  fail("Portfolio conformance command drifted.");
+}
+if (conformanceManifest.schemaVersion !== "1.0.0" || conformanceManifest.product !== "portfolio") {
+  fail("Portfolio conformance manifest metadata drifted.");
+}
+for (const id of ["DS-DIST-001", "DS-HEADER-001", "DS-SITES-002", "DS-RESP-001", "DS-TEST-001"]) {
+  if (!conformanceManifest.rules?.[id]) fail(`Portfolio conformance manifest is missing ${id}.`);
 }
 
 const requiredStyles = [
@@ -144,9 +155,13 @@ requireFragments(sync, [
 requireFragments(syncWorkflow, [
   "workflow_dispatch:", "schedule:", "contents: write", "pull-requests: write",
   `uses: JohnnyZLi/Web-Design-System/.github/workflows/consumer-design-system-sync.yml@${expectedCommit}`,
-  'node-version: "24"', "npm run design-system:integration", "assets/design-system", "product-name: portfolio",
+  'node-version: "24"', "npm run design-system:integration", "npm run design-system:conformance", "assets/design-system", "product-name: portfolio",
 ], "Shared design-system update workflow caller");
 if (syncWorkflow.includes("gh pr create") || syncWorkflow.includes("git push")) fail("Portfolio workflow still duplicates shared publication behavior.");
+requireFragments(conformanceWorkflow, [
+  `uses: JohnnyZLi/Web-Design-System/.github/workflows/consumer-conformance.yml@${expectedCommit}`,
+  "npm run design-system:integration", "npm run design-system:conformance", "portfolio-design-system-conformance",
+], "Portfolio conformance workflow caller");
 
 const projectDirectory = resolve(root, "projects");
 const projectPages = (await readdir(projectDirectory)).filter((name) => name.endsWith(".html"));
