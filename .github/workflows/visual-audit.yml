@@ -46,8 +46,9 @@ jobs:
           ];
           const viewports = [
             ['desktop', { width: 1440, height: 1000 }],
-            ['zoom-200', { width: 720, height: 900 }],
+            ['narrow-desktop', { width: 720, height: 900 }],
             ['mobile', { width: 390, height: 844 }],
+            ['minimum', { width: 320, height: 700 }],
           ];
           const near = (actual, expected, tolerance = 0.75) =>
             typeof actual === 'number' && Math.abs(actual - expected) <= tolerance;
@@ -72,7 +73,7 @@ jobs:
             }));
 
             const problems = [];
-            const compact = viewportName === 'mobile';
+            const compact = viewportName !== 'desktop';
             const expectedInnerHeight = compact ? 68 : 82;
             const expectedOuterHeight = compact ? 69 : 83;
             const expectedButtonHeight = compact ? 40 : 44;
