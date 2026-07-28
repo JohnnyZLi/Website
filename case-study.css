@@ -35,19 +35,30 @@
   letter-spacing: -0.025em;
   line-height: 1.5;
 }
-.case-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
-.case-action {
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-  padding: 12px 16px;
-  border: 1px solid var(--rule);
-  font-size: 0.86rem;
-  font-weight: 600;
-  transition: background 180ms ease, color 180ms ease;
+.case-actions {
+  --jl-actions-gap: 12px;
+  margin-top: 34px;
 }
-.case-action-primary { background: var(--ink); color: var(--paper); }
-.case-action:hover, .case-action:focus-visible { background: var(--clay); border-color: var(--clay); color: var(--paper); }
+.case-action {
+  --jl-button-min-height: auto;
+  --jl-button-gap: 10px;
+  --jl-button-padding-block: 12px;
+  --jl-button-padding-inline: 16px;
+  --jl-button-border-color: var(--rule);
+  --jl-button-radius: 0;
+  --jl-button-background: transparent;
+  --jl-button-color: var(--ink);
+  --jl-button-font-size: 0.86rem;
+  --jl-button-font-weight: 600;
+  --jl-button-hover-border-color: var(--clay);
+  --jl-button-hover-background: var(--clay);
+  --jl-button-hover-color: var(--paper);
+}
+.case-action-primary {
+  --jl-button-border-color: var(--ink);
+  --jl-button-background: var(--ink);
+  --jl-button-color: var(--paper);
+}
 .case-action span { transition: transform 180ms ease; }
 .case-action:hover span, .case-action:focus-visible span { transform: translate(3px, -3px); }
 .case-facts {
