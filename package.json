@@ -6,6 +6,7 @@
     "node": ">=24"
   },
   "scripts": {
+    "lint": "npm run lint:html && npm run lint:css",
     "design-system:update": "node scripts/update-design-system.mjs",
     "design-system:sync": "node scripts/sync-design-system.mjs",
     "design-system:check": "npm run design-system:sync && git diff --exit-code -- assets/design-system",
@@ -15,7 +16,7 @@
     "lint:css": "stylelint \"**/*.css\" --ignore-pattern \"assets/design-system/**/*.css\""
   },
   "dependencies": {
-    "@johnnyzli/web-design-system": "github:JohnnyZLi/Web-Design-System#5f891a80e06a0637b2bb9901a5236b36cc9e3e9a"
+    "@johnnyzli/web-design-system": "github:JohnnyZLi/Web-Design-System#5c8daca97dd21628b6e2340421c8eed2a7d3d563"
   },
   "devDependencies": {
     "html-validate": "11.5.6",
