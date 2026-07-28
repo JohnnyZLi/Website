@@ -23,17 +23,23 @@ const lock = JSON.parse(await read("design-system.lock.json"));
 const packageMetadata = JSON.parse(await read("package.json"));
 const source = await read("assets/design-system/SOURCE.md");
 
-const expectedVersion = "1.8.0";
-const expectedCommit = "5f891a80e06a0637b2bb9901a5236b36cc9e3e9a";
+const expectedVersion = String(lock.version ?? "");
+const expectedCommit = String(lock.sourceCommit ?? "");
 const fail = (message) => { throw new Error(message); };
 const requireFragments = (content, fragments, label) => {
   for (const fragment of fragments) if (!content.includes(fragment)) fail(`${label} is incomplete: ${fragment}.`);
 };
+const requireImmutableWorkflow = (content, workflow, label) => {
+  const pattern = new RegExp(`uses: JohnnyZLi/Web-Design-System/\\.github/workflows/${workflow}@[0-9a-f]{40}`);
+  if (!pattern.test(content)) fail(`${label} is not pinned to an immutable design-system commit.`);
+};
 
+if (lock.package !== "@johnnyzli/web-design-system") fail("Design-system lock package is invalid.");
+if (!/^\d+\.\d+\.\d+$/.test(expectedVersion)) fail("Design-system lock version is invalid.");
+if (!/^[0-9a-f]{40}$/.test(expectedCommit)) fail("Design-system lock source commit is invalid.");
 if (version.version !== expectedVersion) fail(`Portfolio must consume Web Design System v${expectedVersion}.`);
-if (lock.version !== expectedVersion || lock.sourceCommit !== expectedCommit) fail("Design-system lock metadata drifted.");
-if (!source.includes(expectedCommit)) fail("Generated asset source commit is not pinned.");
-if (!String(packageMetadata.dependencies?.["@johnnyzli/web-design-system"] ?? "").endsWith(`#${expectedCommit}`)) {
+if (!source.includes(expectedCommit) || !source.includes(`Version: ${expectedVersion}`)) fail("Generated asset source commit is not pinned.");
+if (String(packageMetadata.dependencies?.["@johnnyzli/web-design-system"] ?? "") !== `github:JohnnyZLi/Web-Design-System#${expectedCommit}`) {
   fail("Portfolio package dependency does not match the design-system lock.");
 }
 if (packageMetadata.scripts?.["design-system:conformance"] !== "node node_modules/@johnnyzli/web-design-system/scripts/conformance-runner.mjs") {
@@ -118,7 +124,7 @@ requireFragments(identityStyles, [
   "font-weight: 700;", "line-height: 1;", '.jl-site-switcher__button > [aria-hidden="true"]',
   "border-right: 2px solid currentColor;", "border-bottom: 2px solid currentColor;",
   ".jl-header-menu-toggle", ".jl-global-header__nav.jl-header-menu--open",
-  "right: var(--jl-layout-gutter);", "left: var(--jl-layout-gutter);", "@media (forced-colors: active)",
+  "right: var(--jl-layout-gutter);", "left: var(--jl-layout-gutter);", "@media (max-width: 360px)", "@media (forced-colors: active)",
 ], "Shared header and compact-menu contract");
 
 requireFragments(primitives, [
@@ -154,14 +160,14 @@ requireFragments(sync, [
 ], "Design-system synchronizer");
 requireFragments(syncWorkflow, [
   "workflow_dispatch:", "schedule:", "contents: write", "pull-requests: write",
-  `uses: JohnnyZLi/Web-Design-System/.github/workflows/consumer-design-system-sync.yml@${expectedCommit}`,
   'node-version: "24"', "npm run design-system:integration", "npm run design-system:conformance", "assets/design-system", "product-name: portfolio",
 ], "Shared design-system update workflow caller");
+requireImmutableWorkflow(syncWorkflow, "consumer-design-system-sync\\.yml", "Shared design-system update workflow caller");
 if (syncWorkflow.includes("gh pr create") || syncWorkflow.includes("git push")) fail("Portfolio workflow still duplicates shared publication behavior.");
 requireFragments(conformanceWorkflow, [
-  `uses: JohnnyZLi/Web-Design-System/.github/workflows/consumer-conformance.yml@${expectedCommit}`,
   "npm run design-system:integration", "npm run design-system:conformance", "portfolio-design-system-conformance",
 ], "Portfolio conformance workflow caller");
+requireImmutableWorkflow(conformanceWorkflow, "consumer-conformance\\.yml", "Portfolio conformance workflow caller");
 
 const projectDirectory = resolve(root, "projects");
 const projectPages = (await readdir(projectDirectory)).filter((name) => name.endsWith(".html"));
