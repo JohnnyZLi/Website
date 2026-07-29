@@ -36,6 +36,20 @@ npm run lint:css
 
 GitHub Actions also runs Web Content Accessibility Guidelines 2 AA checks and a rendered visual audit across every HTML page. Generated conformance reports and visual-audit screenshots are ignored locally.
 
+## Performance baseline
+
+The monthly and manually dispatchable performance workflow inventories production HTML, CSS, JavaScript, images, and fonts, then records median desktop and mobile browser timings for every page. It uploads `performance-baseline/report.json` and `performance-baseline/report.md` as a 30-day artifact.
+
+For a local run:
+
+```bash
+npm install --no-save --no-package-lock playwright@1.54.1
+npx playwright install chromium
+npm run performance:baseline
+```
+
+Treat the browser timings as same-environment engineering evidence rather than field data. Compare runs only when the machine, browser build, power state, and workload are reasonably equivalent.
+
 ## Hosting
 
 This site is dependency-free at runtime and designed for GitHub Pages. Publish the repository from the `main` branch and repository root.
