@@ -43,8 +43,8 @@
       ]
     },
     "DS-RESP-002": {
-      "status": "manual-pending",
-      "reason": "Actual 200 percent browser zoom remains a manual release check; the automated narrow-desktop viewport is not labeled as zoom."
+      "status": "manual-passed",
+      "reason": "Repository owner completed actual 200 percent browser zoom review across the homepage and all case studies on 2026-07-29; no blocking overflow or loss of access was found."
     },
     "DS-A11Y-001": {
       "evidence": [
@@ -52,8 +52,8 @@
       ]
     },
     "DS-A11Y-002": {
-      "status": "manual-pending",
-      "reason": "Real forced-colors and assistive-technology review remains a recorded manual release check."
+      "status": "manual-passed",
+      "reason": "Repository owner completed forced-colors, reduced-motion, keyboard, and assistive-technology review on 2026-07-29; no blocking issue was found."
     },
     "DS-STATE-002": {
       "evidence": [
@@ -78,8 +78,8 @@
       ]
     },
     "DS-PERF-001": {
-      "status": "manual-pending",
-      "reason": "Reviewed bundle and user-experience performance baselines have not yet been recorded."
+      "status": "manual-passed",
+      "reason": "The initial immutable-commit portfolio performance baseline was generated, reviewed for fixture and measurement errors, and accepted as the engineering reference on 2026-07-29."
     }
   }
 }
