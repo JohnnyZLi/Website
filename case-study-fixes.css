@@ -26,7 +26,8 @@
 
 .case-facts {
   margin-top: 84px;
-  padding-top: 30px;
+  padding-top: 38px;
+  text-align: center;
 }
 
 .case-hero-grid,
@@ -200,7 +201,7 @@
 
   .case-facts {
     margin-top: 64px;
-    padding-top: 26px;
+    padding-top: 32px;
   }
 
   .case-hero::before {
