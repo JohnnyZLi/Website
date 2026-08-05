@@ -41,6 +41,7 @@
   --jl-button-padding-block: 0;
   --jl-button-padding-inline: 20px;
   --jl-button-border-color: var(--jl-color-rule-inverse);
+  --jl-button-radius: 6px;
   --jl-button-font-size: 0.95rem;
   --jl-button-font-weight: 600;
   --jl-button-hover-border-color: var(--jl-color-accent-hover);
