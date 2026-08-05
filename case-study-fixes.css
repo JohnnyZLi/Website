@@ -26,6 +26,33 @@
   overflow-wrap: anywhere;
 }
 
+/* Restore a visible terracotta rhythm through the full case-study scroll. */
+.case-hero h1 em,
+.case-lead,
+.metric-grid strong {
+  color: var(--clay);
+}
+
+.case-next h2 em {
+  color: var(--clay-soft);
+}
+
+.decision-number,
+.process-list li > span {
+  font-weight: 700;
+}
+
+.output-grid pre {
+  background:
+    linear-gradient(120deg, rgba(165, 93, 69, 0.24), transparent 42%),
+    var(--ink);
+  box-shadow: inset 5px 0 0 var(--clay);
+}
+
+.case-next a {
+  border-bottom-color: var(--clay-soft);
+}
+
 /* Keep process stages open and separated, not enclosed as cards. */
 .process-list {
   margin-top: -28px;
