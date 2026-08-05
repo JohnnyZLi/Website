@@ -62,14 +62,35 @@
   margin-top: 36px;
 }
 
+/* Present validation figures as open metrics with internal dividers only. */
+.metric-grid {
+  margin-top: -28px;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.metric-grid div {
+  padding: 22px 24px 24px;
+}
+
+.metric-grid span {
+  margin-top: 4px;
+}
+
+.validation-copy {
+  margin-top: 30px;
+}
+
 @media (hover: hover) {
   .process-list li,
-  .decision-grid article {
+  .decision-grid article,
+  .metric-grid div {
     transition: none;
   }
 
   .process-list li:hover,
-  .decision-grid article:hover {
+  .decision-grid article:hover,
+  .metric-grid div:hover {
     background-color: transparent;
     transform: none;
   }
@@ -77,7 +98,8 @@
 
 @media (max-width: 560px) {
   .process-list,
-  .decision-grid {
+  .decision-grid,
+  .metric-grid {
     margin-top: -8px;
   }
 
@@ -93,6 +115,14 @@
 
   .decision-grid h3 {
     margin-top: 34px;
+  }
+
+  .metric-grid div {
+    padding: 24px 0 26px;
+  }
+
+  .validation-copy {
+    margin-top: 28px;
   }
 }
 
