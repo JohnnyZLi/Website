@@ -3,7 +3,7 @@
 .case-hero {
   overflow: clip;
   padding-top: clamp(60px, 6vw, 96px);
-  padding-bottom: 88px;
+  padding-bottom: 68px;
 }
 
 /* Keep the warm hero light inside the shell so it reaches transparency before
@@ -26,7 +26,7 @@
 
 .case-facts {
   margin-top: 84px;
-  padding-top: 38px;
+  padding-top: 30px;
   text-align: center;
 }
 
