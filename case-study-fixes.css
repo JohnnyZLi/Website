@@ -28,7 +28,20 @@
 
 /* Keep process stages open and separated, not enclosed as cards. */
 .process-list {
+  margin-top: -28px;
   border: 0;
+}
+
+.process-list li {
+  min-height: 220px;
+}
+
+.process-list strong {
+  margin-top: 36px;
+}
+
+.process-list p {
+  margin-top: 14px;
 }
 
 @media (hover: hover) {
@@ -39,6 +52,12 @@
   .process-list li:hover {
     background-color: transparent;
     transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .process-list {
+    margin-top: -8px;
   }
 }
 
