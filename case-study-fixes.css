@@ -29,8 +29,7 @@
 /* Keep terracotta visible but restrained: primary accent for readable text,
    decorative accent for small markers, and soft accent on inverse surfaces. */
 .case-hero h1 em,
-.case-lead em,
-.metric-grid strong {
+.case-lead em {
   color: var(--clay-text);
 }
 
@@ -118,11 +117,13 @@
 }
 
 .metric-grid strong {
+  color: var(--jl-color-ink);
   font-size: clamp(2.8rem, 3.4vw, 4rem);
 }
 
 .metric-grid span {
   margin-top: 6px;
+  color: var(--jl-color-accent-decorative);
 }
 
 .validation-copy {
