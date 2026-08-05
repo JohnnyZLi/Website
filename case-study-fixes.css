@@ -26,11 +26,12 @@
   overflow-wrap: anywhere;
 }
 
-/* Restore a visible terracotta rhythm through the full case-study scroll. */
+/* Keep terracotta visible but restrained: primary accent for readable text,
+   decorative accent for small markers, and soft accent on inverse surfaces. */
 .case-hero h1 em,
-.case-lead,
+.case-lead em,
 .metric-grid strong {
-  color: var(--clay);
+  color: var(--clay-text);
 }
 
 .case-next h2 em {
@@ -43,14 +44,17 @@
 }
 
 .output-grid pre {
-  background:
-    linear-gradient(120deg, rgba(165, 93, 69, 0.24), transparent 42%),
-    var(--ink);
-  box-shadow: inset 5px 0 0 var(--clay);
+  background-color: var(--jl-color-surface-inverse);
+  background-image: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--jl-color-accent-decorative) 24%, transparent),
+    transparent 42%
+  );
+  box-shadow: inset 5px 0 0 var(--jl-color-accent);
 }
 
 .case-next a {
-  border-bottom-color: var(--clay-soft);
+  border-bottom-color: var(--jl-color-accent-soft);
 }
 
 /* Keep process stages open and separated, not enclosed as cards. */
