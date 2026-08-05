@@ -30,6 +30,30 @@
   text-align: center;
 }
 
+/* Keep hero actions precise and subordinate to the project title. */
+.case-actions {
+  --jl-actions-gap: 12px;
+}
+
+.case-action {
+  --jl-button-min-height: var(--jl-control-height-lg);
+  --jl-button-gap: 10px;
+  --jl-button-padding-block: 0;
+  --jl-button-padding-inline: 20px;
+  --jl-button-border-color: var(--jl-color-rule-inverse);
+  --jl-button-font-size: 0.95rem;
+  --jl-button-font-weight: 600;
+  --jl-button-hover-border-color: var(--jl-color-accent-hover);
+  --jl-button-hover-background: var(--jl-color-accent-hover);
+  --jl-button-hover-color: var(--jl-color-on-accent);
+}
+
+.case-action-primary {
+  --jl-button-border-color: var(--jl-color-accent);
+  --jl-button-background: var(--jl-color-accent);
+  --jl-button-color: var(--jl-color-on-accent);
+}
+
 .case-hero-grid,
 .case-summary,
 .case-copy-grid,
