@@ -84,6 +84,10 @@
   color: var(--clay-text);
 }
 
+.case-next h2 {
+  color: var(--clay-text);
+}
+
 .case-next h2 em {
   color: var(--clay-soft);
 }
