@@ -2,6 +2,30 @@
 
 .case-hero {
   overflow: clip;
+  padding-top: clamp(60px, 6vw, 96px);
+  padding-bottom: 88px;
+}
+
+/* Keep the warm hero light inside the shell so it reaches transparency before
+   the right edge instead of being visibly clipped there. */
+.case-hero::before {
+  width: min(64vw, 900px);
+  top: -44%;
+  right: 0;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--jl-color-accent-soft) 30%, transparent),
+    color-mix(in srgb, var(--jl-color-accent-decorative) 9%, transparent) 38%,
+    transparent 70%
+  );
+}
+
+.case-hero-grid {
+  margin-top: 48px;
+}
+
+.case-facts {
+  margin-top: 84px;
 }
 
 .case-hero-grid,
@@ -164,6 +188,25 @@
 }
 
 @media (max-width: 560px) {
+  .case-hero {
+    padding-top: 52px;
+    padding-bottom: 76px;
+  }
+
+  .case-hero-grid {
+    margin-top: 42px;
+  }
+
+  .case-facts {
+    margin-top: 64px;
+  }
+
+  .case-hero::before {
+    width: 120vw;
+    top: -24%;
+    right: -18vw;
+  }
+
   .process-list,
   .decision-grid,
   .metric-grid {
