@@ -124,6 +124,7 @@
 .metric-grid span {
   margin-top: 6px;
   color: var(--jl-color-accent-decorative);
+  font-weight: 700;
 }
 
 .validation-copy {
