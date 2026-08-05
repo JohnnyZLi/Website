@@ -73,7 +73,7 @@
       <section class="case-section shell" aria-labelledby="problem-heading">
         <div class="case-section-label"><span>01</span><h2 id="problem-heading">The problem</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Redundant paths on a topology diagram do not prove that routing will survive a failure.</p>
+          <p class="case-lead">Redundant paths on a topology diagram <em>do not prove that routing will survive a failure</em>.</p>
           <div class="case-body-copy">
             <p>A useful resiliency test needs a known baseline, a controlled fault, route and adjacency evidence, a reachability check, and a verified return to normal.</p>
             <p>This lab makes that sequence repeatable. The same command builds the topology, checks both forwarding paths, pauses one core router, measures convergence, and confirms recovery.</p>
@@ -84,7 +84,7 @@
       <section class="case-section shell" aria-labelledby="design-heading">
         <div class="case-section-label"><span>02</span><h2 id="design-heading">Topology and policy</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Two edge routers communicate through independent core routers, with equal OSPF cost through either side.</p>
+          <p class="case-lead">Two edge routers communicate through independent core routers, with <em>equal OSPF cost through either side</em>.</p>
           <div class="case-body-copy">
             <p>All links participate in OSPF area 0. Router IDs are explicit, transit interfaces use the point-to-point network type, and interfaces are passive unless an adjacency is required.</p>
             <p>A higher-cost link joins the core routers. It remains available to OSPF but stays outside the normal equal-cost forwarding path between the edges.</p>
@@ -163,7 +163,7 @@
       <section class="case-section case-section-last shell" aria-labelledby="limits-heading">
         <div class="case-section-label"><span>07</span><h2 id="limits-heading">Limits and next steps</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">A controlled lab result is evidence of behavior, not a production convergence guarantee.</p>
+          <p class="case-lead">A controlled lab result is <em>evidence of behavior</em>, not a production convergence guarantee.</p>
           <div class="case-body-copy">
             <p>The timings depend on the chosen timers and GitHub-hosted runner. The experiment observes one source and destination, and a paused container models control-plane silence rather than every physical or software failure mode.</p>
             <p>Useful next steps are repeated-run distributions, packet-level capture during convergence, additional failure points, and an observability layer that tracks latency and reachability over time.</p>
