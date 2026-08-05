@@ -77,12 +77,9 @@
   overflow-wrap: anywhere;
 }
 
-/* Keep terracotta visible but restrained: primary accent for readable text,
-   decorative accent for small markers, and soft accent on inverse surfaces. */
-.case-hero h1 em {
-  color: var(--clay-soft);
-}
-
+/* Keep terracotta visible but restrained: primary accent for readable text on
+   light surfaces, decorative accent for markers, and soft accent on inverse surfaces. */
+.case-hero h1 em,
 .case-lead em {
   color: var(--clay-text);
 }
