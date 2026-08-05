@@ -73,7 +73,7 @@
       <section class="case-section shell" aria-labelledby="problem-heading">
         <div class="case-section-label"><span>01</span><h2 id="problem-heading">The problem</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Configuration reviews are easy to make vague: a warning without the command, location, or remediation leaves the engineer to repeat the investigation.</p>
+          <p class="case-lead">Configuration reviews are easy to make vague: <em>a warning without the command, location, or remediation</em> leaves the engineer to repeat the investigation.</p>
           <div class="case-body-copy">
             <p>This project treats every finding as a reviewable claim. The analyzer preserves line numbers, identifies the exact command that triggered a rule, assigns a severity, and gives a concrete next step.</p>
             <p>It stays offline and read-only. No device credentials are needed, and the tool never attempts to modify a running configuration.</p>
@@ -123,7 +123,7 @@
         <div class="case-section-label"><span>04</span><h2 id="output-heading">Review output</h2></div>
         <div class="case-section-content output-grid">
           <div>
-            <p class="case-lead">The included insecure switch configuration produces 16 findings. Its hardened counterpart produces none.</p>
+            <p class="case-lead">The included insecure switch configuration <em>produces 16 findings</em>. Its hardened counterpart produces none.</p>
             <p class="output-note">The samples are intentionally small so each result can be traced back to a deliberate configuration choice.</p>
           </div>
           <pre><code>HIGH   SEC001  VTY access is not restricted to SSH
@@ -156,7 +156,7 @@ after validating SSH access.</code></pre>
       <section class="case-section case-section-last shell" aria-labelledby="limits-heading">
         <div class="case-section-label"><span>06</span><h2 id="limits-heading">Limits and next steps</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Static analysis should start a review, not replace engineering judgment.</p>
+          <p class="case-lead">Static analysis should <em>start a review</em>, not replace engineering judgment.</p>
           <div class="case-body-copy">
             <p>IOS syntax, defaults, and inherited policy vary across platforms and releases. A production assessment must also account for AAA policy, management-plane ACLs, software versions, approved exceptions, and the device’s role.</p>
             <p>Useful next additions are per-rule suppression with documented justification, configuration diffs, and a vendor-neutral rule interface.</p>
