@@ -6,6 +6,18 @@
   color: var(--clay);
 }
 
+.contact-title em {
+  color: var(--clay);
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.055em;
+}
+
+.contact-links a {
+  border-bottom-color: var(--clay-soft);
+}
+
 @media (hover: hover) {
   .work-item h3 {
     transition:
