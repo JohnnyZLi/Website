@@ -85,11 +85,11 @@
 }
 
 .case-next h2 {
-  color: var(--clay-text);
+  color: var(--paper);
 }
 
 .case-next h2 em {
-  color: var(--clay-soft);
+  color: var(--clay-text);
 }
 
 .decision-number,
