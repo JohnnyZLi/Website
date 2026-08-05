@@ -104,7 +104,12 @@
 }
 
 .case-next a {
+  color: var(--paper);
   border-bottom-color: var(--jl-color-accent-soft);
+}
+
+.case-next a span {
+  color: var(--jl-color-accent-soft);
 }
 
 /* Keep process stages open and separated, not enclosed as cards. */
