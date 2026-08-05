@@ -73,7 +73,7 @@
       <section class="case-section shell" aria-labelledby="problem-heading">
         <div class="case-section-label"><span>01</span><h2 id="problem-heading">The problem</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">A proxy sits between two independently framed connections and has to remain correct when clients, origins, DNS, TLS, or policy fail.</p>
+          <p class="case-lead">A proxy sits between two independently framed connections and <em>has to remain correct</em> when clients, origins, DNS, TLS, or policy fail.</p>
           <div class="case-body-copy">
             <p>The downstream side accepts ordinary HTTP proxy requests. The upstream side resolves the requested host, establishes TLS, verifies the certificate and hostname, rewrites the request, and streams the response back without losing message boundaries.</p>
             <p>At the same time, the process must isolate concurrent clients, enforce hostname and resolved-IP rules, and produce useful HTTP errors rather than leaking socket failures to the browser.</p>
@@ -122,7 +122,7 @@
       <section class="case-section shell" aria-labelledby="reload-heading">
         <div class="case-section-label"><span>04</span><h2 id="reload-heading">Live access-control reload</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Policy changes should not require stopping the service or leaving newly forbidden connections active.</p>
+          <p class="case-lead">Policy changes <em>should not require stopping the service</em> or leaving newly forbidden connections active.</p>
           <div class="case-body-copy">
             <p>Sending SIGINT reloads the forbidden-sites file into a new immutable snapshot while the proxy remains running. New requests immediately use the replacement rule set.</p>
             <p>The proxy also reevaluates active upstream destinations. Connections covered by a newly loaded hostname or IP rule are shut down so the policy change applies to existing work as well as future requests.</p>
@@ -148,7 +148,7 @@
       <section class="case-section shell" aria-labelledby="logging-heading">
         <div class="case-section-label"><span>06</span><h2 id="logging-heading">Operational evidence</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">A forwarding service needs enough evidence to explain what happened without retaining response bodies.</p>
+          <p class="case-lead">A forwarding service needs <em>enough evidence to explain what happened</em> without retaining response bodies.</p>
           <div class="case-body-copy">
             <p>Each completed request produces an RFC 3339 access-log entry with the client address, request line, returned status, and relayed byte count. X-Forwarded-For is created or extended so the origin receives the downstream address chain.</p>
             <p>Worker cleanup is centralized so client sockets, upstream sockets, and TLS objects are released consistently across success, parse errors, access-control rejection, and connection failure.</p>
@@ -159,7 +159,7 @@
       <section class="case-section case-section-last shell" aria-labelledby="limits-heading">
         <div class="case-section-label"><span>07</span><h2 id="limits-heading">Scope and provenance</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">The proxy demonstrates HTTP, TLS, concurrency, and policy mechanics; it is not intended as an anonymous or production security gateway.</p>
+          <p class="case-lead">The proxy demonstrates HTTP, TLS, concurrency, and policy mechanics; it is <em>not intended as an anonymous or production security gateway</em>.</p>
           <div class="case-body-copy">
             <p>It supports GET and HEAD rather than tunneling arbitrary HTTPS with CONNECT, uses a fixed worker capacity, and does not provide caching, authentication, content inspection, or distributed policy management.</p>
             <p>The project originated in CSE 156/L at UC Santa Cruz in Winter 2025. After the original university-hosted source was lost, the published implementation was reconstructed from the surviving specification and expanded with stronger TLS verification, broader framing coverage, automated tests, and detailed cleanup documentation.</p>
