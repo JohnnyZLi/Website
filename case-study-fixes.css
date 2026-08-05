@@ -84,6 +84,10 @@
   color: var(--clay-text);
 }
 
+.case-next h2 em {
+  color: var(--clay-soft);
+}
+
 .decision-number,
 .process-list li > span {
   font-weight: 700;
@@ -99,18 +103,13 @@
   box-shadow: inset 5px 0 0 var(--jl-color-accent);
 }
 
-/* Use one strong terracotta expression throughout the inverse next-project band. */
-.case-next,
-.case-next-inner > p,
-.case-next h2,
-.case-next h2 em,
-.case-next a,
-.case-next a span {
-  color: var(--clay-text);
+.case-next a {
+  color: var(--paper);
+  border-bottom-color: var(--jl-color-accent-soft);
 }
 
-.case-next a {
-  border-bottom-color: var(--clay-text);
+.case-next a span {
+  color: var(--jl-color-accent-soft);
 }
 
 /* Keep process stages open and separated, not enclosed as cards. */
