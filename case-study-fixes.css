@@ -26,6 +26,22 @@
   overflow-wrap: anywhere;
 }
 
+/* Keep process stages open and separated, not enclosed as cards. */
+.process-list {
+  border: 0;
+}
+
+@media (hover: hover) {
+  .process-list li {
+    transition: none;
+  }
+
+  .process-list li:hover {
+    background-color: transparent;
+    transform: none;
+  }
+}
+
 @supports not (overflow: clip) {
   .case-hero {
     overflow: hidden;
