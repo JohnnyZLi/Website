@@ -62,23 +62,42 @@
   margin-top: 36px;
 }
 
-/* Present validation figures as open metrics with internal dividers only. */
+/* Keep validation compact: figures on the left, supporting evidence beside them. */
+.case-section[aria-labelledby="validation-heading"] .case-section-content {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+  align-items: center;
+  padding-top: 48px;
+}
+
 .metric-grid {
-  margin-top: -28px;
+  grid-column: 1 / span 8;
+  margin: 0;
   border-top: 0;
   border-bottom: 0;
 }
 
 .metric-grid div {
-  padding: 22px 24px 24px;
+  min-height: 164px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 22px 20px 24px;
+}
+
+.metric-grid strong {
+  font-size: clamp(2.8rem, 3.4vw, 4rem);
 }
 
 .metric-grid span {
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .validation-copy {
-  margin-top: 30px;
+  grid-column: 9 / -1;
+  width: auto;
+  margin: 0;
 }
 
 @media (hover: hover) {
@@ -93,6 +112,21 @@
   .metric-grid div:hover {
     background-color: transparent;
     transform: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .case-section[aria-labelledby="validation-heading"] .case-section-content {
+    display: block;
+  }
+
+  .metric-grid {
+    margin-top: -8px;
+  }
+
+  .validation-copy {
+    width: min(620px, 100%);
+    margin: 34px 0 0 auto;
   }
 }
 
@@ -117,7 +151,12 @@
     margin-top: 34px;
   }
 
+  .case-section[aria-labelledby="validation-heading"] .case-section-content {
+    padding-top: 48px;
+  }
+
   .metric-grid div {
+    min-height: 0;
     padding: 24px 0 26px;
   }
 
