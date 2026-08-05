@@ -6,8 +6,12 @@
   color: var(--clay);
 }
 
-.contact-title em {
+.contact-title {
   color: var(--clay);
+}
+
+.contact-title em {
+  color: var(--paper);
   font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
   font-style: italic;
   font-weight: 400;
