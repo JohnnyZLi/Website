@@ -73,7 +73,7 @@
       <section class="case-section shell" aria-labelledby="problem-heading">
         <div class="case-section-label"><span>01</span><h2 id="problem-heading">The problem</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">UDP provides datagrams, not reliable delivery, ordering, congestion control, or a completed-file guarantee.</p>
+          <p class="case-lead">UDP provides datagrams, <em>not reliable delivery</em>, ordering, congestion control, or a completed-file guarantee.</p>
           <div class="case-body-copy">
             <p>The application therefore has to define its own packet identity, acknowledgement behavior, retransmission policy, transfer completion, and file-reassembly rules.</p>
             <p>The server makes the failure path observable by independently dropping received DATA packets and transmitted acknowledgements at a configured rate.</p>
@@ -122,7 +122,7 @@
       <section class="case-section shell" aria-labelledby="evidence-heading">
         <div class="case-section-label"><span>04</span><h2 id="evidence-heading">Failure evidence</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Reliability is visible in the packet timeline rather than inferred from a successful exit code alone.</p>
+          <p class="case-lead">Reliability is <em>visible in the packet timeline</em> rather than inferred from a successful exit code alone.</p>
           <div class="case-body-copy">
             <p>The client writes RFC 3339 CSV events for every DATA transmission and acknowledgement, including the current base, next sequence number, and window boundary. The server separately records every deliberate DATA or ACK drop.</p>
             <p>A bundled Python tool converts those logs into a sequence-versus-time SVG. Retransmissions appear as repeated DATA points, while acknowledgements show when the send window can advance.</p>
@@ -148,7 +148,7 @@
       <section class="case-section case-section-last shell" aria-labelledby="limits-heading">
         <div class="case-section-label"><span>06</span><h2 id="limits-heading">Scope and provenance</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">This is an application protocol experiment, not a replacement for a production transport such as TCP or QUIC.</p>
+          <p class="case-lead">This is an application protocol experiment, <em>not a replacement for a production transport</em> such as TCP or QUIC.</p>
           <div class="case-body-copy">
             <p>The model uses a fixed retransmission policy and controlled packet loss. It does not implement congestion control, path-MTU discovery, cryptographic authentication, or Internet-scale fairness.</p>
             <p>The project originated in CSE 156/L at UC Santa Cruz in Winter 2025. After the original university-hosted source was lost, the published implementation was reconstructed from the surviving specification and expanded with integrity checks, automated tests, and clearer documentation.</p>
