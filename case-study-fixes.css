@@ -44,20 +44,55 @@
   margin-top: 14px;
 }
 
+/* Treat engineering decisions as an editorial grid, not hoverable cards. */
+.decision-grid {
+  margin-top: -28px;
+}
+
+.decision-grid article {
+  min-height: 205px;
+  padding: 26px 34px 30px;
+}
+
+.decision-grid article:nth-child(-n + 2) {
+  border-top: 0;
+}
+
+.decision-grid h3 {
+  margin-top: 36px;
+}
+
 @media (hover: hover) {
-  .process-list li {
+  .process-list li,
+  .decision-grid article {
     transition: none;
   }
 
-  .process-list li:hover {
+  .process-list li:hover,
+  .decision-grid article:hover {
     background-color: transparent;
     transform: none;
   }
 }
 
 @media (max-width: 560px) {
-  .process-list {
+  .process-list,
+  .decision-grid {
     margin-top: -8px;
+  }
+
+  .decision-grid article {
+    min-height: 0;
+    padding: 28px 0 34px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .decision-grid article:first-child {
+    border-top: 0;
+  }
+
+  .decision-grid h3 {
+    margin-top: 34px;
   }
 }
 
