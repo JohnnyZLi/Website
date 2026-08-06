@@ -24,6 +24,12 @@ requireFragments(report, [
   'report-action-primary jl-button jl-button--primary',
   'report-action-resource jl-button',
   'class="report-abstract-lede"',
+  'data-report-toc',
+  'data-report-toc-indicator',
+  'data-report-section-link',
+  'data-report-progress',
+  'data-report-progress-toggle',
+  'data-report-progress-menu',
   'class="report-heading-group"',
   '<section class="report-table-wrap jl-table-region"',
   '<caption class="report-table-caption">',
@@ -80,6 +86,10 @@ if ((report.match(/class="report-commit"/g) ?? []).length !== 4) fail("Project t
 requireFragments(styles, [
   "--report-text: var(--jl-color-text);",
   ".report-abstract-lede",
+  ".report-toc-indicator",
+  ".report-progress-controls",
+  ".report-progress-menu",
+  "@media (prefers-reduced-motion: reduce)",
   ".report-intro + .report-section",
   ".report-toc {",
   "scroll-margin-top: 110px;",
@@ -133,7 +143,14 @@ for (const brittleSelector of [
   if (actions.includes(brittleSelector)) fail(`Shared action styling still depends on a URL selector: ${brittleSelector}`);
 }
 
-if (!behavior.includes("window.print()")) fail("Technical report print behavior is missing.");
+requireFragments(behavior, [
+  "window.print()",
+  "IntersectionObserver",
+  "history.replaceState",
+  "aria-current', 'location'",
+  "data-report-progress-link",
+  "prefers-reduced-motion: reduce",
+], "Technical report behavior");
 requireFragments(workflow, [
   "runs-on: ubuntu-24.04",
   "poppler-utils",
@@ -144,6 +161,9 @@ requireFragments(workflow, [
 ], "Technical report workflow");
 requireFragments(visualAudit, [
   "compact report actions are not three full-width stacked rows",
+  "scroll-aware contents did not activate section 04",
+  "compact report progress menu",
+  "desktop contents indicator has no motion",
   "still requires hidden horizontal scrolling",
   "compact code panel",
   "print separates",

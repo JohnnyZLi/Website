@@ -3,47 +3,52 @@ name: Technical report audit
 on:
   pull_request:
     paths:
-      - ".github/workflows/technical-report-audit.yml"
-      - ".github/workflows/apply-report-scrollspy.yml"
+      - "projects/network-diagnostics-suite/report/**"
+      - "technical-report.css"
       - "technical-report.js"
+      - "project-actions.css"
+      - "scripts/validate-technical-report.mjs"
+      - "scripts/technical-report-visual-audit.mjs"
       - "scripts/technical-report-visual-baseline.json"
+      - ".github/workflows/technical-report-audit.yml"
+      - "package.json"
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  patch-scroll-navigation:
-    if: github.event.pull_request.head.ref == 'feat/technical-report-scrollspy'
+  validate:
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          ref: feat/technical-report-scrollspy
-          fetch-depth: 0
-      - name: Apply deterministic report patch
+          node-version: 24
+      - run: npm install --no-audit --no-fund
+      - run: npm install --no-save playwright@1.54.1
+      - run: npx playwright install --with-deps chromium
+      - name: Install PDF inspection tools
         run: |
-          git fetch origin main
-          python3 <<'PY'
-          from pathlib import Path
-
-          workflow = Path('.github/workflows/apply-report-scrollspy.yml').read_text()
-          start = "          python3 <<'PY'\n"
-          end = "\n          PY\n"
-          if start not in workflow or end not in workflow:
-              raise SystemExit('Scrollspy patch payload is missing')
-          payload = workflow.split(start, 1)[1].split(end, 1)[0]
-          payload = '\n'.join(line[10:] if line.startswith('          ') else line for line in payload.splitlines())
-          exact = "if report.count(old_toc) != 1:\n    raise SystemExit(\"Expected one canonical report contents block\")\nreport = report.replace(old_toc, new_toc)"
-          resilient = "import re\nreport, replaced = re.subn(r'        <aside class=\"report-toc\" id=\"contents\" aria-label=\"Report contents\">.*?        </aside>\\n', new_toc, report, count=1, flags=re.S)\nif replaced != 1:\n    raise SystemExit(\"Expected one canonical report contents block\")"
-          if exact not in payload:
-              raise SystemExit('Canonical contents replacement payload changed')
-          payload = payload.replace(exact, resilient)
-          exec(compile(payload, 'apply-report-scrollspy', 'exec'), {'__name__': '__main__'})
-          PY
-          git show origin/main:.github/workflows/technical-report-audit.yml > .github/workflows/technical-report-audit.yml
-          rm .github/workflows/apply-report-scrollspy.yml
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add .github/workflows/technical-report-audit.yml .github/workflows/apply-report-scrollspy.yml projects/network-diagnostics-suite/report/index.html technical-report.css scripts/technical-report-visual-audit.mjs scripts/validate-technical-report.mjs
-          git commit -m "Add scroll-aware report contents"
-          git push origin HEAD:feat/technical-report-scrollspy
+          sudo apt-get update
+          sudo apt-get install --yes poppler-utils
+      - run: npm run lint
+      - run: node scripts/validate-technical-report.mjs
+      - name: Start static site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/portfolio-report-server.log 2>&1 &
+          echo $! > /tmp/portfolio-report-server.pid
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:4173/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/portfolio-report-server.log
+          exit 1
+      - run: node scripts/technical-report-visual-audit.mjs
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: technical-report-visual-audit
+          path: technical-report-visual-audit
+          retention-days: 7

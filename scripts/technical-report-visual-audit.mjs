@@ -227,11 +227,78 @@ try {
       if (!sitesOpened || !sitesFocusRestored) problems.push("report Sites menu does not open and restore focus correctly");
     }
 
+    await page.locator('[data-report-section-link][href="#delivery-path"]').click();
+    await page.waitForTimeout(250);
+    const readingNavigation = await page.evaluate(() => {
+      const activeLink = document.querySelector('[data-report-section-link][aria-current="location"]');
+      const activeItem = activeLink?.closest('li');
+      const indicator = document.querySelector('[data-report-toc-indicator]');
+      const progress = document.querySelector('[data-report-progress]');
+      const progressFill = document.querySelector('[data-report-progress-fill]');
+      const currentSection = document.querySelector('#delivery-path');
+      const rect = (element) => {
+        const bounds = element?.getBoundingClientRect();
+        return bounds ? { top: bounds.top, bottom: bounds.bottom, left: bounds.left, height: bounds.height } : null;
+      };
+      return {
+        hash: location.hash,
+        activeHref: activeLink?.getAttribute('href') ?? null,
+        activeCurrent: activeLink?.getAttribute('aria-current') ?? null,
+        activeItem: rect(activeItem),
+        indicator: rect(indicator),
+        indicatorOpacity: indicator ? getComputedStyle(indicator).opacity : null,
+        indicatorTransition: indicator ? getComputedStyle(indicator).transitionDuration : null,
+        progressDisplay: progress ? getComputedStyle(progress).display : null,
+        progressPosition: progress ? getComputedStyle(progress).position : null,
+        progressCounter: document.querySelector('[data-report-progress-counter]')?.textContent.trim() ?? null,
+        progressTitle: document.querySelector('[data-report-progress-title]')?.textContent.trim() ?? null,
+        previousHref: document.querySelector('[data-report-progress-previous]')?.getAttribute('href') ?? null,
+        nextHref: document.querySelector('[data-report-progress-next]')?.getAttribute('href') ?? null,
+        progressWidth: progressFill?.style.getPropertyValue('--report-progress') ?? null,
+        progressTransition: progressFill ? getComputedStyle(progressFill).transitionDuration : null,
+        progressRect: rect(progress),
+        sectionRect: rect(currentSection),
+      };
+    });
+    if (readingNavigation.hash !== '#delivery-path' || readingNavigation.activeHref !== '#delivery-path' || readingNavigation.activeCurrent !== 'location') problems.push('scroll-aware contents did not activate section 04 or update the hash');
+    if (viewport.width > 820) {
+      if (readingNavigation.progressDisplay !== 'none') problems.push('compact report progress is visible on desktop');
+      if (readingNavigation.indicatorOpacity !== '1' || !readingNavigation.indicator || !readingNavigation.activeItem) problems.push('desktop report contents indicator is not visible');
+      else if (Math.abs(readingNavigation.indicator.top - readingNavigation.activeItem.top) > 1 || Math.abs(readingNavigation.indicator.height - readingNavigation.activeItem.height) > 1) problems.push('desktop report contents indicator is not aligned with the active row');
+    } else {
+      if (readingNavigation.progressDisplay === 'none' || readingNavigation.progressPosition !== 'sticky') problems.push('compact report progress is not sticky and visible while reading');
+      if (readingNavigation.progressCounter !== '04 / 13' || readingNavigation.progressTitle !== 'Finding the download bottleneck') problems.push('compact report progress does not identify the active section');
+      if (readingNavigation.previousHref !== '#mlab' || readingNavigation.nextHref !== '#measurement-plan' || readingNavigation.progressWidth !== '30.76923076923077%') problems.push('compact report progress controls do not match section 04');
+      if (readingNavigation.progressRect && readingNavigation.sectionRect && readingNavigation.sectionRect.top < readingNavigation.progressRect.bottom + 6) problems.push('compact report section lands beneath the sticky progress control');
+      await page.locator('[data-report-progress-toggle]').click();
+      const progressMenuOpened = await page.locator('[data-report-progress-menu]').isVisible();
+      const progressMenuCurrent = await page.locator('[data-report-progress-link][aria-current="location"]').getAttribute('href');
+      await page.keyboard.press('Escape');
+      const progressMenuFocusRestored = await page.evaluate(() => document.activeElement?.hasAttribute('data-report-progress-toggle') ?? false);
+      if (!progressMenuOpened || progressMenuCurrent !== '#delivery-path' || !progressMenuFocusRestored) problems.push('compact report progress menu does not expose the active section and restore focus');
+    }
+    if (readingNavigation.indicatorTransition?.split(',').some((duration) => duration.trim() !== '0s') || readingNavigation.progressTransition?.split(',').some((duration) => duration.trim() !== '0s')) problems.push('reduced-motion report navigation still animates');
+
     const screenshotHash = await fileHash(screenshotPath);
     if (baseline.hashes[name] && baseline.hashes[name] !== screenshotHash) problems.push(`visual baseline changed: ${screenshotHash}`);
     results.push({ name, viewport, ...metrics, screenshotHash, problems });
     await context.close();
   }
+
+  const motionContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: "no-preference" });
+  const motionPage = await motionContext.newPage();
+  await motionPage.goto(`${baseUrl}${route}`, { waitUntil: "networkidle" });
+  await motionPage.locator('[data-report-section-link][href="#delivery-path"]').click();
+  await motionPage.waitForTimeout(80);
+  const motionMetrics = await motionPage.evaluate(() => ({
+    indicatorDuration: getComputedStyle(document.querySelector('[data-report-toc-indicator]')).transitionDuration,
+    linkDuration: getComputedStyle(document.querySelector('[data-report-section-link][aria-current="location"]')).transitionDuration,
+  }));
+  const motionProblems = [];
+  if (!motionMetrics.indicatorDuration.split(',').some((duration) => Number.parseFloat(duration) > 0)) motionProblems.push('desktop contents indicator has no motion when motion is allowed');
+  if (!motionMetrics.linkDuration.split(',').some((duration) => Number.parseFloat(duration) > 0)) motionProblems.push('active contents link has no transition when motion is allowed');
+  results.push({ name: 'motion', ...motionMetrics, problems: motionProblems });
+  await motionContext.close();
 
   const printContext = await browser.newContext({ viewport: { width: 816, height: 1056 }, reducedMotion: "reduce" });
   const printPage = await printContext.newPage();
