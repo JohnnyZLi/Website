@@ -1,0 +1,104 @@
+name: Fix report principle boundary
+
+on:
+  push:
+    branches:
+      - fix/report-principle-boundary
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: fix/report-principle-boundary
+      - name: Remove duplicate boundary and add regression coverage
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          css_path = Path("technical-report.css")
+          css = css_path.read_text()
+          old_css = '''.report-principle {
+            margin-top: 46px;
+            padding: 30px 0;
+            border-top: 2px solid var(--jl-color-accent);
+            border-bottom: 1px solid var(--rule);
+          }
+          '''.replace('          ', '')
+          new_css = '''.report-principle {
+            margin-top: 46px;
+            padding: 30px 0;
+            border-top: 2px solid var(--jl-color-accent);
+          }
+          '''.replace('          ', '')
+          if old_css not in css:
+              raise SystemExit("Report principle boundary block did not match")
+          css_path.write_text(css.replace(old_css, new_css))
+
+          audit_path = Path("scripts/technical-report-visual-audit.mjs")
+          audit = audit_path.read_text()
+          old_nodes = '''      const metadata = document.querySelector(".report-meta");
+                const timeline = document.querySelector(".report-timeline article");
+                const reportGrids ='''.replace('                ', '      ')
+          new_nodes = '''      const metadata = document.querySelector(".report-meta");
+                const timeline = document.querySelector(".report-timeline article");
+                const principle = document.querySelector(".report-principle");
+                const firstSection = document.querySelector(".report-section");
+                const reportGrids ='''.replace('                ', '      ')
+          if old_nodes not in audit:
+              raise SystemExit("Visual audit node setup did not match")
+          audit = audit.replace(old_nodes, new_nodes)
+
+          old_metrics = '''        timelineDisplay: timeline ? getComputedStyle(timeline).display : null,
+                reportGrids,
+          '''.replace('                ', '        ')
+          new_metrics = '''        timelineDisplay: timeline ? getComputedStyle(timeline).display : null,
+                principleBottomBorder: principle ? Number.parseFloat(getComputedStyle(principle).borderBottomWidth) : null,
+                firstSectionTopBorder: firstSection ? Number.parseFloat(getComputedStyle(firstSection).borderTopWidth) : null,
+                reportGrids,
+          '''.replace('                ', '        ')
+          if old_metrics not in audit:
+              raise SystemExit("Visual audit metric block did not match")
+          audit = audit.replace(old_metrics, new_metrics)
+
+          old_checks = '''    const expectedTimeline = viewport.width <= 420 ? "block" : "grid";
+              if (metrics.timelineDisplay !== expectedTimeline) problems.push(`timeline display is ${metrics.timelineDisplay}, expected ${expectedTimeline}`);
+              for (const [gridIndex, grid] of metrics.reportGrids.entries()) {
+          '''.replace('              ', '    ')
+          new_checks = '''    const expectedTimeline = viewport.width <= 420 ? "block" : "grid";
+              if (metrics.timelineDisplay !== expectedTimeline) problems.push(`timeline display is ${metrics.timelineDisplay}, expected ${expectedTimeline}`);
+              if (metrics.principleBottomBorder !== 0) problems.push(`report principle adds a duplicate bottom rule at ${metrics.principleBottomBorder}px`);
+              if (metrics.firstSectionTopBorder === null || metrics.firstSectionTopBorder < 1) problems.push("first report section is missing its boundary rule");
+              for (const [gridIndex, grid] of metrics.reportGrids.entries()) {
+          '''.replace('              ', '    ')
+          if old_checks not in audit:
+              raise SystemExit("Visual audit boundary check anchor did not match")
+          audit_path.write_text(audit.replace(old_checks, new_checks))
+
+          validator_path = Path("scripts/validate-technical-report.mjs")
+          validator = validator_path.read_text()
+          old_validator = '''if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");
+
+          const reportGridBlock ='''
+          new_validator = '''if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");
+
+          const reportPrincipleBlock = styles.match(/\\.report-principle \\{([^}]*)\\}/)?.[1] ?? "";
+          if (/border-bottom\\s*:/.test(reportPrincipleBlock)) fail("Report principle must not duplicate the following section boundary.");
+          if (!/border-top\\s*:/.test(reportPrincipleBlock)) fail("Report principle must retain its accent top rule.");
+
+          const reportGridBlock ='''
+          if old_validator not in validator:
+              raise SystemExit("Static validator anchor did not match")
+          validator_path.write_text(validator.replace(old_validator, new_validator))
+          PY
+          rm .github/workflows/fix-report-principle-boundary.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add technical-report.css scripts/technical-report-visual-audit.mjs scripts/validate-technical-report.mjs .github/workflows/fix-report-principle-boundary.yml
+          git commit -m "Remove duplicate report principle boundary"
+          git push origin HEAD:fix/report-principle-boundary
