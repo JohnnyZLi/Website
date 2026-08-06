@@ -9,6 +9,7 @@ on:
       - "project-actions.css"
       - "scripts/validate-technical-report.mjs"
       - "scripts/technical-report-visual-audit.mjs"
+      - "scripts/capture-technical-report-navigation.mjs"
       - "scripts/technical-report-visual-baseline.json"
       - ".github/workflows/technical-report-audit.yml"
       - "package.json"
@@ -46,6 +47,7 @@ jobs:
           cat /tmp/portfolio-report-server.log
           exit 1
       - run: node scripts/technical-report-visual-audit.mjs
+      - run: node scripts/capture-technical-report-navigation.mjs
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
