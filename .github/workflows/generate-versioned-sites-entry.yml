@@ -36,6 +36,10 @@ jobs:
                   'site-switcher.js"></script>',
                   f'site-switcher.js?v={version}"></script>',
               )
+              updated = updated.replace(
+                  "Automation &amp development",
+                  "Automation &amp; development",
+              )
               if updated != text:
                   path.write_text(updated)
                   changed.append(str(path))
@@ -51,7 +55,7 @@ jobs:
               changed.append(str(validator))
 
           if not changed:
-              raise SystemExit("No unversioned Sites controller references were found.")
+              raise SystemExit("No Sites entry corrections were required.")
 
           print("Updated:")
           print("\n".join(changed))
@@ -76,4 +80,4 @@ jobs:
             --base main \
             --head fix/versioned-sites-controller-entry \
             --title "Version the Sites controller for GitHub Pages" \
-            --body "Versions the outer site-switcher module URL on every portfolio route, updates the integration contract, removes the ineffective Cloudflare Pages headers file, and removes this one-time generator. The normal merge commit will force GitHub Pages to publish the corrected entry points."
+            --body "Versions the outer site-switcher module URL on every portfolio route, updates the integration contract, removes the ineffective Cloudflare Pages headers file, normalizes the homepage entity, and removes this one-time generator. The normal merge commit will force GitHub Pages to publish the corrected entry points."
