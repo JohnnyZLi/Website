@@ -27,6 +27,7 @@ const source = await read("assets/design-system/SOURCE.md");
 
 const expectedVersion = String(lock.version ?? "");
 const expectedCommit = String(lock.sourceCommit ?? "");
+const expectedSiteSwitcherEntry = `<script type="module" src="site-switcher.js?v=${expectedVersion}"></script>`;
 const fail = (message) => { throw new Error(message); };
 const requireFragments = (content, fragments, label) => {
   for (const fragment of fragments) if (!content.includes(fragment)) fail(`${label} is incomplete: ${fragment}.`);
@@ -85,7 +86,7 @@ requireFragments(index, [
   'aria-controls="portfolio-navigation"', 'aria-controls="owned-sites-menu"',
   'id="owned-sites-menu"', "data-header-menu", "data-header-menu-button",
   "data-site-switcher", "data-site-switcher-button", "data-site-switcher-menu",
-  '<script type="module" src="site-switcher.js"></script>',
+  expectedSiteSwitcherEntry,
   '<script type="module" src="portfolio-navigation.js"></script>',
 ], "Portfolio shared header");
 for (const legacy of ["site-header shell", "wordmark", "site-header__actions", "primary-nav", "portfolio-nav-toggle"]) {
