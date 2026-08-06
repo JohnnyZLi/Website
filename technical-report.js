@@ -73,17 +73,22 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
       const transitionOverride = reducedMotion.matches ? 'transition: none !important;' : '';
       if (dynamicStyleSheet) {
         dynamicStyleSheet.replaceSync(`
-          [data-report-toc-indicator] {
+          .report-toc-indicator[data-report-toc-indicator] {
             --report-toc-indicator-y: ${indicatorY};
             --report-toc-indicator-height: ${indicatorHeight};
             ${transitionOverride}
           }
-          [data-report-progress-fill] {
+          [data-report-progress-fill][data-report-progress-fill] {
             --report-progress: ${progressValue};
             ${transitionOverride}
           }
+          @media (prefers-reduced-motion: reduce) {
+            .report-toc-indicator[data-report-toc-indicator],
+            [data-report-progress-fill][data-report-progress-fill] {
+              transition: none !important;
+            }
+          }
         `);
-        if (activeIndex >= 0) progressFill.style.setProperty('--report-progress', progressValue);
         return;
       }
 

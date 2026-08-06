@@ -34,7 +34,7 @@ body {
 :focus-visible {
   outline: 2px solid var(--jl-color-focus-ring);
   outline-offset: 3px;
-  box-shadow: 0 0 0 5px var(--jl-color-focus-gap-light);
+  box-shadow: 0 0 0 5px var(--_jl-focus-gap-color);
 }
 
 .contact-section {
@@ -81,4 +81,10 @@ body {
   :root {
     --shell: calc(100% - 32px);
   }
+}
+
+:root[data-theme="dark"] .contact-section,
+:root[data-theme="dark"] .case-next,
+:root[data-theme="dark"] .output-grid pre {
+  --_jl-focus-gap-color: var(--jl-color-focus-gap-light);
 }

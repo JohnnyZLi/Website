@@ -8,6 +8,8 @@ const motion = await read("motion.js");
 const navigation = await read("portfolio-navigation.js");
 const switcher = await read("site-switcher.js");
 const siteControls = await read("assets/design-system/site-controls.js");
+const themeBootstrap = await read("assets/design-system/theme-bootstrap.js");
+const themeStyles = await read("assets/design-system/theme-control.css");
 const primitives = await read("assets/design-system/content-primitives.css");
 const caseStyles = await read("case-study.css");
 const caseFixes = await read("case-study-fixes.css");
@@ -48,7 +50,7 @@ if (packageMetadata.scripts?.["design-system:conformance"] !== "node node_module
 if (conformanceManifest.schemaVersion !== "1.0.0" || conformanceManifest.product !== "portfolio") {
   fail("Portfolio conformance manifest metadata drifted.");
 }
-for (const id of ["DS-DIST-001", "DS-HEADER-001", "DS-SITES-002", "DS-RESP-001", "DS-TEST-001"]) {
+for (const id of ["DS-DIST-001", "DS-HEADER-001", "DS-SITES-002", "DS-RESP-001", "DS-TEST-001", "DS-THEME-001"]) {
   if (!conformanceManifest.rules?.[id]) fail(`Portfolio conformance manifest is missing ${id}.`);
 }
 
@@ -56,6 +58,7 @@ const requiredStyles = [
   "assets/design-system/tokens.css",
   "assets/design-system/foundations.css",
   "assets/design-system/site-identity.css",
+  "assets/design-system/theme-control.css",
   "styles.css",
   "knowledge.css",
   "terracotta-accent.css",
@@ -73,6 +76,8 @@ if (!adapter.startsWith('@import url("assets/design-system/content-primitives.cs
 }
 
 requireFragments(index, [
+  '<script src="assets/design-system/theme-bootstrap.js"></script>', 'href="assets/design-system/theme-control.css"',
+  'data-theme-light="#f2efe8"', 'data-theme-dark="#171714"',
   'class="jl-global-header"', 'class="jl-global-header__inner"', 'class="jl-site-identity"',
   'class="jl-site-identity__owner"', 'class="jl-site-identity__product"',
   'class="jl-global-header__nav jl-header-menu"', 'class="jl-global-header__actions"',
@@ -88,13 +93,15 @@ for (const legacy of ["site-header shell", "wordmark", "site-header__actions", "
 }
 
 requireFragments(siteControls, [
-  "export const OWNED_SITES", 'id: "portfolio"', 'id: "network"', 'id: "rolepacket"',
+  "export const OWNED_SITES", "export const THEME_PREFERENCES", "export function installThemeControl", 'id: "portfolio"', 'id: "network"', 'id: "rolepacket"',
   'href: "https://johnnyli.dev"', 'href: "https://network.johnnyli.dev"',
   'href: "https://rolepacket.johnnyli.dev"', "export function installSiteSwitcher",
   "export function installHeaderMenu", 'event.key === "ArrowDown"', 'event.key === "ArrowUp"',
   'event.key === "Home"', 'event.key === "End"', 'event.key === "Escape"',
   'document.addEventListener("pointerdown"', 'closeMediaQuery: "(min-width: 901px)"',
 ], "Shared site-control contract");
+requireFragments(themeBootstrap, ["prefers-color-scheme: dark", "data-theme", "data-theme-preference", "Domain=.johnnyli.dev", "beforeprint", "afterprint", "theme-color"], "Shared pre-paint theme contract");
+requireFragments(themeStyles, [".jl-theme-menu-item", ".jl-theme-options", "aria-pressed", "@media (forced-colors: active)"], "Shared appearance-control styles");
 requireFragments(switcher, [
   'import { installSiteSwitcher } from "./assets/design-system/site-controls.js"',
   'document.querySelectorAll("[data-site-switcher]")', 'currentSite: "portfolio"', "populate: true",
@@ -155,7 +162,7 @@ requireFragments(updater, [
   'resolveConsumerRelease({ packageJson: "package.json" })', "release.version", "release.sourceCommit",
 ], "Shared design-system release resolver");
 requireFragments(sync, [
-  'readFile(resolve("design-system.lock.json")', 'styles/content-primitives.css',
+  'readFile(resolve("design-system.lock.json")', 'styles/content-primitives.css', 'styles/theme-control.css', 'scripts/theme-bootstrap.js',
   'assets/design-system', "dependency.endsWith(`#${sourceCommit}`)",
 ], "Design-system synchronizer");
 requireFragments(syncWorkflow, [
@@ -175,7 +182,9 @@ for (const page of projectPages) {
   const html = await readFile(resolve(projectDirectory, page), "utf8");
   requireFragments(html, [
     'href="../assets/design-system/tokens.css"', 'href="../assets/design-system/foundations.css"',
-    'href="../assets/design-system/site-identity.css"', 'href="../design-system-migration.css"',
+    'href="../assets/design-system/site-identity.css"', 'href="../assets/design-system/theme-control.css"',
+    '<script src="../assets/design-system/theme-bootstrap.js"></script>', 'data-theme-light=', 'data-theme-dark=',
+    'href="../design-system-migration.css"',
     'href="../case-study-fixes.css"', 'class="jl-global-header"', 'class="jl-global-header__inner"',
     'class="jl-global-header__nav jl-header-menu"', 'class="jl-header-menu-toggle"',
     "data-header-menu", "data-header-menu-button", "data-site-switcher", "data-site-switcher-button",
