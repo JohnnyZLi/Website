@@ -1,0 +1,32 @@
+name: Production theme smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "site-switcher.js"
+      - "assets/design-system/site-controls.js"
+      - "assets/design-system/theme-bootstrap.js"
+      - "assets/design-system/theme-control.css"
+      - "_headers"
+      - "scripts/production-theme-smoke.mjs"
+      - ".github/workflows/production-theme-smoke.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production-menu:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm install --no-save playwright@1.54.1
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/production-theme-smoke.mjs
