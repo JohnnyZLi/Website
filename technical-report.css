@@ -428,6 +428,14 @@ body {
   background: var(--jl-color-accent);
 }
 
+.bar-fill-direct {
+  width: 100%;
+}
+
+.bar-fill-worker {
+  width: 58.3%;
+}
+
 .bar-row:last-child .bar-track span {
   background: var(--jl-color-accent-decorative);
 }
