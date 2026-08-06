@@ -1,13 +1,9 @@
 name: Generate versioned Sites entry
 
-# This one-time workflow is intentionally modified after landing so the
-# already-registered workflow receives a matching push event on main.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/generate-versioned-sites-entry.yml
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
 
 permissions:
   contents: write
