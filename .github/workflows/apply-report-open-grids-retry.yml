@@ -1,0 +1,89 @@
+name: Apply report open grids retry
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.head_ref == 'fix/report-open-grids' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: fix/report-open-grids
+      - name: Apply internal-only grid dividers
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('technical-report.css')
+          css = path.read_text()
+
+          css, desktop_count = re.subn(
+              r'''\.report-grid \{\n  display: grid;\n  grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);\n  margin-top: 48px;\n  border-top: 1px solid var\(--rule\);\n\}\n\n\.report-grid article \{\n  min-width: 0;\n  padding: 26px 28px 30px;\n  border-bottom: 1px solid var\(--rule\);\n\}\n\n\.report-grid article:nth-child\(odd\) \{\n  border-right: 1px solid var\(--rule\);\n\}''',
+              '''.report-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-top: 48px;
+          }
+
+          .report-grid article {
+            min-width: 0;
+            padding: 26px 28px 30px;
+          }
+
+          .report-grid article:nth-child(odd) {
+            border-right: 1px solid var(--rule);
+          }
+
+          .report-grid article:nth-child(n + 3) {
+            border-top: 1px solid var(--rule);
+          }'''.replace('          ', ''),
+              css,
+              count=1,
+          )
+          if desktop_count != 1:
+              raise SystemExit(f'Expected one desktop grid replacement, found {desktop_count}')
+
+          css, mobile_count = re.subn(
+              r'''  \.report-grid article \{\n    padding: 25px 0 28px;\n    border-right: 0;\n  \}''',
+              '''  .report-grid article {
+            padding: 25px 0 28px;
+            border-top: 0;
+            border-right: 0;
+          }
+
+          .report-grid article + article {
+            border-top: 1px solid var(--rule);
+          }'''.replace('          ', ''),
+              css,
+              count=1,
+          )
+          if mobile_count != 1:
+              raise SystemExit(f'Expected one mobile grid replacement, found {mobile_count}')
+
+          if 'border-top: 1px solid var(--rule);\n}\n\n.report-grid article {' in css:
+              raise SystemExit('Outer grid top rule remains')
+          if 'padding: 26px 28px 30px;\n  border-bottom:' in css:
+              raise SystemExit('Outer grid bottom rules remain')
+          if '.report-grid article:nth-child(n + 3)' not in css:
+              raise SystemExit('Desktop internal row divider is missing')
+          if '.report-grid article + article' not in css:
+              raise SystemExit('Mobile internal dividers are missing')
+
+          path.write_text(css)
+          PY
+          rm -f .github/workflows/apply-report-open-grids.yml
+          rm -f .github/workflows/apply-report-open-grids-pr.yml
+          rm -f .github/workflows/apply-report-open-grids-retry.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add technical-report.css .github/workflows/apply-report-open-grids.yml .github/workflows/apply-report-open-grids-pr.yml .github/workflows/apply-report-open-grids-retry.yml
+          git commit -m "Use internal dividers for report grids"
+          git push origin HEAD:fix/report-open-grids
