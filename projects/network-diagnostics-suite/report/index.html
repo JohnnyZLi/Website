@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A technical report on how Network Diagnostics Suite evolved from a browser speed test into a shared browser, desktop, and command-line diagnostic system.">
+    <meta name="theme-color" content="#f2efe8">
+    <meta property="og:title" content="Network Diagnostics Suite Technical Report — Johnny Li">
+    <meta property="og:description" content="Measurement methodology, M-Lab benchmarking, transport investigation, native architecture, report compatibility, privacy, and validation.">
+    <meta property="og:type" content="article">
+    <title>Network Diagnostics Suite Technical Report — Johnny Li</title>
+    <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../../assets/design-system/tokens.css">
+    <link rel="stylesheet" href="../../../assets/design-system/foundations.css">
+    <link rel="stylesheet" href="../../../assets/design-system/site-identity.css">
+    <link rel="stylesheet" href="../../../styles.css">
+    <link rel="stylesheet" href="../../../design-system-migration.css">
+    <style>
+      :root { --report-text: #3f3d38; --report-rail: 252px; }
+      body { color: var(--ink); }
+      .report-header { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(14px); }
+      .report-hero { overflow: clip; position: relative; isolation: isolate; padding: clamp(64px, 7vw, 108px) 0 78px; }
+      .report-hero::before { width: min(68vw, 920px); aspect-ratio: 1; position: absolute; z-index: -1; top: -48%; right: 0; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--clay-soft) 32%, transparent), color-mix(in srgb, var(--clay) 9%, transparent) 40%, transparent 70%); content: ""; }
+      .report-breadcrumb { display: inline-flex; gap: 10px; align-items: center; color: var(--muted); font-size: .82rem; }
+      .report-breadcrumb span { color: var(--clay); }
+      .report-kicker { margin: 42px 0 0; color: var(--clay); font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+      .report-hero-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; align-items: end; margin-top: 34px; }
+      .report-hero h1 { grid-column: 1 / span 8; max-width: 980px; margin: 0; font-size: clamp(4rem, 7.3vw, 7rem); font-weight: 400; letter-spacing: -.067em; line-height: .91; }
+      .report-hero h1 em { color: var(--clay-text); font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-weight: 400; }
+      .report-summary { grid-column: 9 / -1; padding-bottom: 8px; }
+      .report-summary > p { margin: 0; color: var(--report-text); font-size: 1.12rem; line-height: 1.55; }
+      .report-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+      .report-action { min-height: 46px; display: inline-flex; gap: 9px; align-items: center; justify-content: center; padding: 0 17px; border: 1px solid var(--rule); border-radius: 6px; background: transparent; color: var(--ink); font: inherit; font-size: .88rem; font-weight: 650; cursor: pointer; }
+      .report-action-primary { border-color: var(--jl-color-accent); background: var(--jl-color-accent); color: var(--jl-color-on-accent); }
+      .report-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 74px; padding-top: 24px; border-top: 1px solid var(--rule); text-align: center; }
+      .report-meta div { min-width: 0; }
+      .report-meta dt { color: var(--muted); font-size: .65rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+      .report-meta dd { margin: 9px 0 0; font-size: .88rem; line-height: 1.4; }
+      .report-layout { display: grid; grid-template-columns: var(--report-rail) minmax(0, 1fr); gap: clamp(48px, 7vw, 110px); align-items: start; padding: 70px 0 130px; border-top: 1px solid var(--rule); }
+      .report-toc { position: sticky; top: 116px; }
+      .report-toc p { margin: 0 0 20px; color: var(--muted); font-size: .66rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+      .report-toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+      .report-toc li { counter-increment: toc; border-top: 1px solid var(--rule); }
+      .report-toc li:last-child { border-bottom: 1px solid var(--rule); }
+      .report-toc a { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 12px 0; color: var(--muted); font-size: .76rem; line-height: 1.4; }
+      .report-toc a::before { color: var(--clay); content: counter(toc, decimal-leading-zero); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .68rem; }
+      .report-article { min-width: 0; }
+      .report-intro { padding-bottom: 84px; }
+      .report-intro h2, .report-section h2 { margin: 0; font-size: clamp(2.5rem, 4.7vw, 4.7rem); font-weight: 430; letter-spacing: -.055em; line-height: .98; }
+      .report-intro > p { max-width: 820px; margin: 36px 0 0; color: var(--report-text); font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: clamp(1.55rem, 2.5vw, 2.35rem); letter-spacing: -.035em; line-height: 1.22; }
+      .report-principle { margin-top: 46px; padding: 30px 0; border-top: 2px solid var(--clay); border-bottom: 1px solid var(--rule); }
+      .report-principle strong { display: block; max-width: 760px; font-size: clamp(1.5rem, 2.6vw, 2.45rem); font-weight: 480; letter-spacing: -.04em; line-height: 1.16; }
+      .report-principle span { display: block; margin-top: 14px; color: var(--muted); font-size: .83rem; line-height: 1.55; }
+      .report-section { scroll-margin-top: 110px; padding: 86px 0 96px; border-top: 1px solid var(--rule); }
+      .report-number { margin: 0 0 24px; color: var(--clay); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .73rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+      .report-lede { max-width: 820px; margin: 34px 0 0; font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: clamp(1.55rem, 2.5vw, 2.35rem); letter-spacing: -.035em; line-height: 1.2; }
+      .report-lede em { color: var(--clay-text); }
+      .report-prose { max-width: 820px; margin-top: 38px; }
+      .report-prose p { margin: 0; color: var(--report-text); font-size: 1rem; line-height: 1.72; }
+      .report-prose p + p { margin-top: 23px; }
+      .report-prose strong { color: var(--ink); }
+      .report-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 48px; border-top: 1px solid var(--rule); }
+      .report-grid article { min-width: 0; padding: 26px 28px 30px; border-bottom: 1px solid var(--rule); }
+      .report-grid article:nth-child(odd) { border-right: 1px solid var(--rule); }
+      .report-grid .label { margin: 0; color: var(--clay); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; font-weight: 700; text-transform: uppercase; }
+      .report-grid h3 { margin: 30px 0 0; font-size: 1.25rem; font-weight: 560; letter-spacing: -.035em; }
+      .report-grid article > p:last-child { margin: 14px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.58; }
+      .report-table-wrap { overflow-x: auto; margin-top: 46px; }
+      .report-table { width: 100%; min-width: 670px; border-collapse: collapse; font-size: .84rem; line-height: 1.5; }
+      .report-table th, .report-table td { padding: 15px 17px; border-top: 1px solid var(--rule); vertical-align: top; text-align: left; }
+      .report-table thead th { color: var(--muted); font-size: .65rem; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
+      .report-table tbody th { width: 22%; font-weight: 700; }
+      .report-note { margin: 34px 0 0; padding-left: 18px; border-left: 3px solid var(--clay-soft); color: var(--muted); font-size: .88rem; line-height: 1.65; }
+      .report-bars { margin-top: 46px; padding: 28px; border: 1px solid var(--rule); }
+      .bar-row { display: grid; grid-template-columns: minmax(180px, .8fr) minmax(220px, 1.4fr); gap: 24px; align-items: center; }
+      .bar-row + .bar-row { margin-top: 25px; }
+      .bar-row strong { display: block; font-size: .98rem; }
+      .bar-row small { display: block; margin-top: 5px; color: var(--muted); }
+      .bar-track { height: 18px; background: rgba(23, 23, 20, .08); }
+      .bar-track span { display: block; height: 100%; background: var(--jl-color-accent); }
+      .bar-row:last-child .bar-track span { background: var(--jl-color-accent-soft); }
+      .report-timeline { margin-top: 48px; border-top: 1px solid var(--rule); }
+      .report-timeline article { display: grid; grid-template-columns: 92px 1fr; gap: 22px; padding: 22px 0 24px; border-bottom: 1px solid var(--rule); }
+      .report-timeline time { color: var(--clay); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .72rem; font-weight: 700; }
+      .report-timeline h3 { margin: -3px 0 0; font-size: 1.08rem; }
+      .report-timeline p { margin: 9px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.55; }
+      .report-code { overflow-x: auto; margin: 48px 0 0; padding: 28px; background: var(--ink); color: var(--paper); box-shadow: inset 5px 0 0 var(--jl-color-accent); font: .8rem/1.65 ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .report-quote { margin: 52px 0 0; padding: 32px 0 0; border-top: 2px solid var(--clay); font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: clamp(1.7rem, 3vw, 2.65rem); letter-spacing: -.04em; line-height: 1.16; }
+      .references { margin: 46px 0 0; padding: 0; list-style: none; counter-reset: refs; }
+      .references li { counter-increment: refs; display: grid; grid-template-columns: 42px 1fr; gap: 18px; padding: 15px 0; border-top: 1px solid var(--rule); color: var(--report-text); font-size: .86rem; line-height: 1.55; }
+      .references li::before { color: var(--clay); content: counter(refs, decimal-leading-zero); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; font-weight: 700; }
+      .references li:last-child { border-bottom: 1px solid var(--rule); }
+      .references a { border-bottom: 1px solid var(--clay-soft); }
+      .report-ending { padding: 88px 0 38px; background: var(--ink); color: var(--paper); }
+      .report-ending p { margin: 0; color: var(--jl-color-accent-soft); font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+      .report-ending h2 { max-width: 1000px; margin: 45px 0 65px; color: var(--paper); font-size: clamp(3.3rem, 6.4vw, 6.2rem); font-weight: 400; letter-spacing: -.06em; line-height: .94; }
+      .report-ending h2 em { color: var(--clay-text); font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-weight: 400; }
+      .report-ending a { display: inline-flex; gap: 10px; padding-bottom: 5px; border-bottom: 1px solid var(--clay-soft); }
+      .report-ending a span { color: var(--clay-soft); }
+      @media (max-width: 1050px) { :root { --report-rail: 210px; } .report-hero-grid { display: block; } .report-summary { max-width: 600px; margin: 48px 0 0 auto; } }
+      @media (max-width: 820px) { .report-layout { display: block; } .report-toc { position: static; margin-bottom: 70px; } .report-toc ol { columns: 2; column-gap: 28px; } .report-toc li { break-inside: avoid; } }
+      @media (max-width: 600px) { .report-hero { padding-top: 50px; } .report-hero h1 { font-size: clamp(3.2rem, 14vw, 4.7rem); } .report-summary { margin-top: 38px; } .report-meta { grid-template-columns: 1fr 1fr; gap: 26px 18px; } .report-toc ol { columns: 1; } .report-section { padding: 72px 0 80px; } .report-grid { display: block; } .report-grid article { padding: 25px 0 28px; border-right: 0 !important; } .bar-row { grid-template-columns: 1fr; gap: 12px; } .report-timeline article { grid-template-columns: 70px 1fr; } }
+      @media print {
+        @page { size: Letter; margin: .65in .7in .72in; }
+        :root { --paper: #fff; --ink: #171714; --report-text: #35332f; --muted: #625e57; --rule: rgba(23,23,20,.25); --clay: #8f4d39; --clay-text: #8f4d39; --clay-soft: #c89d87; }
+        body { overflow: visible; background: #fff; font-family: Arial, Helvetica, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .report-header, .report-breadcrumb, .report-actions, .report-toc, .report-ending, script { display: none !important; }
+        .shell, .report-layout { width: auto; max-width: none; margin: 0; }
+        .report-hero { overflow: visible; padding: 0 0 .35in; border-bottom: 1px solid var(--rule); }
+        .report-hero::before { display: none; }
+        .report-kicker { margin-top: 0; }
+        .report-hero-grid { display: block; margin-top: .27in; }
+        .report-hero h1 { max-width: 7.2in; font-size: 38pt; line-height: .96; }
+        .report-summary { max-width: 6.5in; margin: .27in 0 0; padding: 0; }
+        .report-summary > p { font-size: 11pt; line-height: 1.48; }
+        .report-meta { margin-top: .34in; padding-top: .18in; }
+        .report-meta dt { font-size: 6.5pt; } .report-meta dd { font-size: 8.3pt; }
+        .report-layout { display: block; padding: 0; border-top: 0; }
+        .report-intro { padding: .46in 0 .5in; }
+        .report-section { padding: .44in 0 .5in; break-before: page; }
+        .report-number { break-after: avoid; margin-bottom: .15in; font-size: 7pt; }
+        .report-intro h2, .report-section h2 { font-size: 25pt; line-height: 1; }
+        .report-intro > p, .report-lede { margin-top: .28in; font-size: 15.5pt; }
+        .report-prose { max-width: none; margin-top: .26in; }
+        .report-prose p { font-size: 9.2pt; line-height: 1.58; }
+        .report-prose p + p { margin-top: .14in; }
+        .report-principle, .report-grid, .report-table-wrap, .report-bars, .report-timeline, .report-code, .report-quote { break-inside: avoid; }
+        .report-principle { margin-top: .28in; padding: .18in 0; } .report-principle strong { font-size: 15pt; } .report-principle span, .report-note { font-size: 8pt; }
+        .report-grid { margin-top: .28in; } .report-grid article { padding: .14in; } .report-grid h3 { margin-top: .16in; font-size: 9pt; } .report-grid article > p:last-child { font-size: 7.3pt; }
+        .report-table { min-width: 0; font-size: 7.1pt; } .report-table th, .report-table td { padding: .08in .09in; }
+        .report-bars { margin-top: .28in; padding: .17in; } .bar-row strong { font-size: 8pt; } .bar-row small { font-size: 6.7pt; }
+        .report-timeline { margin-top: .28in; } .report-timeline article { padding: .12in 0; } .report-timeline h3 { font-size: 9pt; } .report-timeline p { font-size: 7pt; }
+        .report-code { margin-top: .28in; padding: .18in; font-size: 7pt; }
+        .report-quote { font-size: 16pt; }
+        .references li { font-size: 7.4pt; }
+        a { color: inherit; text-decoration: none; }
+        h2, h3 { break-after: avoid; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="jl-global-header report-header">
+      <div class="jl-global-header__inner">
+        <div class="jl-site-identity">
+          <a class="jl-site-identity__owner" href="../../../index.html">Johnny Li</a>
+          <span class="jl-site-identity__separator" aria-hidden="true">/</span>
+          <a class="jl-site-identity__product" href="../../../index.html" aria-current="page">Portfolio</a>
+        </div>
+        <nav class="jl-global-header__nav jl-header-menu" id="portfolio-navigation" aria-label="Report navigation" data-header-menu>
+          <a href="../../network-diagnostics-suite.html">Project overview</a>
+          <a href="#contents">Contents</a>
+          <a href="#references">References</a>
+        </nav>
+        <div class="jl-global-header__actions">
+          <button class="jl-header-menu-toggle" type="button" aria-expanded="false" aria-controls="portfolio-navigation" data-header-menu-button>Menu</button>
+          <div class="jl-site-switcher" data-site-switcher>
+            <button class="jl-site-switcher__button" type="button" aria-expanded="false" aria-controls="owned-sites-menu" data-site-switcher-button>Sites <span aria-hidden="true">⌄</span></button>
+            <ul class="jl-site-menu" id="owned-sites-menu" aria-label="Johnny Li sites" data-site-switcher-menu hidden>
+              <li><a href="https://johnnyli.dev" aria-current="page">Portfolio</a></li>
+              <li><a href="https://network.johnnyli.dev">Network Diagnostics</a></li>
+              <li><a href="https://rolepacket.johnnyli.dev">RolePacket</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="report-hero shell" aria-labelledby="report-title">
+        <a class="report-breadcrumb" href="../../network-diagnostics-suite.html"><span aria-hidden="true">←</span> Network Diagnostics Suite</a>
+        <p class="report-kicker">Technical report / Revision 1</p>
+        <div class="report-hero-grid">
+          <h1 id="report-title">From browser speed test to <em>cross-platform diagnostics.</em></h1>
+          <div class="report-summary">
+            <p>How benchmarking against Google’s M-Lab-backed test exposed a delivery bottleneck, and how the project evolved into compatible browser, desktop, and command-line measurement clients.</p>
+            <div class="report-actions">
+              <button class="report-action report-action-primary" type="button" data-print-report>Print / save PDF <span aria-hidden="true">↓</span></button>
+              <a class="report-action" href="https://network.johnnyli.dev" target="_blank" rel="noreferrer">Launch tool <span aria-hidden="true">↗</span></a>
+              <a class="report-action" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite" target="_blank" rel="noreferrer">Source <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+        </div>
+        <dl class="report-meta">
+          <div><dt>Author</dt><dd>Johnny Li</dd></div>
+          <div><dt>Published</dt><dd>August 2026</dd></div>
+          <div><dt>Scope</dt><dd>Browser · Desktop · CLI</dd></div>
+          <div><dt>Report model</dt><dd>Schema 2.0</dd></div>
+        </dl>
+      </section>
+
+      <div class="report-layout shell">
+        <aside class="report-toc" id="contents" aria-label="Report contents">
+          <p>Contents</p>
+          <ol>
+            <li><a href="#origin">From speed test to diagnostic system</a></li>
+            <li><a href="#browser-boundary">The browser boundary</a></li>
+            <li><a href="#mlab">Benchmarking against M-Lab</a></li>
+            <li><a href="#delivery-path">Finding the download bottleneck</a></li>
+            <li><a href="#measurement-plan">A shared measurement plan</a></li>
+            <li><a href="#interpretation">Throughput and responsiveness</a></li>
+            <li><a href="#endpoint-context">Endpoint and transport context</a></li>
+            <li><a href="#native">The native core</a></li>
+            <li><a href="#reports">Schema 2.0 and findings parity</a></li>
+            <li><a href="#lan">LAN isolation and interface binding</a></li>
+            <li><a href="#privacy">Privacy and accuracy</a></li>
+            <li><a href="#validation">Validation and release engineering</a></li>
+            <li><a href="#lessons">Lessons and next work</a></li>
+          </ol>
+        </aside>
+
+        <article class="report-article">
+          <section class="report-intro" aria-labelledby="abstract-heading">
+            <p class="report-number">Abstract</p>
+            <h2 id="abstract-heading">A connection-quality system built around evidence boundaries.</h2>
+            <p>Network Diagnostics Suite began as a browser test for throughput and latency under load. It became a shared measurement system after the browser’s limits, disagreements with M-Lab, and the need for operating-system evidence made a single-client design inadequate.</p>
+            <div class="report-principle">
+              <strong>Report only what the active client actually measured.</strong>
+              <span>Browser failures remain request loss. Packet loss, routes, Wi-Fi, resolver timing, path MTU, and interface evidence require native access. Missing evidence is shown as “Not measured,” not guessed.</span>
+            </div>
+          </section>
+
+          <section class="report-section" id="origin" aria-labelledby="origin-heading">
+            <p class="report-number">01</p>
+            <h2 id="origin-heading">From speed test to diagnostic system</h2>
+            <p class="report-lede">The project began with a practical question: <em>why can a fast connection still feel bad?</em></p>
+            <div class="report-prose">
+              <p>Ordinary speed tests compress a connection into download and upload headlines. Those numbers matter, but they do not show whether latency rises during transfer, whether one flow behaves differently from several, whether the result is still ramping, or whether failures occur around an otherwise healthy average.</p>
+              <p>The browser application therefore measured idle latency, loaded latency during download and upload, latency distributions, jitter, request failures, single-flow and aggregate throughput, and connection-count scaling. The design kept the barrier to entry low: no installation, account, telemetry, or project-operated result database.</p>
+              <p>That browser-first scope exposed the next problem. Several questions users naturally ask—packet loss, gateway health, traceroute, DNS resolver timing, route choice, Wi-Fi condition, path MTU, and local-link capacity—cannot be answered truthfully by webpage JavaScript. The architecture expanded instead of relabeling browser approximations.</p>
+            </div>
+            <div class="report-grid">
+              <article><p class="label">Browser</p><h3>Immediate connection quality</h3><p>First-party transfer, responsiveness under load, request loss, scaling, endpoint selection, and locally stored reports.</p></article>
+              <article><p class="label">Desktop</p><h3>Native diagnostic workbench</h3><p>Connection Check, Quick, Full, and Stress plus operating-system, interface, route, resolver, path, and LAN evidence.</p></article>
+              <article><p class="label">CLI</p><h3>Scriptable deep probe</h3><p>Repeatable ICMP, traceroute, DNS, MTU, TCP/TLS, Wi-Fi, routing, optional Internet transfer, and two-machine LAN testing.</p></article>
+              <article><p class="label">Report</p><h3>Compatible evidence envelope</h3><p>Schema 2.0 carries producer identity, plan, endpoint context, measurements, findings, and optional native or LAN sections.</p></article>
+            </div>
+          </section>
+
+          <section class="report-section" id="browser-boundary" aria-labelledby="browser-heading">
+            <p class="report-number">02</p>
+            <h2 id="browser-heading">The browser boundary</h2>
+            <p class="report-lede">A browser can measure application behavior precisely without having <em>raw network visibility.</em></p>
+            <div class="report-prose">
+              <p>Idle latency uses uncached requests to the project’s ping endpoint. Successful requests produce minimum, maximum, mean, median, 95th percentile, and consecutive-sample jitter. Failed or timed-out requests divided by attempts produce browser request loss.</p>
+              <p>That value is not packet loss. Transmission Control Protocol may retransmit below the browser, while failures can originate in Domain Name System resolution, Transport Layer Security setup, HTTP handling, extensions, browser scheduling, endpoint behavior, or the path itself. The browser cannot isolate those layers.</p>
+              <p>The same boundary excludes truthful traceroute, default-gateway testing, route-table inspection, raw ICMP, path Maximum Transmission Unit discovery, source-interface socket binding, and reliable Wi-Fi radio details. Rather than invent those fields, the project added a native core and made capability status part of the report.</p>
+            </div>
+          </section>
+
+          <section class="report-section" id="mlab" aria-labelledby="mlab-heading">
+            <p class="report-number">03</p>
+            <h2 id="mlab-heading">Benchmarking against Google’s M-Lab test</h2>
+            <p class="report-lede">A large download gap became evidence that the test might be measuring <em>its own delivery path.</em></p>
+            <div class="report-prose">
+              <p>Early comparisons repeatedly showed M-Lab reporting much higher download speed while upload stayed close. One observed pair was approximately 381 Mbps through M-Lab versus 182 Mbps through Network Diagnostics Suite. A later comparison showed 328.7 Mbps down and 86.2 Mbps up through M-Lab, versus roughly 198–206 Mbps down and 85–91 Mbps up through the project.</p>
+              <p>The close upload values mattered. They weakened the idea that the browser, access connection, or all Cloudflare traffic was universally capped near 200 Mbps. The discrepancy was concentrated in the project’s download implementation.</p>
+              <p>Research into NDT7 corrected another assumption: M-Lab was not simply opening many parallel browser downloads. NDT7 uses one long-lived WebSocket over one TCP connection, usually to a nearby well-provisioned server, with BBR where available and server-side TCP instrumentation. It measures application-level goodput over a mature measurement path.</p>
+            </div>
+            <section class="report-table-wrap" tabindex="0" aria-label="Observed comparison between M-Lab and Network Diagnostics Suite">
+              <table class="report-table">
+                <thead><tr><th scope="col">Development observation</th><th scope="col">M-Lab</th><th scope="col">Network Diagnostics Suite</th><th scope="col">Interpretation</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Early comparison</th><td>≈381 Mbps down</td><td>≈182 Mbps down</td><td>The gap was too large to dismiss without isolating the serving path.</td></tr>
+                  <tr><th scope="row">Later comparison</th><td>328.7 down / 86.2 up</td><td>≈198–206 down / 85–91 up</td><td>Upload agreement pointed toward a download-specific bottleneck.</td></tr>
+                  <tr><th scope="row">After transport work</th><td>Different endpoint and method</td><td>≈370.1 median / 366.3 steady down</td><td>The earlier 180–200 Mbps ceiling was not an unavoidable browser limit.</td></tr>
+                </tbody>
+              </table>
+            </section>
+            <p class="report-note">These are development observations from back-to-back testing, not controlled laboratory benchmarks. Different endpoints, routes, congestion control, duration, and result definitions can produce legitimate differences.</p>
+          </section>
+
+          <section class="report-section" id="delivery-path" aria-labelledby="delivery-heading">
+            <p class="report-number">04</p>
+            <h2 id="delivery-heading">Finding the download bottleneck</h2>
+            <p class="report-lede">The decisive experiment compared the connection through <em>two project-controlled delivery paths.</em></p>
+            <div class="report-prose">
+              <p>The initial engine repeatedly requested a dynamically composed Worker stream. Even with cache hits, concurrency, and modern protocol negotiation, throughput oscillated and frequently settled near 200 Mbps. Request turnover could create brief peaks without sustaining the same rate.</p>
+              <p>The project then added a large deterministic incompressible object on a direct R2 custom domain while retaining the Worker stream as an explicit comparison. The direct path delivered 283.2 Mbps whole-phase and 270.9 Mbps steady, while the Worker path delivered 159.7 Mbps whole-phase and 157.9 Mbps steady. Upload remained around 97 Mbps through either route.</p>
+              <p>That A/B result showed the project’s own Worker path materially limiting download delivery. The browser was measuring both the user’s connection and avoidable server-side response construction.</p>
+            </div>
+            <div class="report-bars" role="img" aria-label="Direct R2 steady throughput was 270.9 megabits per second compared with 157.9 megabits per second through the Worker stream">
+              <div class="bar-row"><div><strong>Direct R2 object</strong><small>270.9 Mbps steady</small></div><div class="bar-track"><span style="width: 100%"></span></div></div>
+              <div class="bar-row"><div><strong>Worker stream</strong><small>157.9 Mbps steady</small></div><div class="bar-track"><span style="width: 58.3%"></span></div></div>
+            </div>
+            <div class="report-timeline">
+              <article><time>6ed3cdb</time><div><h3>Move download testing to first-party static edge assets</h3><p>Introduced deterministic static payloads, an excluded warm-up, and a Worker fallback.</p></div></article>
+              <article><time>4bacb7e</time><div><h3>Use long-lived segmented Worker responses</h3><p>Reduced routine request turnover and recorded request generations and lifecycle evidence.</p></div></article>
+              <article><time>7b27ea8</time><div><h3>Add direct R2 download A/B path</h3><p>Added direct range delivery, validation, cache evidence, and explicit Worker comparison.</p></div></article>
+              <article><time>8ec174d</time><div><h3>Make automatic R2 delivery the default</h3><p>Retained Worker delivery as a fallback and advanced comparison rather than an assumed equivalent.</p></div></article>
+            </div>
+            <p class="report-note">The goal was not to force the same number as Google. It was to remove project-created bottlenecks so that disagreement reflected methodology and path differences rather than an inefficient payload implementation.</p>
+          </section>
+
+          <section class="report-section" id="measurement-plan" aria-labelledby="plan-heading">
+            <p class="report-number">05</p>
+            <h2 id="plan-heading">A shared measurement plan</h2>
+            <p class="report-lede">Profiles became contracts rather than loose labels for <em>roughly how long a test runs.</em></p>
+            <div class="report-prose">
+              <p>The browser, desktop application, and opt-in CLI Internet-transfer mode consume the same canonical profile contract. It defines idle samples, stage duration, byte ceilings, sample count, aggregate connection count, service checks, comparison allocation, and Stress scaling stages.</p>
+              <p>Single uses one connection in each direction. Aggregate uses the profile’s configured parallel connection count. Compare runs independent single and aggregate stages so the methods do not compete. Stress measures download scaling at 1, 2, 4, 8, and 10 connections before upload comparison.</p>
+              <p>Each client computes the actual stage sequence, estimated time, and maximum transfer before starting. Caps are ceilings, not promised consumption. A slower connection reaches the duration first; a fast connection may reach the byte ceiling first.</p>
+            </div>
+            <section class="report-table-wrap" tabindex="0" aria-label="Native measurement profile limits">
+              <table class="report-table">
+                <thead><tr><th scope="col">Profile</th><th scope="col">Base estimate</th><th scope="col">Download cap</th><th scope="col">Upload cap</th><th scope="col">Deep diagnostics</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Connection Check</th><td>15 seconds</td><td>20 MB</td><td>8 MB</td><td>No</td></tr>
+                  <tr><th scope="row">Quick</th><td>20 seconds</td><td>600 MB</td><td>128 MB</td><td>No</td></tr>
+                  <tr><th scope="row">Full</th><td>35 seconds</td><td>900 MB</td><td>256 MB</td><td>Yes</td></tr>
+                  <tr><th scope="row">Stress</th><td>60 seconds</td><td>3 GB</td><td>512 MB</td><td>Yes</td></tr>
+                </tbody>
+              </table>
+            </section>
+          </section>
+
+          <section class="report-section" id="interpretation" aria-labelledby="interpretation-heading">
+            <p class="report-number">06</p>
+            <h2 id="interpretation-heading">Throughput and responsiveness</h2>
+            <p class="report-lede">An average stays useful, but the <em>shape of the transfer</em> explains more.</p>
+            <div class="report-prose">
+              <p>Throughput uses successfully transferred payload bytes over elapsed wall time. Progress is sampled every 250 milliseconds. Intervals shorter than 100 milliseconds are excluded from graph and interval-derived statistics so a few terminal bytes cannot create an impossible peak; those bytes remain in the whole-phase average.</p>
+              <p>The engine also reports steady-state rate after the initial ramp, retained peak, coefficient of variation, stability, ramp ratio, and classifications such as cap-limited, still-ramping, declining, unstable, or qualified. Multi-sample download stages report medians rather than allowing one outlier to define the profile.</p>
+              <p>Separate latency requests continue during each transfer stage. Added delay is the loaded median minus the idle median. This shows whether the measured path remains responsive while busy without claiming which router, radio, provider segment, route, or endpoint created the queue.</p>
+              <p>Single share and parallel gain expose when several flows use materially more of the path than one flow. They do not identify the cause: congestion control, packet loss, endpoint limits, routing, radio conditions, security software, CPU load, and server behavior can all contribute.</p>
+            </div>
+            <pre class="report-code"><code>Mbps = transferred bytes × 8 ÷ elapsed seconds ÷ 1,000,000
+
+added delay = loaded median - idle median
+
+single share = single steady Mbps ÷ aggregate steady Mbps × 100
+
+parallel gain = (aggregate steady Mbps ÷ single steady Mbps - 1) × 100</code></pre>
+          </section>
+
+          <section class="report-section" id="endpoint-context" aria-labelledby="endpoint-heading">
+            <p class="report-number">07</p>
+            <h2 id="endpoint-heading">Endpoint and transport context</h2>
+            <p class="report-lede">A speed result is incomplete without identifying <em>where and how it was measured.</em></p>
+            <div class="report-prose">
+              <p>Before a run, the browser and native core probe configured endpoint candidates and select the lowest-latency available origin. Reports preserve candidate success and failure, selected origin, edge location, network name, autonomous system number, negotiated protocol, Transport Layer Security version, and Internet Protocol version when available.</p>
+              <p>The desktop and CLI can select a source interface. HTTP/1.1, HTTP/2, and LAN sockets bind to the interface’s source address. Managed ICMP, traceroute, DNS, and the exact HTTP/3 request remain routed by the operating system because their portable APIs do not provide equivalent source-interface binding. The report states that scope rather than implying complete isolation.</p>
+              <p>The native engine sends a separate HTTPS request requiring HTTP version 3.0 exactly. Browsers cannot make an equivalent portable exact-version request, so the web client records the protocol observed through Navigation Timing instead. Observed and forced protocol evidence remain distinct.</p>
+            </div>
+          </section>
+
+          <section class="report-section" id="native" aria-labelledby="native-heading">
+            <p class="report-number">08</p>
+            <h2 id="native-heading">The native core</h2>
+            <p class="report-lede">Deeper evidence moved into a shared engine instead of being duplicated across <em>a GUI and a command line.</em></p>
+            <div class="report-prose">
+              <p>NetworkDiagnostics.Core on .NET 10 owns planning, endpoint selection, Internet transfers, ICMP, gateway testing, traceroute, resolver timing, path MTU, TCP and TLS phases, interfaces, Wi-Fi, routes, LAN testing, findings, capability reporting, and serialization.</p>
+              <p>Avalonia provides the Windows, macOS, and Linux desktop host. The application adds a workbench for profiles, methods, progress, cancellation, comparison, history, import, export, settings, and detailed evidence. The command-line host preserves repeatable deep-only diagnostics and can explicitly opt into the same Internet-transfer plans.</p>
+            </div>
+            <div class="report-grid">
+              <article><p class="label">Core</p><h3>One implementation of native measurement</h3><p>Planning, transfer enforcement, diagnostics, findings, capabilities, and report serialization.</p></article>
+              <article><p class="label">Desktop</p><h3>Interactive workbench</h3><p>Cross-platform native controls, local history, comparison, and evidence-oriented result views.</p></article>
+              <article><p class="label">CLI</p><h3>Automation and repeatability</h3><p>Scriptable diagnostics, output paths, interface selection, endpoint overrides, and LAN server/client modes.</p></article>
+              <article><p class="label">Platforms</p><h3>Five packaged targets</h3><p>Windows x64, Apple Silicon macOS, Intel macOS, Linux x64, and Linux ARM64.</p></article>
+            </div>
+          </section>
+
+          <section class="report-section" id="reports" aria-labelledby="reports-heading">
+            <p class="report-number">09</p>
+            <h2 id="reports-heading">Schema 2.0 and findings parity</h2>
+            <p class="report-lede">Richer evidence did not require incompatible <em>browser and native report silos.</em></p>
+            <div class="report-prose">
+              <p>Schema 2.0 is a combined envelope for producer identity, run metadata, transfer plan, endpoint selection, interface scope, network context, Internet measurements, deep diagnostics, optional LAN results, and deterministic findings.</p>
+              <p>Compatibility remains additive. The browser importer accepts historical native schemas 1.0, 1.1, and 1.2 as well as 2.0. Unknown optional fields are ignored. Missing native sections mean the scope was not run or was unavailable and render as “Not measured,” not failure.</p>
+              <p>Shared parity fixtures verify that TypeScript and C# findings engines produce the same finding identifiers for representative reports. Rendered wording can remain appropriate to each client while the underlying interpretation does not drift silently.</p>
+              <p>Imported native JSON is read through the browser File API and parsed locally. It is not uploaded to the project, allowing the browser to act as a compatible report reader without becoming a collection service.</p>
+            </div>
+            <pre class="report-code"><code>{
+  "schemaVersion": "2.0",
+  "producer": { "client": "desktop", "engine": ".NET" },
+  "plan": { "profile": "full", "method": "compare" },
+  "context": {
+    "selectedEndpoint": "...",
+    "interfaceBinding": "http-and-lan-only",
+    "http3": { "attempted": true, "negotiated": "h3" }
+  },
+  "measurements": {
+    "internet": { "...": "..." },
+    "deepDiagnostics": { "...": "..." },
+    "lan": null
+  },
+  "findings": [
+    { "id": "loaded-latency-high", "confidence": "high" }
+  ]
+}</code></pre>
+          </section>
+
+          <section class="report-section" id="lan" aria-labelledby="lan-heading">
+            <p class="report-number">10</p>
+            <h2 id="lan-heading">LAN isolation and interface binding</h2>
+            <p class="report-lede">A second trusted machine removes the public Internet without pretending to remove <em>the local endpoints.</em></p>
+            <div class="report-prose">
+              <p>The optional LAN server listens on a configurable TCP port. The client measures request/response latency, generated download traffic, and generated upload traffic with a configurable duration and parallel stream count.</p>
+              <p>This removes the provider, public transit, and public test platform. It does not remove either machine’s operating system, CPU, adapter, firewall, switch, access point, cabling, or TCP implementation. A preferably wired server with capacity above the expected client rate is recommended.</p>
+              <p>Fast LAN with slower Internet points away from the local link as the primary bottleneck. Slow LAN makes the local device, adapter, radio, cabling, switch, access point, server, or firewall part of the investigation. It narrows scope rather than producing a universal diagnosis.</p>
+            </div>
+          </section>
+
+          <section class="report-section" id="privacy" aria-labelledby="privacy-heading">
+            <p class="report-number">11</p>
+            <h2 id="privacy-heading">Privacy and accuracy</h2>
+            <p class="report-lede">Privacy is implemented through minimization, while accuracy begins by <em>stating the remaining dependencies.</em></p>
+            <div class="report-prose">
+              <p>The project has no accounts, cookies, analytics, advertising, telemetry, or project-operated result database. Browser history remains in that browser. Native reports remain on the user’s computer. Imported reports are not uploaded.</p>
+              <p>No retained result does not mean invisible traffic. Cloudflare necessarily processes traffic sent to default endpoints. Full and Stress service checks contact the named providers. User-supplied endpoints and LAN targets remain outside the project’s trust boundary.</p>
+              <p>Native reports hide local interface addresses, gateways, resolver addresses, private route details, hostname, public IP, MAC address, and service set identifier by default. Enabling local identifiers makes the report sensitive diagnostic material.</p>
+              <p>Every result describes a particular device, software stack, route, endpoint, and moment. Virtual private networks, security software, CPU load, power saving, Wi-Fi contention, browser scheduling, and background traffic can affect a run. Repeated comparisons are more useful than treating one result as a permanent rating.</p>
+            </div>
+          </section>
+
+          <section class="report-section" id="validation" aria-labelledby="validation-heading">
+            <p class="report-number">12</p>
+            <h2 id="validation-heading">Validation and release engineering</h2>
+            <p class="report-lede">The project’s contracts are useful only when browsers, native targets, and report readers <em>continue to agree.</em></p>
+            <div class="report-prose">
+              <p>Continuous integration validates design-system integration, TypeScript, browser and Worker tests, production builds, the native core, deep-probe tests, desktop builds, profile contracts, report compatibility, and findings parity.</p>
+              <p>Concurrent native download workers reserve bytes before reading so committed measured payload cannot exceed the configured stage ceiling. Cancellation preserves partial evidence rather than converting an interrupted run into an empty failure.</p>
+              <p>Desktop and CLI workflows package self-contained artifacts for five runtime targets with checksums and local privacy notes. macOS artifacts are valid application bundles but remain unsigned until Developer ID signing and notarization credentials are configured.</p>
+            </div>
+            <div class="report-grid">
+              <article><p class="label">Contracts</p><h3>Profiles and schemas</h3><p>Shared fixtures prevent browser and native definitions from drifting independently.</p></article>
+              <article><p class="label">Parity</p><h3>TypeScript and C# findings</h3><p>Representative reports must produce the same rule identifiers across engines.</p></article>
+              <article><p class="label">Packaging</p><h3>Five native targets</h3><p>Self-contained outputs and checksums make artifacts inspectable and reproducible.</p></article>
+              <article><p class="label">Boundaries</p><h3>Failures remain explicit</h3><p>Unsupported, unavailable, partial, and cancelled states are preserved rather than guessed away.</p></article>
+            </div>
+          </section>
+
+          <section class="report-section" id="lessons" aria-labelledby="lessons-heading">
+            <p class="report-number">13</p>
+            <h2 id="lessons-heading">Lessons and next work</h2>
+            <div class="report-prose">
+              <p>The project’s largest improvements came from treating disagreement as evidence. M-Lab’s higher result was not dismissed as “a different server,” and it was not used as a number that had to be copied. It triggered a transport investigation that revealed a real bottleneck in the project’s Worker delivery path.</p>
+              <p>The same pattern shaped the rest of the system. Browser request failures were not relabeled as packet loss. A native probe was added. One aggregate throughput number was not treated as the connection’s full capacity. Single, aggregate, and scaling stages were separated. Missing fields were not guessed. Schema compatibility made absence explicit.</p>
+              <p>Future work should continue in that direction: more controlled cross-client comparison fixtures, signed and notarized desktop packages, broader platform validation of Wi-Fi and route parsers, and longitudinal comparison tools that help users distinguish a temporary route from a persistent local fault.</p>
+            </div>
+            <blockquote class="report-quote">A useful diagnostic tool does not need to know everything. It needs to make clear what it observed, what it inferred, and what remains unknown.</blockquote>
+          </section>
+
+          <section class="report-section" id="references" aria-labelledby="references-heading">
+            <p class="report-number">References</p>
+            <h2 id="references-heading">Primary sources and project records</h2>
+            <ol class="references">
+              <li><span>Measurement Lab, <a href="https://github.com/m-lab/ndt-server/blob/main/spec/ndt7-protocol.md" target="_blank" rel="noreferrer">“ndt7 protocol specification.”</a></span></li>
+              <li><span>Measurement Lab, <a href="https://www.measurementlab.net/tests/ndt/" target="_blank" rel="noreferrer">“NDT (Network Diagnostic Tool).”</a></span></li>
+              <li><span>Measurement Lab, <a href="https://www.measurementlab.net/tests/ndt/ndt7/" target="_blank" rel="noreferrer">“ndt7 Protocol and data schema.”</a></span></li>
+              <li><span>Measurement Lab, <a href="https://www.measurementlab.net/blog/speed-tests-accuracy/index.html" target="_blank" rel="noreferrer">“How fast is my Internet? Speed Tests, Accuracy, NDT &amp; M-Lab.”</a></span></li>
+              <li><span>Measurement Lab, <a href="https://www.measurementlab.net/develop/locate-v1/" target="_blank" rel="noreferrer">“Locate API.”</a></span></li>
+              <li><span>Cloudflare, <a href="https://developers.cloudflare.com/cache/interaction-cloudflare-products/r2/" target="_blank" rel="noreferrer">“Enable cache in an R2 bucket.”</a></span></li>
+              <li><span>Cloudflare, <a href="https://developers.cloudflare.com/cache/concepts/default-cache-behavior/" target="_blank" rel="noreferrer">“Default Cache Behavior: client-side range requests.”</a></span></li>
+              <li><span>World Wide Web Consortium, <a href="https://www.w3.org/TR/resource-timing/" target="_blank" rel="noreferrer">“Resource Timing.”</a></span></li>
+              <li><span>Network Diagnostics Suite, <a href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/blob/main/docs/methodology.md" target="_blank" rel="noreferrer">“Measurement methodology.”</a></span></li>
+              <li><span>Network Diagnostics Suite, <a href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/blob/main/README.md" target="_blank" rel="noreferrer">architecture, profiles, compatibility, privacy, and deployment record.</a></span></li>
+            </ol>
+          </section>
+        </article>
+      </div>
+
+      <section class="report-ending">
+        <div class="shell">
+          <p>Part of Network Diagnostics Suite</p>
+          <h2>The report supports the project.<br><em>It is not a separate project.</em></h2>
+          <a href="../../network-diagnostics-suite.html">Return to project overview <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+    </main>
+
+    <script src="../../../motion.js" defer></script>
+    <script type="module" src="../../../site-switcher.js"></script>
+    <script type="module" src="../../../portfolio-navigation.js"></script>
+    <script>
+      document.querySelector('[data-print-report]')?.addEventListener('click', () => window.print());
+    </script>
+  </body>
+</html>
