@@ -1,4 +1,5 @@
 @import url("assets/design-system/content-primitives.css");
+@import url("project-actions.css");
 
 /* Portfolio expression of the shared Johnny Li design system.
    Shared header structure, controls, and compact menu geometry are package-owned. */
