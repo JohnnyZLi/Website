@@ -71,6 +71,10 @@ if (/#[\da-f]{3,8}\b/i.test(styles) || /\b(?:rgb|rgba|hsl|hsla)\(/i.test(styles)
 }
 if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");
 
+const reportPrincipleBlock = styles.match(/\.report-principle \{([^}]*)\}/)?.[1] ?? "";
+if (/border-bottom\s*:/.test(reportPrincipleBlock)) fail("Report principle must not duplicate the following section boundary.");
+if (!/border-top\s*:/.test(reportPrincipleBlock)) fail("Report principle must retain its accent top rule.");
+
 const reportGridBlock = styles.match(/\.report-grid \{([^}]*)\}/)?.[1] ?? "";
 if (/border(?:-top|-right|-bottom|-left)?\s*:/.test(reportGridBlock)) fail("Report grids must not draw an outer container border.");
 const reportGridItemBlock = styles.match(/\.report-grid article \{([^}]*)\}/)?.[1] ?? "";
