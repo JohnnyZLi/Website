@@ -2,6 +2,11 @@
   "schemaVersion": "1.0.0",
   "runner": "ubuntu-24.04",
   "playwright": "1.54.1",
-  "pending": "scroll-navigation-selector-fix",
-  "hashes": {}
+  "hashes": {
+    "desktop": "97e8c98cf3bb131146c8b541e1ffbedb9e0e88c335a1753ce78e9372cc4ed995",
+    "narrow-desktop": "fae3291d6e9517cf96f8bac4128f7ae5689b0c7180a5ddfc9b8ded96915f4578",
+    "mobile": "67b4781563a84512236d756f8c4993c6826fb4227cad3174a126e34de855efe5",
+    "minimum": "8d9344de7112f9138a12228a72f0128cffd5ad06d2600a17aeab8bf5340e0e67",
+    "forced-colors": "e74b3f2704593113946b70564bf8358ff4f0f87b1b7ba80353282f60eee7d89d"
+  }
 }
