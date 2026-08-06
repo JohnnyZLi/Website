@@ -33,6 +33,11 @@ jobs:
               raise SystemExit('Scrollspy patch payload is missing')
           payload = workflow.split(start, 1)[1].split(end, 1)[0]
           payload = '\n'.join(line[10:] if line.startswith('          ') else line for line in payload.splitlines())
+          exact = "if report.count(old_toc) != 1:\n    raise SystemExit(\"Expected one canonical report contents block\")\nreport = report.replace(old_toc, new_toc)"
+          resilient = "import re\nreport, replaced = re.subn(r'        <aside class=\"report-toc\" id=\"contents\" aria-label=\"Report contents\">.*?        </aside>\\n', new_toc, report, count=1, flags=re.S)\nif replaced != 1:\n    raise SystemExit(\"Expected one canonical report contents block\")"
+          if exact not in payload:
+              raise SystemExit('Canonical contents replacement payload changed')
+          payload = payload.replace(exact, resilient)
           exec(compile(payload, 'apply-report-scrollspy', 'exec'), {'__name__': '__main__'})
           PY
           git show origin/main:.github/workflows/technical-report-audit.yml > .github/workflows/technical-report-audit.yml
