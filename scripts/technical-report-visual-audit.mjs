@@ -74,6 +74,15 @@ try {
           labelledCells: table?.querySelectorAll("tbody td[data-label]").length ?? 0,
         };
       });
+      const codePanels = [...document.querySelectorAll(".report-code")].map((panel) => {
+        const style = getComputedStyle(panel);
+        return {
+          clientWidth: panel.clientWidth,
+          scrollWidth: panel.scrollWidth,
+          overflowX: style.overflowX,
+          whiteSpace: style.whiteSpace,
+        };
+      });
       const root = getComputedStyle(document.documentElement);
       const markerStyle = marker ? getComputedStyle(marker) : null;
       const heading = document.querySelector(".report-section h2");
@@ -97,6 +106,7 @@ try {
         actions: actions.map(rect),
         reportGrids,
         tables,
+        codePanels,
         comparisonFigureBorders: comparisonFigure ? borderWidths(comparisonFigure) : null,
         quoteTag: quote?.tagName ?? null,
         inlineStyles: document.querySelectorAll("[style]").length,
@@ -161,13 +171,20 @@ try {
 
     for (const [tableIndex, table] of metrics.tables.entries()) {
       if (table.captionCount !== 1) problems.push(`report table ${tableIndex + 1} is missing its caption`);
-      if (viewport.width <= 700) {
+      if (viewport.width <= 760) {
         if (table.scrollWidth > table.clientWidth + 1) problems.push(`report table ${tableIndex + 1} still requires hidden horizontal scrolling`);
         if (!["block", "grid"].includes(table.rowDisplay)) problems.push(`report table ${tableIndex + 1} did not stack its rows`);
         if (!table.firstCellLabel || table.firstCellLabel === "none" || table.firstCellLabel === '""') problems.push(`report table ${tableIndex + 1} does not expose compact data labels`);
         if (table.labelledCells < 9) problems.push(`report table ${tableIndex + 1} has too few labelled cells`);
       } else if (table.tableDisplay !== "table") {
         problems.push(`report table ${tableIndex + 1} lost desktop table semantics`);
+      }
+    }
+
+    if (viewport.width <= 600) {
+      for (const [codeIndex, codePanel] of metrics.codePanels.entries()) {
+        if (codePanel.scrollWidth > codePanel.clientWidth + 1) problems.push(`compact code panel ${codeIndex + 1} still clips or scrolls horizontally`);
+        if (codePanel.whiteSpace !== "pre-wrap") problems.push(`compact code panel ${codeIndex + 1} does not preserve wrapped code formatting`);
       }
     }
 
@@ -268,7 +285,8 @@ try {
       const openingPage = pages.findIndex((page) => page.includes(opening));
       if (headingPage < 0 || openingPage < 0 || headingPage !== openingPage) printProblems.push(`print separates “${heading}” from its opening content`);
     }
-    if (!pdfText.includes("b1c549c") || !pdfText.includes("johnnyli.dev/projects/network-diagnostics-suite/report")) printProblems.push("printed provenance is incomplete");
+    const compactPdfText = pdfText.replace(/\s+/g, "");
+    if (!compactPdfText.includes("b1c549c") || !compactPdfText.includes("johnnyli.dev/projects/network-diagnostics-suite/report/")) printProblems.push("printed provenance is incomplete");
     if (!pdfText.includes("measurementlab.net") || !pdfText.includes("developers.cloudflare.com") || !pdfText.includes("w3.org/TR/resource-timing")) printProblems.push("printed references omit source destinations");
   } catch (error) {
     printProblems.push(`PDF text inspection failed: ${error.message}`);
