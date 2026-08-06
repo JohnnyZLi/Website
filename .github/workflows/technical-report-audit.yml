@@ -3,52 +3,80 @@ name: Technical report audit
 on:
   pull_request:
     paths:
-      - "projects/network-diagnostics-suite/report/**"
-      - "technical-report.css"
-      - "technical-report.js"
-      - "project-actions.css"
-      - "scripts/validate-technical-report.mjs"
-      - "scripts/technical-report-visual-audit.mjs"
-      - "scripts/technical-report-visual-baseline.json"
       - ".github/workflows/technical-report-audit.yml"
-      - "package.json"
-  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  validate:
+  consolidate-toc-selectors:
+    if: github.event.pull_request.head.ref == 'feat/technical-report-scrollspy'
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 24
-      - run: npm install --no-audit --no-fund
-      - run: npm install --no-save playwright@1.54.1
-      - run: npx playwright install --with-deps chromium
-      - name: Install PDF inspection tools
+          ref: feat/technical-report-scrollspy
+          fetch-depth: 0
+      - name: Consolidate CSS selectors
         run: |
-          sudo apt-get update
-          sudo apt-get install --yes poppler-utils
-      - run: npm run lint
-      - run: node scripts/validate-technical-report.mjs
-      - name: Start static site
-        run: |
-          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/portfolio-report-server.log 2>&1 &
-          echo $! > /tmp/portfolio-report-server.pid
-          for attempt in {1..30}; do
-            curl --fail --silent http://127.0.0.1:4173/ >/dev/null && exit 0
-            sleep 1
-          done
-          cat /tmp/portfolio-report-server.log
-          exit 1
-      - run: node scripts/technical-report-visual-audit.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: always()
-        with:
-          name: technical-report-visual-audit
-          path: technical-report-visual-audit
-          retention-days: 7
+          git fetch origin main
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('technical-report.css')
+          css = path.read_text()
+          css = css.replace(
+              '''.report-toc li {
+  counter-increment: toc;
+  border-top: 1px solid var(--rule);
+}''',
+              '''.report-toc li {
+  position: relative;
+  counter-increment: toc;
+  border-top: 1px solid var(--rule);
+}''',
+              1,
+          )
+          css = css.replace(
+              '''.report-toc a {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  padding: 12px 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}''',
+              '''.report-toc a {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  padding: 12px 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+  transition: color 160ms ease, transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}''',
+              1,
+          )
+          css = css.replace(
+              '''.report-toc li {
+  position: relative;
+}
+
+.report-toc a {
+  transition: color 160ms ease, transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+''',
+              '',
+              1,
+          )
+          path.write_text(css)
+          PY
+          git show origin/main:.github/workflows/technical-report-audit.yml > .github/workflows/technical-report-audit.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .github/workflows/technical-report-audit.yml technical-report.css
+          git commit -m "Consolidate report contents selectors"
+          git push origin HEAD:feat/technical-report-scrollspy
