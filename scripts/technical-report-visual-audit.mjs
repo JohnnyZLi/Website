@@ -28,6 +28,8 @@ try {
       const marker = document.querySelector(".report-intro .report-number");
       const metadata = document.querySelector(".report-meta");
       const timeline = document.querySelector(".report-timeline article");
+      const principle = document.querySelector(".report-principle");
+      const firstSection = document.querySelector(".report-section");
       const reportGrids = [...document.querySelectorAll(".report-grid")].map((grid) => {
         const gridStyle = getComputedStyle(grid);
         const items = [...grid.querySelectorAll(":scope > article")].map((item) => {
@@ -61,6 +63,8 @@ try {
         markerFontFamily: markerStyle?.fontFamily ?? null,
         metadataColumns: metadata ? getComputedStyle(metadata).gridTemplateColumns.split(" ").length : null,
         timelineDisplay: timeline ? getComputedStyle(timeline).display : null,
+        principleBottomBorder: principle ? Number.parseFloat(getComputedStyle(principle).borderBottomWidth) : null,
+        firstSectionTopBorder: firstSection ? Number.parseFloat(getComputedStyle(firstSection).borderTopWidth) : null,
         reportGrids,
         actionLabels: [...document.querySelectorAll(".report-actions > *")].map((element) => element.textContent.trim().replace(/\s+[↗↓]$/, "")),
         inlineStyles: document.querySelectorAll("[style]").length,
@@ -82,6 +86,8 @@ try {
     if (metrics.metadataColumns !== expectedColumns) problems.push(`metadata has ${metrics.metadataColumns} columns, expected ${expectedColumns}`);
     const expectedTimeline = viewport.width <= 420 ? "block" : "grid";
     if (metrics.timelineDisplay !== expectedTimeline) problems.push(`timeline display is ${metrics.timelineDisplay}, expected ${expectedTimeline}`);
+    if (metrics.principleBottomBorder !== 0) problems.push(`report principle adds a duplicate bottom rule at ${metrics.principleBottomBorder}px`);
+    if (metrics.firstSectionTopBorder === null || metrics.firstSectionTopBorder < 1) problems.push("first report section is missing its boundary rule");
     for (const [gridIndex, grid] of metrics.reportGrids.entries()) {
       if (grid.items.length !== 4) problems.push(`report grid ${gridIndex + 1} has ${grid.items.length} items, expected 4`);
       if (grid.borderTop !== 0 || grid.borderRight !== 0 || grid.borderBottom !== 0 || grid.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} has an outer container border`);
