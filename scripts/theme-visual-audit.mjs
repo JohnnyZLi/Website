@@ -46,7 +46,7 @@ try {
             documentWidth: root.scrollWidth,
             themeColor: meta?.getAttribute("content") ?? null,
             linkCount: document.querySelectorAll("[data-site-switcher-menu] a[href]").length,
-            themeButtons: document.querySelectorAll("[data-theme-preference]").length,
+            themeButtons: document.querySelectorAll("button[data-theme-preference]").length,
             selectedButton: document.querySelector('[data-theme-preference][aria-pressed="true"]')?.getAttribute("data-theme-preference") ?? null,
           };
         });
@@ -102,11 +102,11 @@ try {
   const printPage = await printContext.newPage();
   await printPage.goto(`${baseUrl}/projects/network-diagnostics-suite/report/`, { waitUntil: "networkidle" });
   const printProblems = [];
-  await printPage.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
   let printState = await printPage.evaluate(() => ({ theme: document.documentElement.dataset.theme, themeColor: document.querySelector('meta[name="theme-color"]')?.content }));
   if (printState.theme !== "light" || printState.themeColor?.toLowerCase() !== "#f2efe8") printProblems.push("beforeprint did not force light paper theme");
   await printPage.emulateMedia({ media: "print" });
   await printPage.pdf({ path: `${output}/report-from-dark.pdf`, format: "Letter", printBackground: true });
+  await printPage.emulateMedia({ media: "screen" });
   await printPage.evaluate(() => window.dispatchEvent(new Event("afterprint")));
   printState = await printPage.evaluate(() => ({ theme: document.documentElement.dataset.theme, themeColor: document.querySelector('meta[name="theme-color"]')?.content }));
   if (printState.theme !== "dark" || printState.themeColor?.toLowerCase() !== "#171714") printProblems.push("afterprint did not restore dark theme");
