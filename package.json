@@ -10,7 +10,7 @@
     "design-system:update": "node scripts/update-design-system.mjs",
     "design-system:sync": "node scripts/sync-design-system.mjs",
     "design-system:check": "npm run design-system:sync && git diff --exit-code -- assets/design-system",
-    "design-system:integration": "node scripts/validate-design-system-integration.mjs && node scripts/validate-technical-report.mjs",
+    "design-system:integration": "node scripts/validate-design-system-integration.mjs",
     "design-system:conformance": "node node_modules/@johnnyzli/web-design-system/scripts/conformance-runner.mjs",
     "technical-report:check": "node scripts/validate-technical-report.mjs",
     "technical-report:visual": "node scripts/technical-report-visual-audit.mjs",
