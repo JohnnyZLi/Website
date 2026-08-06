@@ -116,6 +116,22 @@ try {
   await browser.close();
 }
 
+for (const [routeName] of routes) {
+  for (const [viewportName] of viewports) {
+    const light = results.find((result) => result.routeName === routeName && result.viewportName === viewportName && result.theme === "light");
+    const dark = results.find((result) => result.routeName === routeName && result.viewportName === viewportName && result.theme === "dark");
+    if (!light || !dark) continue;
+    if (light.state.background === dark.state.background) {
+      light.problems.push("light and dark canvas colors are identical");
+      dark.problems.push("light and dark canvas colors are identical");
+    }
+    if (light.state.color === dark.state.color) {
+      light.problems.push("light and dark text colors are identical");
+      dark.problems.push("light and dark text colors are identical");
+    }
+  }
+}
+
 const failures = results.filter((result) => result.problems.length > 0);
 await writeFile(`${output}/report.json`, JSON.stringify(results, null, 2));
 if (failures.length) {
