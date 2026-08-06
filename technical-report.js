@@ -53,6 +53,11 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
 
     const headerHeight = () => document.querySelector('.jl-global-header')?.getBoundingClientRect().height ?? 0;
 
+    const setCurrent = (link, current) => {
+      if (current) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    };
+
     const closeProgressMenu = ({ restoreFocus = false } = {}) => {
       progressMenu.hidden = true;
       progressToggle.setAttribute('aria-expanded', 'false');
@@ -93,11 +98,11 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
 
       tocLinks.forEach((link, linkIndex) => {
         const current = linkIndex === activeIndex;
-        link.toggleAttribute('aria-current', current);
+        setCurrent(link, current);
         link.closest('li')?.classList.toggle('is-active', current);
         link.closest('li')?.classList.toggle('is-complete', activeIndex >= 0 && linkIndex < activeIndex);
       });
-      compactLinks.forEach((link, linkIndex) => link.toggleAttribute('aria-current', linkIndex === activeIndex));
+      compactLinks.forEach((link, linkIndex) => setCurrent(link, linkIndex === activeIndex));
 
       if (activeIndex >= 0) {
         const count = String(activeIndex + 1).padStart(2, '0');
