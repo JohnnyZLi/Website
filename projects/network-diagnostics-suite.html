@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A case study of Johnny Li's privacy-first browser and Windows network diagnostics suite.">
+    <meta name="description" content="A case study of Johnny Li's privacy-first browser, desktop, and command-line network diagnostics suite.">
     <meta name="theme-color" content="#f2efe8">
     <meta property="og:title" content="Network Diagnostics Suite — Johnny Li">
-    <meta property="og:description" content="Browser throughput and loaded-latency testing paired with an optional Windows deep probe.">
+    <meta property="og:description" content="A shared browser, desktop, and command-line measurement system for throughput, responsiveness, local networks, and path evidence.">
     <meta property="og:type" content="article">
     <title>Network Diagnostics Suite — Johnny Li</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -34,10 +34,7 @@
         <div class="jl-global-header__actions">
           <button class="jl-header-menu-toggle" type="button" aria-expanded="false" aria-controls="portfolio-navigation" data-header-menu-button>Menu</button>
           <div class="jl-site-switcher" data-site-switcher>
-            <button class="jl-site-switcher__button" type="button" aria-expanded="false" aria-controls="owned-sites-menu" data-site-switcher-button>
-              Sites
-              <span aria-hidden="true">⌄</span>
-            </button>
+            <button class="jl-site-switcher__button" type="button" aria-expanded="false" aria-controls="owned-sites-menu" data-site-switcher-button>Sites <span aria-hidden="true">⌄</span></button>
             <ul class="jl-site-menu" id="owned-sites-menu" aria-label="Johnny Li sites" data-site-switcher-menu hidden>
               <li><a href="https://johnnyli.dev" aria-current="page">Portfolio</a></li>
               <li><a href="https://network.johnnyli.dev">Network Diagnostics</a></li>
@@ -54,9 +51,10 @@
         <div class="case-hero-grid">
           <h1 id="case-title">Network Diagnostics<br><em>Suite</em></h1>
           <div class="case-summary">
-            <p>A privacy-first connection-quality test that pairs browser measurements with an optional Windows 11 deep probe.</p>
+            <p>A privacy-first measurement system spanning the browser, a cross-platform desktop application, and a scriptable command-line probe.</p>
             <div class="case-actions jl-actions">
               <a class="case-action case-action-primary jl-button jl-button--primary" href="https://network.johnnyli.dev" target="_blank" rel="noreferrer">Launch tool <span aria-hidden="true">↗</span></a>
+              <a class="case-action jl-button" href="network-diagnostics-suite/report/">Technical report <span aria-hidden="true">→</span></a>
               <a class="case-action jl-button" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a>
             </div>
           </div>
@@ -64,9 +62,9 @@
 
         <dl class="case-facts">
           <div><dt>Role</dt><dd>Architecture and implementation</dd></div>
-          <div><dt>Web stack</dt><dd>React · TypeScript · Cloudflare Workers</dd></div>
-          <div><dt>Local probe</dt><dd>.NET 10 · Windows 11 x64</dd></div>
-          <div><dt>Status</dt><dd>44 tests · Public source</dd></div>
+          <div><dt>Clients</dt><dd>Browser · Desktop · CLI</dd></div>
+          <div><dt>Native stack</dt><dd>.NET 10 · Avalonia</dd></div>
+          <div><dt>Status</dt><dd>Active · Public source</dd></div>
         </dl>
       </section>
 
@@ -75,46 +73,46 @@
         <div class="case-section-content case-copy-grid">
           <p class="case-lead">A single download number can look healthy <em>while calls stall, games spike, or uploads make the connection unusable</em>.</p>
           <div class="case-body-copy">
-            <p>This project measures the connection under three conditions: idle, saturated download, and saturated upload. It reports the distribution instead of hiding it behind one average.</p>
-            <p>The design also separates what a browser can honestly observe from what requires operating-system access. Browser timeouts remain request loss; only the local probe reports raw packet loss.</p>
+            <p>The browser measures idle and loaded latency, request failures, throughput stability, and the difference between one connection and several parallel connections.</p>
+            <p>Native clients add evidence a webpage cannot collect honestly: ICMP packet loss, gateway latency, traceroute, resolver timing, path MTU, interfaces, routes, Wi-Fi, protocol phases, and isolated LAN throughput.</p>
           </div>
         </div>
       </section>
 
       <section class="case-section shell" aria-labelledby="model-heading">
-        <div class="case-section-label"><span>02</span><h2 id="model-heading">Two measurement layers</h2></div>
+        <div class="case-section-label"><span>02</span><h2 id="model-heading">Three clients, one model</h2></div>
         <div class="case-section-content">
-          <ol class="process-list" aria-label="Diagnostic measurement layers">
-            <li><span>Baseline</span><strong>Idle distribution</strong><p>Mean, median, minimum, maximum, 95th percentile, jitter, and browser request timeouts.</p></li>
-            <li><span>Load</span><strong>Throughput + delay</strong><p>Parallel transfers run while latency sampling continues in each direction.</p></li>
-            <li><span>Reach</span><strong>Service battery</strong><p>Optional, credential-free checks distinguish broad connectivity from one test edge.</p></li>
-            <li><span>Probe</span><strong>Operating-system path</strong><p>Internet Control Message Protocol loss, route, DNS, gateway, MTU, TCP, and TLS timing.</p></li>
+          <ol class="process-list" aria-label="Network Diagnostics Suite clients and report model">
+            <li><span>Browser</span><strong>Immediate measurement</strong><p>First-party transfer, responsiveness under load, request loss, connection scaling, and endpoint evidence.</p></li>
+            <li><span>Desktop</span><strong>Native workbench</strong><p>Connection Check, Quick, Full, and Stress with deep operating-system and local-network views.</p></li>
+            <li><span>CLI</span><strong>Scriptable probe</strong><p>Repeatable diagnostics, optional Internet transfer, interface selection, and two-machine LAN testing.</p></li>
+            <li><span>Report</span><strong>Compatible evidence</strong><p>Schema 2.0 combines plans, context, measurements, findings, and optional native or LAN sections.</p></li>
           </ol>
         </div>
       </section>
 
       <section class="case-section shell" aria-labelledby="profiles-heading">
-        <div class="case-section-label"><span>03</span><h2 id="profiles-heading">Test profiles</h2></div>
+        <div class="case-section-label"><span>03</span><h2 id="profiles-heading">Measurement plans</h2></div>
         <div class="case-section-content decision-grid">
           <article>
-            <p class="decision-number">Quick</p>
-            <h3>Core signal in about 15 seconds</h3>
-            <p>Up to 100 MB down and 32 MB up, without contacting the optional common-service targets.</p>
+            <p class="decision-number">Check</p>
+            <h3>Low-data first diagnosis</h3>
+            <p>A native 15-second path with a 28 MB maximum combined transfer and no deep operating-system diagnostics.</p>
           </article>
           <article>
-            <p class="decision-number">Full</p>
-            <h3>Longer sampling and reachability</h3>
-            <p>Up to 300 MB down and 96 MB up, followed by six clearly named service checks.</p>
+            <p class="decision-number">Quick / Full</p>
+            <h3>Known scope before starting</h3>
+            <p>Each profile exposes its time estimate, transfer ceiling, connection count, and optional checks.</p>
+          </article>
+          <article>
+            <p class="decision-number">Compare</p>
+            <h3>Independent transfer methods</h3>
+            <p>Single and aggregate stages run separately so their results do not compete with one another.</p>
           </article>
           <article>
             <p class="decision-number">Stress</p>
-            <h3>Fast-link sustained load</h3>
-            <p>Higher caps expose longer queueing behavior and require explicit acknowledgement before starting.</p>
-          </article>
-          <article>
-            <p class="decision-number">Local</p>
-            <h3>Importable deep report</h3>
-            <p>The Windows probe writes JSON locally; the dashboard parses it in the tab without uploading the file.</p>
+            <h3>Connection scaling, not one peak</h3>
+            <p>Download stages at 1, 2, 4, 8, and 10 connections show how the path responds to parallelism.</p>
           </article>
         </div>
       </section>
@@ -124,60 +122,72 @@
         <div class="case-section-content decision-grid">
           <article>
             <p class="decision-number">A</p>
-            <h3>Distributions over a headline</h3>
-            <p>Mean, median, tails, jitter, and failures stay visible because each answers a different quality question.</p>
+            <h3>Labels match the observed layer</h3>
+            <p>Browser request loss is not called packet loss, and unavailable native evidence is not guessed.</p>
           </article>
           <article>
             <p class="decision-number">B</p>
-            <h3>Loaded latency in both directions</h3>
-            <p>Download and upload saturation are tested separately so queueing pressure is attributable.</p>
+            <h3>Steady behavior stays visible</h3>
+            <p>Whole-phase rate, steady rate, stability, ramp behavior, lifecycle counts, and loaded delay remain separate.</p>
           </article>
           <article>
             <p class="decision-number">C</p>
-            <h3>Labels match the observed layer</h3>
-            <p>HTTP request loss is not called packet loss, and opaque browser reachability is not presented as server processing time.</p>
+            <h3>The endpoint is part of the result</h3>
+            <p>Candidate selection, edge, network, protocol, TLS, IP version, and interface scope accompany throughput.</p>
           </article>
           <article>
             <p class="decision-number">D</p>
             <h3>Privacy through minimization</h3>
-            <p>No accounts, analytics, cookies, result database, remote fonts, or deep-report upload path are present.</p>
+            <p>No accounts, analytics, advertising, telemetry, project result database, or native-report upload path.</p>
           </article>
         </div>
       </section>
 
-      <section class="case-section shell" aria-labelledby="results-heading">
-        <div class="case-section-label"><span>05</span><h2 id="results-heading">Validation</h2></div>
-        <div class="case-section-content">
-          <div class="metric-grid">
-            <div><strong>44</strong><span>automated tests</span></div>
-            <div><strong>3</strong><span>load conditions</span></div>
-            <div><strong>6</strong><span>service targets</span></div>
-            <div><strong>0</strong><span>retained results</span></div>
-          </div>
-          <div class="validation-copy">
-            <p>GitHub Actions type-checks and builds the web application, validates the Cloudflare Worker bundle, runs the .NET test suite, and publishes a self-contained Windows 11 x64 executable. The first complete run passed all three jobs.</p>
+      <section class="case-section shell" aria-labelledby="mlab-heading">
+        <div class="case-section-label"><span>05</span><h2 id="mlab-heading">M-Lab benchmark investigation</h2></div>
+        <div class="case-section-content case-copy-grid">
+          <p class="case-lead">A large gap with Google’s M-Lab test became <em>an investigation into the project’s own delivery path</em>.</p>
+          <div class="case-body-copy">
+            <p>Upload results were already close, but early browser downloads could report roughly half the M-Lab result. Research into NDT7 showed a single long-lived WebSocket flow to a nearby measurement server with BBR where available and server-side TCP instrumentation.</p>
+            <p>A direct R2-versus-Worker A/B test then showed the project’s Worker stream materially limiting download delivery. The browser adopted validated direct range delivery, retained the Worker as a fallback and comparison, and expanded transport evidence rather than adding connections merely to produce a larger number.</p>
+            <p><a class="text-link" href="network-diagnostics-suite/report/#mlab">Read the full investigation <span aria-hidden="true">→</span></a></p>
           </div>
         </div>
       </section>
 
-      <section class="case-section shell" aria-labelledby="probe-heading">
-        <div class="case-section-label"><span>06</span><h2 id="probe-heading">Windows deep probe</h2></div>
+      <section class="case-section shell" aria-labelledby="results-heading">
+        <div class="case-section-label"><span>06</span><h2 id="results-heading">Current system</h2></div>
+        <div class="case-section-content">
+          <div class="metric-grid">
+            <div><strong>3</strong><span>compatible clients</span></div>
+            <div><strong>4</strong><span>native profiles</span></div>
+            <div><strong>5</strong><span>native build targets</span></div>
+            <div><strong>0</strong><span>project-retained results</span></div>
+          </div>
+          <div class="validation-copy">
+            <p>Shared contracts define profiles and findings. TypeScript and C# parity fixtures keep interpretations aligned, while schema 2.0 preserves endpoint, capability, interface, HTTP/3, Internet, deep-diagnostic, LAN, and recommendation evidence.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="case-section shell" aria-labelledby="native-heading">
+        <div class="case-section-label"><span>07</span><h2 id="native-heading">Native core</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Some network questions are deliberately kept <em>outside the browser</em>.</p>
+          <p class="case-lead">Deeper evidence belongs in a native engine, <em>not behind browser-shaped approximations</em>.</p>
           <div class="case-body-copy">
-            <p>The local probe adds Internet Control Message Protocol (ICMP) packet loss, three samples per traceroute hop, default-gateway latency, direct Domain Name System (DNS) resolver timing, IPv4 path Maximum Transmission Unit (MTU), and separate DNS, Transmission Control Protocol (TCP), and Transport Layer Security (TLS) phases.</p>
-            <p>Private and link-local hops are redacted by default. Local interface, gateway, and resolver addresses appear only with an explicit command-line option.</p>
+            <p>NetworkDiagnostics.Core owns planning, endpoint selection, Internet transfer, ICMP, routes, DNS, MTU, TLS, interfaces, Wi-Fi, LAN testing, findings, capability reporting, and serialization.</p>
+            <p>Avalonia provides the Windows, macOS, and Linux desktop host. The command-line probe preserves scriptable deep diagnostics and can opt into the same Internet-transfer plans when needed.</p>
           </div>
         </div>
       </section>
 
       <section class="case-section case-section-last shell" aria-labelledby="limits-heading">
-        <div class="case-section-label"><span>07</span><h2 id="limits-heading">Privacy and limits</h2></div>
+        <div class="case-section-label"><span>08</span><h2 id="limits-heading">Privacy and limits</h2></div>
         <div class="case-section-content case-copy-grid">
           <p class="case-lead">No retained result <em>does not mean invisible traffic</em>.</p>
           <div class="case-body-copy">
-            <p>Cloudflare still processes requests needed to serve the application. Full and Stress profiles contact the six named services, which may process those requests under their own policies. Quick mode avoids that battery.</p>
-            <p>Results describe one device, browser, route, edge, and moment. VPNs, Wi-Fi contention, endpoint security, browser scheduling, and test infrastructure can all affect a run, so repeated comparisons are more useful than treating one result as a permanent rating.</p>
+            <p>Cloudflare still processes requests sent to the default endpoints. Full and Stress service checks contact the named providers. User-supplied endpoints and LAN targets remain outside the project’s trust boundary.</p>
+            <p>Every result describes one device, software stack, route, endpoint, and moment. VPNs, Wi-Fi contention, security software, power saving, browser scheduling, and background traffic can all affect a run. Repeated comparisons are more useful than one permanent rating.</p>
           </div>
         </div>
       </section>
@@ -190,6 +200,7 @@
         </div>
       </section>
     </main>
+
     <script src="../motion.js" defer></script>
     <script type="module" src="../site-switcher.js"></script>
     <script type="module" src="../portfolio-navigation.js"></script>
