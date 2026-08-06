@@ -135,6 +135,7 @@ for (const brittleSelector of [
 
 if (!behavior.includes("window.print()")) fail("Technical report print behavior is missing.");
 requireFragments(workflow, [
+  "runs-on: ubuntu-24.04",
   "poppler-utils",
   "node scripts/validate-technical-report.mjs",
   "node scripts/technical-report-visual-audit.mjs",
@@ -151,7 +152,16 @@ requireFragments(visualAudit, [
   "visual baseline changed",
   "contents anchor lands beneath the header",
 ], "Technical report rendered audit");
-if (visualBaseline.schemaVersion !== "1.0.0" || visualBaseline.playwright !== "1.54.1") fail("Technical report visual baseline metadata is invalid.");
+
+const expectedBaselineNames = ["desktop", "narrow-desktop", "mobile", "minimum", "forced-colors"];
+const baselineNames = Object.keys(visualBaseline.hashes ?? {}).sort();
+if (visualBaseline.schemaVersion !== "1.0.0" || visualBaseline.runner !== "ubuntu-24.04" || visualBaseline.playwright !== "1.54.1") {
+  fail("Technical report visual baseline metadata is invalid.");
+}
+if (baselineNames.join("|") !== [...expectedBaselineNames].sort().join("|")) fail("Technical report visual baseline viewport set is incomplete.");
+for (const name of expectedBaselineNames) {
+  if (!/^[0-9a-f]{64}$/.test(visualBaseline.hashes[name] ?? "")) fail(`Technical report visual baseline hash is invalid: ${name}`);
+}
 if (!socialCard.includes("Network Diagnostics") || !socialCard.includes("Technical report")) fail("Technical report social card content is incomplete.");
 
 console.log("Technical report contract passed.");
