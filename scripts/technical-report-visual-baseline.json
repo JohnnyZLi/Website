@@ -1,0 +1,6 @@
+{
+  "schemaVersion": "1.0.0",
+  "runner": "ubuntu-latest",
+  "playwright": "1.54.1",
+  "hashes": {}
+}
