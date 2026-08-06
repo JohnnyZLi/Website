@@ -51,8 +51,49 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
     let activeIndex = -1;
     let observer;
     let scheduled = false;
+    let navigationTarget = -1;
+    let navigationTargetTimer;
+    let indicatorY = '0px';
+    let indicatorHeight = '0px';
+    let progressValue = '0%';
+    let dynamicStyleSheet;
+
+    try {
+      if ('adoptedStyleSheets' in document && 'replaceSync' in CSSStyleSheet.prototype) {
+        dynamicStyleSheet = new CSSStyleSheet();
+        document.adoptedStyleSheets = [...document.adoptedStyleSheets, dynamicStyleSheet];
+      }
+    } catch {
+      dynamicStyleSheet = undefined;
+    }
 
     const headerHeight = () => document.querySelector('.jl-global-header')?.getBoundingClientRect().height ?? 0;
+
+    const syncDynamicStyles = () => {
+      const transitionOverride = reducedMotion.matches ? 'transition: none !important;' : '';
+      if (dynamicStyleSheet) {
+        dynamicStyleSheet.replaceSync(`
+          [data-report-toc-indicator] {
+            --report-toc-indicator-y: ${indicatorY};
+            --report-toc-indicator-height: ${indicatorHeight};
+            ${transitionOverride}
+          }
+          [data-report-progress-fill] {
+            --report-progress: ${progressValue};
+            ${transitionOverride}
+          }
+        `);
+        return;
+      }
+
+      indicator.setAttribute('data-report-dynamic-style', '');
+      progressFill.setAttribute('data-report-dynamic-style', '');
+      indicator.style.setProperty('--report-toc-indicator-y', indicatorY);
+      indicator.style.setProperty('--report-toc-indicator-height', indicatorHeight);
+      progressFill.style.setProperty('--report-progress', progressValue);
+      indicator.style.transition = reducedMotion.matches ? 'none' : '';
+      progressFill.style.transition = reducedMotion.matches ? 'none' : '';
+    };
 
     const setCurrent = (link, current) => {
       if (current) link.setAttribute('aria-current', 'location');
@@ -73,8 +114,9 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
       }
       const item = tocLinks[activeIndex]?.closest('li');
       if (!(item instanceof HTMLLIElement)) return;
-      indicator.style.setProperty('--report-toc-indicator-y', `${item.offsetTop}px`);
-      indicator.style.setProperty('--report-toc-indicator-height', `${item.offsetHeight}px`);
+      indicatorY = `${item.offsetTop}px`;
+      indicatorHeight = `${item.offsetHeight}px`;
+      syncDynamicStyles();
       indicator.classList.add('is-visible');
     };
 
@@ -109,7 +151,7 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
         const count = String(activeIndex + 1).padStart(2, '0');
         progressCounter.textContent = `${count} / ${String(sections.length).padStart(2, '0')}`;
         progressTitle.textContent = tocLinks[activeIndex].textContent.trim();
-        progressFill.style.setProperty('--report-progress', `${((activeIndex + 1) / sections.length) * 100}%`);
+        progressValue = `${((activeIndex + 1) / sections.length) * 100}%`;
         setDirectionalLink(progressPrevious, activeIndex - 1, 'Previous section');
         setDirectionalLink(progressNext, activeIndex + 1, 'Next section');
         if (updateHash && changed && window.location.hash !== `#${sections[activeIndex].id}`) {
@@ -118,15 +160,21 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
       } else {
         progressCounter.textContent = `00 / ${String(sections.length).padStart(2, '0')}`;
         progressTitle.textContent = 'Report contents';
-        progressFill.style.setProperty('--report-progress', '0%');
+        progressValue = '0%';
         setDirectionalLink(progressPrevious, -1, 'Previous section');
         setDirectionalLink(progressNext, 0, 'Next section');
       }
 
+      syncDynamicStyles();
       requestAnimationFrame(syncIndicator);
     };
 
     const calculateActiveSection = () => {
+      if (navigationTarget >= 0) {
+        setActiveSection(navigationTarget);
+        return;
+      }
+
       const readingLine = headerHeight() + Math.min(180, window.innerHeight * 0.28);
       let index = -1;
       sections.forEach((section, sectionIndex) => {
@@ -160,12 +208,20 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
       scheduleActiveSection();
     };
 
+    const releaseNavigationTarget = () => {
+      navigationTarget = -1;
+      scheduleActiveSection();
+    };
+
     const scrollToSection = (index) => {
       const section = sections[index];
       if (!(section instanceof HTMLElement)) return;
       closeProgressMenu();
+      navigationTarget = index;
+      clearTimeout(navigationTargetTimer);
       setActiveSection(index);
       section.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
+      navigationTargetTimer = setTimeout(releaseNavigationTarget, reducedMotion.matches ? 500 : 1100);
     };
 
     tocLinks.forEach((link, index) => {
@@ -215,6 +271,8 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
     });
 
     progress.hidden = false;
+    syncDynamicStyles();
+    reducedMotion.addEventListener('change', syncDynamicStyles);
     window.addEventListener('scroll', scheduleActiveSection, { passive: true });
     window.addEventListener('resize', rebuildObserver);
     document.fonts?.ready.then(() => {
