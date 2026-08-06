@@ -18,6 +18,10 @@ const requireFragments = (content, fragments, label) => {
 };
 
 requireFragments(report, [
+  '<script src="../../../assets/design-system/theme-bootstrap.js"></script>',
+  'href="../../../assets/design-system/theme-control.css"',
+  'data-theme-light="#f2efe8"',
+  'data-theme-dark="#171714"',
   'href="../../../technical-report.css"',
   'class="jl-global-header"',
   'class="report-actions jl-actions"',
