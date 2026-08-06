@@ -1,0 +1,53 @@
+name: Apply report native sections
+
+on:
+  push:
+    branches:
+      - fix/technical-report-conformance
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: fix/technical-report-conformance
+      - name: Convert table regions and retire this workflow
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          report_path = Path("projects/network-diagnostics-suite/report/index.html")
+          report = report_path.read_text()
+          report, count = re.subn(
+              r'<div class="report-table-wrap jl-table-region" role="region" tabindex="0" aria-label="([^"]+)">(.*?)</div>',
+              r'<section class="report-table-wrap jl-table-region" tabindex="0" aria-label="\1">\2</section>',
+              report,
+              flags=re.S,
+          )
+          if count != 2:
+              raise SystemExit(f"Expected two report table regions, replaced {count}")
+          report_path.write_text(report)
+
+          validator_path = Path("scripts/validate-technical-report.mjs")
+          validator = validator_path.read_text()
+          old_required = "  'class=\"report-table-wrap jl-table-region\" role=\"region\"',"
+          new_required = "  '<section class=\"report-table-wrap jl-table-region\"',"
+          old_forbidden = "  '<section class=\"report-table-wrap\"',"
+          new_forbidden = "  '<div class=\"report-table-wrap jl-table-region\" role=\"region\"',"
+          if old_required not in validator or old_forbidden not in validator:
+              raise SystemExit("Technical report validator fragments did not match")
+          validator = validator.replace(old_required, new_required).replace(old_forbidden, new_forbidden)
+          validator_path.write_text(validator)
+          PY
+          rm .github/workflows/apply-report-native-sections.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add projects/network-diagnostics-suite/report/index.html scripts/validate-technical-report.mjs .github/workflows/apply-report-native-sections.yml
+          git commit -m "Use native report table regions"
+          git push origin HEAD:fix/technical-report-conformance
