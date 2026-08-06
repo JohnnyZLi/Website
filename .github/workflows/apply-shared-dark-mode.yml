@@ -1,0 +1,132 @@
+name: Apply shared dark mode
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.head_ref == 'feat/shared-dark-mode' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: feat/shared-dark-mode
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - run: npm install --no-audit --no-fund
+      - run: npm run design-system:sync
+      - name: Migrate portfolio routes and validation
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import json
+          import re
+
+          html_paths = [Path('index.html'), *sorted(Path('projects').rglob('*.html'))]
+          for path in html_paths:
+              text = path.read_text()
+              identity = re.search(r'<link rel="stylesheet" href="([^"]*assets/design-system/site-identity\.css)">', text)
+              if not identity:
+                  raise SystemExit(f'Missing shared identity stylesheet in {path}')
+              identity_href = identity.group(1)
+              prefix = identity_href.removesuffix('site-identity.css')
+              bootstrap = f'    <script src="{prefix}theme-bootstrap.js"></script>\n'
+              theme_css = f'    <link rel="stylesheet" href="{prefix}theme-control.css">\n'
+              if 'theme-bootstrap.js' not in text:
+                  first_stylesheet = text.index('    <link rel="stylesheet"')
+                  text = text[:first_stylesheet] + bootstrap + text[first_stylesheet:]
+              if 'theme-control.css' not in text:
+                  marker = f'    <link rel="stylesheet" href="{identity_href}">\n'
+                  if marker not in text:
+                      raise SystemExit(f'Cannot place theme stylesheet in {path}')
+                  text = text.replace(marker, marker + theme_css, 1)
+              text = re.sub(
+                  r'<meta name="theme-color" content="([^"]+)">',
+                  r'<meta name="theme-color" content="\1" data-theme-light="#f2efe8" data-theme-dark="#171714">',
+                  text,
+                  count=1,
+              )
+              if 'data-theme-light=' not in text:
+                  raise SystemExit(f'Missing theme-color metadata in {path}')
+              path.write_text(text)
+
+          adapter = Path('design-system-migration.css')
+          css = adapter.read_text()
+          css = css.replace(
+              'box-shadow: 0 0 0 5px var(--jl-color-focus-gap-light);',
+              'box-shadow: 0 0 0 5px var(--_jl-focus-gap-color);',
+          )
+          dark_focus = '''\n:root[data-theme="dark"] .contact-section,\n:root[data-theme="dark"] .case-next,\n:root[data-theme="dark"] .output-grid pre {\n  --_jl-focus-gap-color: var(--jl-color-focus-gap-light);\n}\n'''
+          if dark_focus.strip() not in css:
+              css += dark_focus
+          adapter.write_text(css)
+
+          conformance_path = Path('design-system.conformance.json')
+          conformance = json.loads(conformance_path.read_text())
+          conformance['rules']['DS-THEME-001'] = {
+              'evidence': [
+                  {'type': 'contains', 'file': 'scripts/sync-design-system.mjs', 'values': ['styles/theme-control.css', 'scripts/theme-bootstrap.js']},
+                  {'type': 'contains', 'file': 'index.html', 'values': ['assets/design-system/theme-bootstrap.js', 'assets/design-system/theme-control.css', 'data-theme-light=', 'data-theme-dark=']},
+                  {'type': 'contains', 'file': 'scripts/theme-visual-audit.mjs', 'values': ['System follows operating-system changes', 'aria-pressed', 'beforeprint', 'theme-color']}
+              ]
+          }
+          conformance_path.write_text(json.dumps(conformance, indent=2) + '\n')
+
+          validator = Path('scripts/validate-design-system-integration.mjs')
+          text = validator.read_text()
+          text = text.replace(
+              'const siteControls = await read("assets/design-system/site-controls.js");',
+              'const siteControls = await read("assets/design-system/site-controls.js");\nconst themeBootstrap = await read("assets/design-system/theme-bootstrap.js");\nconst themeStyles = await read("assets/design-system/theme-control.css");',
+          )
+          text = text.replace(
+              '"DS-TEST-001"]',
+              '"DS-TEST-001", "DS-THEME-001"]',
+          )
+          text = text.replace(
+              '"assets/design-system/site-identity.css",\n  "styles.css",',
+              '"assets/design-system/site-identity.css",\n  "assets/design-system/theme-control.css",\n  "styles.css",',
+          )
+          text = text.replace(
+              "  'class=\"jl-global-header\"'",
+              "  '<script src=\"assets/design-system/theme-bootstrap.js\"></script>', 'href=\"assets/design-system/theme-control.css\"',\n  'data-theme-light=\"#f2efe8\"', 'data-theme-dark=\"#171714\"',\n  'class=\"jl-global-header\"'",
+              1,
+          )
+          text = text.replace(
+              '"export const OWNED_SITES",',
+              '"export const OWNED_SITES", "export const THEME_PREFERENCES", "export function installThemeControl",',
+          )
+          text = text.replace(
+              '], "Shared site-control contract");',
+              '], "Shared site-control contract");\nrequireFragments(themeBootstrap, ["prefers-color-scheme: dark", "data-theme", "data-theme-preference", "Domain=.johnnyli.dev", "beforeprint", "afterprint", "theme-color"], "Shared pre-paint theme contract");\nrequireFragments(themeStyles, [".jl-theme-menu-item", ".jl-theme-options", "aria-pressed", "@media (forced-colors: active)"], "Shared appearance-control styles");',
+              1,
+          )
+          text = text.replace(
+              "  'readFile(resolve(\"design-system.lock.json\")', 'styles/content-primitives.css',",
+              "  'readFile(resolve(\"design-system.lock.json\")', 'styles/content-primitives.css', 'styles/theme-control.css', 'scripts/theme-bootstrap.js',",
+          )
+          text = text.replace(
+              "    'href=\"../assets/design-system/site-identity.css\"', 'href=\"../design-system-migration.css\"',",
+              "    'href=\"../assets/design-system/site-identity.css\"', 'href=\"../assets/design-system/theme-control.css\"',\n    '<script src=\"../assets/design-system/theme-bootstrap.js\"></script>', 'data-theme-light=', 'data-theme-dark=',\n    'href=\"../design-system-migration.css\"',",
+          )
+          validator.write_text(text)
+
+          report_validator = Path('scripts/validate-technical-report.mjs')
+          text = report_validator.read_text()
+          text = text.replace(
+              "  'href=\"../../../technical-report.css\"',",
+              "  '<script src=\"../../../assets/design-system/theme-bootstrap.js\"></script>',\n  'href=\"../../../assets/design-system/theme-control.css\"',\n  'data-theme-light=\"#f2efe8\"',\n  'data-theme-dark=\"#171714\"',\n  'href=\"../../../technical-report.css\"',",
+          )
+          report_validator.write_text(text)
+
+          Path('.github/workflows/apply-shared-dark-mode.yml').unlink()
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "Migrate portfolio to shared dark mode"
+          git push origin HEAD:feat/shared-dark-mode
