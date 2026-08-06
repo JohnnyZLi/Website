@@ -254,7 +254,7 @@ try {
         progressTitle: document.querySelector('[data-report-progress-title]')?.textContent.trim() ?? null,
         previousHref: document.querySelector('[data-report-progress-previous]')?.getAttribute('href') ?? null,
         nextHref: document.querySelector('[data-report-progress-next]')?.getAttribute('href') ?? null,
-        progressWidth: progressFill?.style.getPropertyValue('--report-progress') ?? null,
+        progressWidth: progressFill ? getComputedStyle(progressFill).getPropertyValue('--report-progress').trim() : null,
         progressTransition: progressFill ? getComputedStyle(progressFill).transitionDuration : null,
         progressRect: rect(progress),
         sectionRect: rect(currentSection),
