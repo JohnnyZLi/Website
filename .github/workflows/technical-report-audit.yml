@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/technical-report-audit.yml"
+      - "scripts/technical-report-visual-baseline.json"
 
 permissions:
   contents: write
