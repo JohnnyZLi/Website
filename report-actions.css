@@ -1,0 +1,71 @@
+.report-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+  row-gap: 0;
+  align-items: start;
+}
+
+.report-actions .report-action {
+  width: 100%;
+}
+
+.report-actions .report-action-primary {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: stretch;
+  min-height: var(--jl-control-height-lg, 52px);
+  margin: 0;
+  padding: 0 20px;
+  border: 1px solid var(--jl-color-accent);
+  border-radius: 6px;
+  background: var(--jl-color-accent);
+  color: var(--jl-color-on-accent);
+  justify-content: center;
+}
+
+.report-actions .report-action:not(.report-action-primary) {
+  grid-column: 2;
+  min-height: 0;
+  margin: 0;
+  padding: 10px 0 8px;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  justify-content: space-between;
+}
+
+.report-actions .report-action:not(.report-action-primary) span {
+  color: var(--jl-color-accent-decorative);
+}
+
+.report-actions .report-action:not(.report-action-primary):focus-visible {
+  border-bottom-color: var(--jl-color-accent-hover);
+  color: var(--jl-color-accent-hover);
+}
+
+@media (hover: hover) {
+  .report-actions .report-action:not(.report-action-primary):hover {
+    border-bottom-color: var(--jl-color-accent-hover);
+    background: transparent;
+    color: var(--jl-color-accent-hover);
+  }
+}
+
+@media (max-width: 600px) {
+  .report-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .report-actions .report-action-primary,
+  .report-actions .report-action:not(.report-action-primary) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .report-actions .report-action-primary + .report-action {
+    margin-top: 12px;
+  }
+}
