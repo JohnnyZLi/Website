@@ -2,161 +2,79 @@ name: Visual audit
 
 on:
   pull_request:
-  workflow_dispatch:
+    paths:
+      - ".github/workflows/visual-audit.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  screenshots:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+  consolidate-report-navigation:
+    if: github.event.pull_request.head.ref == 'feat/technical-report-scrollspy'
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 24
-      - run: npm install --no-audit --no-fund
-      - run: npm install --no-save playwright@1.54.1
-      - run: npx playwright install --with-deps chromium
-      - name: Start static site
+          ref: feat/technical-report-scrollspy
+          fetch-depth: 0
+      - name: Consolidate report contents CSS
         run: |
-          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/portfolio-server.log 2>&1 &
-          echo $! > /tmp/portfolio-server.pid
-          for attempt in {1..30}; do
-            curl --fail --silent http://127.0.0.1:4173/ >/dev/null && exit 0
-            sleep 1
-          done
-          cat /tmp/portfolio-server.log
-          exit 1
-      - name: Capture and verify every page
-        run: |
-          mkdir -p visual-audit
-          node <<'NODE'
-          const fs = require('node:fs');
-          const { chromium } = require('playwright');
+          git fetch origin main
+          python3 <<'PY'
+          from pathlib import Path
 
-          const pages = [
-            ['home', '/'],
-            ['network-config-auditor', '/projects/network-config-auditor.html'],
-            ['ospf-resiliency-lab', '/projects/ospf-resiliency-lab.html'],
-            ['network-diagnostics-suite', '/projects/network-diagnostics-suite.html'],
-            ['reliable-udp-transport', '/projects/reliable-udp-transport.html'],
-            ['concurrent-c2s-proxy', '/projects/concurrent-c2s-proxy.html'],
-          ];
-          const viewports = [
-            ['desktop', { width: 1440, height: 1000 }],
-            ['narrow-desktop', { width: 720, height: 900 }],
-            ['mobile', { width: 390, height: 844 }],
-            ['minimum', { width: 320, height: 700 }],
-          ];
-          const near = (actual, expected, tolerance = 0.75) =>
-            typeof actual === 'number' && Math.abs(actual - expected) <= tolerance;
+          path = Path('technical-report.css')
+          css = path.read_text()
 
-          async function inspectPage(page, { name, viewportName, path, screenshotPrefix }) {
-            await page.screenshot({ path: `visual-audit/${screenshotPrefix}-${name}-${viewportName}.png`, fullPage: true });
-            const metrics = await page.evaluate(() => ({
-              title: document.title,
-              viewportWidth: window.innerWidth,
-              documentWidth: document.documentElement.scrollWidth,
-              overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
-              h1Count: document.querySelectorAll('h1').length,
-              headerHeight: document.querySelector('.jl-global-header')?.getBoundingClientRect().height ?? null,
-              headerInnerHeight: document.querySelector('.jl-global-header__inner')?.getBoundingClientRect().height ?? null,
-              sitesButton: (() => {
-                const element = document.querySelector('.jl-site-switcher__button');
-                if (!(element instanceof HTMLElement)) return null;
-                const rect = element.getBoundingClientRect();
-                const style = getComputedStyle(element);
-                return { width: rect.width, height: rect.height, fontSize: style.fontSize, fontWeight: style.fontWeight };
-              })(),
-            }));
+          original_item = '''.report-toc li {
+  counter-increment: toc;
+  border-top: 1px solid var(--rule);
+}'''
+          merged_item = '''.report-toc li {
+  position: relative;
+  counter-increment: toc;
+  border-top: 1px solid var(--rule);
+}'''
+          original_link = '''.report-toc a {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  padding: 12px 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}'''
+          merged_link = '''.report-toc a {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  padding: 12px 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+  transition: color 160ms ease, transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}'''
+          duplicate = '''.report-toc li {
+  position: relative;
+}
 
-            const problems = [];
-            const compactHeader = viewportName === 'mobile' || viewportName === 'minimum';
-            const expectedInnerHeight = compactHeader ? 68 : 82;
-            const expectedOuterHeight = compactHeader ? 69 : 83;
-            const expectedButtonHeight = compactHeader ? 40 : 44;
-            if (metrics.overflow) problems.push('document overflow');
-            if (metrics.h1Count !== 1) problems.push(`expected one h1, found ${metrics.h1Count}`);
-            if (!near(metrics.headerInnerHeight, expectedInnerHeight)) problems.push(`header inner ${metrics.headerInnerHeight}, expected ${expectedInnerHeight}`);
-            if (!near(metrics.headerHeight, expectedOuterHeight)) problems.push(`header outer ${metrics.headerHeight}, expected ${expectedOuterHeight}`);
-            if (!metrics.sitesButton) {
-              problems.push('Sites button missing');
-            } else {
-              if (!near(metrics.sitesButton.width, 88)) problems.push(`Sites width ${metrics.sitesButton.width}`);
-              if (!near(metrics.sitesButton.height, expectedButtonHeight)) problems.push(`Sites height ${metrics.sitesButton.height}, expected ${expectedButtonHeight}`);
-              if (metrics.sitesButton.fontSize !== '13px') problems.push(`Sites font size ${metrics.sitesButton.fontSize}`);
-              if (metrics.sitesButton.fontWeight !== '700') problems.push(`Sites font weight ${metrics.sitesButton.fontWeight}`);
-            }
+.report-toc a {
+  transition: color 160ms ease, transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
 
-            const sitesButton = page.locator('.jl-site-switcher__button');
-            const sitesMenu = page.locator('#owned-sites-menu');
-            await sitesButton.click();
-            await sitesMenu.waitFor({ state: 'visible' });
-            if ((await sitesMenu.locator('a').count()) !== 3) problems.push('Sites menu does not contain three links');
-            if ((await sitesMenu.locator('a[aria-current="page"]').count()) !== 1) problems.push('Sites menu current-page state is incorrect');
-            if ((await sitesButton.getAttribute('aria-expanded')) !== 'true') problems.push('Sites button did not expose expanded state');
-            await page.screenshot({ path: `visual-audit/${screenshotPrefix}-${name}-${viewportName}-sites-open.png` });
-            await page.keyboard.press('Escape');
-            if (await sitesMenu.isVisible()) problems.push('Sites menu did not close with Escape');
-            if (!(await sitesButton.evaluate((element) => document.activeElement === element))) problems.push('Sites button did not regain focus after Escape');
+'''
 
-            const nav = page.locator('[data-header-menu], [data-portfolio-nav]').first();
-            const navButton = page.locator('[data-header-menu-button], [data-portfolio-nav-button]').first();
-            await navButton.waitFor({ state: 'attached' });
-            const compactNavigation = viewportName !== 'desktop';
-            if (compactNavigation) {
-              if (!(await navButton.isVisible())) problems.push('compact Menu button is hidden');
-              await navButton.click();
-              await nav.waitFor({ state: 'visible' });
-              const expectedLinks = name === 'home' ? 4 : 3;
-              if ((await nav.locator('a').count()) !== expectedLinks) problems.push(`compact navigation has the wrong link count`);
-              if ((await navButton.getAttribute('aria-expanded')) !== 'true') problems.push('compact Menu did not expose expanded state');
-              await page.keyboard.press('Escape');
-              if (await nav.isVisible()) problems.push('compact navigation did not close with Escape');
-              if (!(await navButton.evaluate((element) => document.activeElement === element))) problems.push('compact Menu did not regain focus after Escape');
-            } else {
-              if (await navButton.isVisible()) problems.push('desktop Menu button should be hidden');
-              if (!(await nav.isVisible())) problems.push('desktop navigation should be visible');
-            }
-
-            return { name, viewportName, path, ...metrics, problems };
-          }
-
-          async function auditBase(browser, baseUrl, screenshotPrefix, viewportSet) {
-            const report = [];
-            for (const [viewportName, viewport] of viewportSet) {
-              const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
-              for (const [name, path] of pages) {
-                const page = await context.newPage();
-                const response = await page.goto(`${baseUrl}${path}`, { waitUntil: 'networkidle' });
-                const entry = await inspectPage(page, { name, viewportName, path, screenshotPrefix });
-                if (!response || !response.ok()) entry.problems.push(`HTTP ${response?.status() ?? 'no response'}`);
-                report.push(entry);
-                await page.close();
-              }
-              await context.close();
-            }
-            return report;
-          }
-
-          (async () => {
-            const browser = await chromium.launch({ headless: true });
-            const localReport = await auditBase(browser, 'http://127.0.0.1:4173', 'local', viewports);
-            const productionReport = await auditBase(browser, 'https://johnnyli.dev', 'production', [viewports[0], viewports[2]]);
-            fs.writeFileSync('visual-audit/report.json', JSON.stringify({ local: localReport, production: productionReport }, null, 2));
-            const failures = [...localReport, ...productionReport].filter((entry) => entry.problems.length > 0);
-            if (failures.length) {
-              console.error('Rendered contract failures:', failures);
-              process.exitCode = 1;
-            }
-            await browser.close();
-          })();
-          NODE
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: always()
-        with:
-          name: portfolio-visual-audit
-          path: visual-audit
-          retention-days: 7
+          if css.count(original_item) != 1 or css.count(original_link) != 1 or css.count(duplicate) != 1:
+              raise SystemExit('Expected report contents selector structure was not found')
+          css = css.replace(original_item, merged_item, 1)
+          css = css.replace(original_link, merged_link, 1)
+          css = css.replace(duplicate, '', 1)
+          path.write_text(css)
+          PY
+          git show origin/main:.github/workflows/visual-audit.yml > .github/workflows/visual-audit.yml
+          git show origin/main:.github/workflows/technical-report-audit.yml > .github/workflows/technical-report-audit.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add technical-report.css .github/workflows/visual-audit.yml .github/workflows/technical-report-audit.yml
+          git commit -m "Consolidate report contents selectors"
+          git push origin HEAD:feat/technical-report-scrollspy
