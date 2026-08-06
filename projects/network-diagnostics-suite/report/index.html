@@ -135,7 +135,7 @@
               <p>The close upload values mattered. They weakened the idea that the browser, access connection, or all Cloudflare traffic was universally capped near 200 Mbps. The discrepancy was concentrated in the project’s download implementation.</p>
               <p>Research into NDT7 corrected another assumption: M-Lab was not simply opening many parallel browser downloads. NDT7 uses one long-lived WebSocket over one TCP connection, usually to a nearby well-provisioned server, with BBR where available and server-side TCP instrumentation. It measures application-level goodput over a mature measurement path.<a class="report-citation" href="#ref-1" aria-label="Reference 1">[1]</a><a class="report-citation" href="#ref-3" aria-label="Reference 3">[3]</a></p>
             </div>
-            <div class="report-table-wrap jl-table-region" role="region" tabindex="0" aria-label="Observed comparison between M-Lab and Network Diagnostics Suite">
+            <section class="report-table-wrap jl-table-region" tabindex="0" aria-label="Observed comparison between M-Lab and Network Diagnostics Suite">
               <table class="report-table">
                 <thead><tr><th scope="col">Development observation</th><th scope="col">M-Lab</th><th scope="col">Network Diagnostics Suite</th><th scope="col">Interpretation</th></tr></thead>
                 <tbody>
@@ -144,7 +144,7 @@
                   <tr><th scope="row">Post-change observation</th><td>Not run concurrently</td><td>≈370.1 median / 366.3 steady down</td><td>The earlier 180–200 Mbps ceiling was not an unavoidable browser limit.</td></tr>
                 </tbody>
               </table>
-            </div>
+            </section>
             <p class="report-evidence-note"><strong>Evidence boundary:</strong> these values were retained from back-to-back development testing, not a controlled benchmark dataset. The earliest observations did not preserve exact timestamps, browser build, device configuration, selected M-Lab server, or exported reports. They are included as engineering observations; the project-controlled R2-versus-Worker A/B below is the stronger causal evidence.</p>
           </section>
 
@@ -179,7 +179,7 @@
               <p>Single uses one connection in each direction. Aggregate uses the profile’s configured parallel connection count. Compare runs independent single and aggregate stages so the methods do not compete. Stress measures download scaling at 1, 2, 4, 8, and 10 connections before upload comparison.</p>
               <p>Each client computes the actual stage sequence, estimated time, and maximum transfer before starting. Caps are ceilings, not promised consumption. A slower connection reaches the duration first; a fast connection may reach the byte ceiling first.</p>
             </div>
-            <div class="report-table-wrap jl-table-region" role="region" tabindex="0" aria-label="Native measurement profile limits">
+            <section class="report-table-wrap jl-table-region" tabindex="0" aria-label="Native measurement profile limits">
               <table class="report-table">
                 <thead><tr><th scope="col">Profile</th><th scope="col">Base estimate</th><th scope="col">Download cap</th><th scope="col">Upload cap</th><th scope="col">Deep diagnostics</th></tr></thead>
                 <tbody>
@@ -189,7 +189,7 @@
                   <tr><th scope="row">Stress</th><td>60 seconds</td><td>3 GB</td><td>512 MB</td><td>Yes</td></tr>
                 </tbody>
               </table>
-            </div>
+            </section>
           </section>
 
           <section class="report-section" id="interpretation" aria-labelledby="interpretation-heading">

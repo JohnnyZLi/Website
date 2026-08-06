@@ -21,7 +21,7 @@ requireFragments(report, [
   'report-action-primary jl-button jl-button--primary',
   'report-action-resource jl-button',
   'class="report-abstract-lede"',
-  'class="report-table-wrap jl-table-region" role="region"',
+  '<section class="report-table-wrap jl-table-region"',
   'class="report-commit"',
   'class="report-citation"',
   '<script src="../../../technical-report.js" defer></script>',
@@ -33,7 +33,7 @@ for (const forbidden of [
   "report-header",
   "<time>",
   '<script src="../../../motion.js"',
-  '<section class="report-table-wrap"',
+  '<div class="report-table-wrap jl-table-region" role="region"',
   "Google’s M-Lab test",
   "report-action report-action-primary\" type=\"button\"",
 ]) {
