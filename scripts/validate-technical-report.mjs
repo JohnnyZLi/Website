@@ -58,7 +58,7 @@ requireFragments(styles, [
   ".bar-fill-direct",
   ".bar-fill-worker",
   ".report-grid article:nth-child(n + 3)",
-  ".report-grid article + article",
+  ".report-grid article:nth-child(n + 2)",
   "@media (max-width: 900px)",
   "@media (max-width: 420px)",
   "@media (forced-colors: active)",
