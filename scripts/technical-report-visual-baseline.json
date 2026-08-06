@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "runner": "ubuntu-latest",
+  "runner": "ubuntu-24.04",
   "playwright": "1.54.1",
   "hashes": {
     "desktop": "97e8c98cf3bb131146c8b541e1ffbedb9e0e88c335a1753ce78e9372cc4ed995",
