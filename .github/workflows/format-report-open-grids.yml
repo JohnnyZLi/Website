@@ -1,0 +1,55 @@
+name: Format report open grids
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.head_ref == 'fix/report-open-grids' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: fix/report-open-grids
+      - name: Normalize compact grid indentation
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('technical-report.css')
+          css = path.read_text()
+          old = '''  .report-grid article {
+          padding: 25px 0 28px;
+          border-top: 0;
+          border-right: 0;
+        }
+
+        .report-grid article + article {
+          border-top: 1px solid var(--rule);
+        }
+          '''.replace('        ', '')
+          new = '''  .report-grid article {
+            padding: 25px 0 28px;
+            border-top: 0;
+            border-right: 0;
+          }
+
+          .report-grid article + article {
+            border-top: 1px solid var(--rule);
+          }
+          '''.replace('          ', '')
+          if old not in css:
+              raise SystemExit('Compact report-grid block did not match')
+          path.write_text(css.replace(old, new))
+          PY
+          rm .github/workflows/format-report-open-grids.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add technical-report.css .github/workflows/format-report-open-grids.yml
+          git commit -m "Format compact report grid rules"
+          git push origin HEAD:fix/report-open-grids
