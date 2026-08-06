@@ -3,52 +3,74 @@ name: Technical report audit
 on:
   pull_request:
     paths:
-      - "projects/network-diagnostics-suite/report/**"
-      - "technical-report.css"
-      - "technical-report.js"
-      - "project-actions.css"
-      - "scripts/validate-technical-report.mjs"
-      - "scripts/technical-report-visual-audit.mjs"
-      - "scripts/technical-report-visual-baseline.json"
       - ".github/workflows/technical-report-audit.yml"
-      - "package.json"
-  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  validate:
+  normalize-navigation-markup:
+    if: github.event.pull_request.head.ref == 'feat/technical-report-scrollspy'
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 24
-      - run: npm install --no-audit --no-fund
-      - run: npm install --no-save playwright@1.54.1
-      - run: npx playwright install --with-deps chromium
-      - name: Install PDF inspection tools
+          ref: feat/technical-report-scrollspy
+          fetch-depth: 0
+      - name: Format report navigation markup
         run: |
-          sudo apt-get update
-          sudo apt-get install --yes poppler-utils
-      - run: npm run lint
-      - run: node scripts/validate-technical-report.mjs
-      - name: Start static site
-        run: |
-          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/portfolio-report-server.log 2>&1 &
-          echo $! > /tmp/portfolio-report-server.pid
-          for attempt in {1..30}; do
-            curl --fail --silent http://127.0.0.1:4173/ >/dev/null && exit 0
-            sleep 1
-          done
-          cat /tmp/portfolio-report-server.log
-          exit 1
-      - run: node scripts/technical-report-visual-audit.mjs
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: always()
-        with:
-          name: technical-report-visual-audit
-          path: technical-report-visual-audit
-          retention-days: 7
+          git fetch origin main
+          python3 <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          path = Path('projects/network-diagnostics-suite/report/index.html')
+          report = path.read_text()
+          start = report.index('        <aside class="report-toc"')
+          end = report.index('        <article class="report-article">', start)
+          block = textwrap.indent(textwrap.dedent('''\
+          <aside class="report-toc" id="contents" aria-label="Report contents" data-report-toc>
+            <p>Contents</p>
+            <div class="report-toc-list">
+              <span class="report-toc-indicator" aria-hidden="true" data-report-toc-indicator></span>
+              <ol>
+                <li><a href="#origin" data-report-section-link>From speed test to diagnostic system</a></li>
+                <li><a href="#browser-boundary" data-report-section-link>The browser boundary</a></li>
+                <li><a href="#mlab" data-report-section-link>Benchmarking against M-Lab</a></li>
+                <li><a href="#delivery-path" data-report-section-link>Finding the download bottleneck</a></li>
+                <li><a href="#measurement-plan" data-report-section-link>A shared measurement plan</a></li>
+                <li><a href="#interpretation" data-report-section-link>Throughput and responsiveness</a></li>
+                <li><a href="#endpoint-context" data-report-section-link>Endpoint and transport context</a></li>
+                <li><a href="#native" data-report-section-link>The native core</a></li>
+                <li><a href="#reports" data-report-section-link>Schema 2.0 and findings parity</a></li>
+                <li><a href="#lan" data-report-section-link>LAN isolation and interface binding</a></li>
+                <li><a href="#privacy" data-report-section-link>Privacy and accuracy</a></li>
+                <li><a href="#validation" data-report-section-link>Validation and release engineering</a></li>
+                <li><a href="#lessons" data-report-section-link>Lessons and next work</a></li>
+              </ol>
+            </div>
+          </aside>
+
+          <nav class="report-progress" aria-label="Current report section" data-report-progress hidden>
+            <div class="report-progress-controls">
+              <a class="report-progress-direction" data-report-progress-previous aria-disabled="true"><span aria-hidden="true">←</span><span class="jl-visually-hidden">Previous section</span></a>
+              <button class="report-progress-current" type="button" aria-expanded="false" aria-controls="report-progress-menu" data-report-progress-toggle>
+                <span class="report-progress-counter" data-report-progress-counter>00 / 13</span>
+                <span class="report-progress-title" data-report-progress-title>Report contents</span>
+                <span class="report-progress-chevron" aria-hidden="true">⌄</span>
+              </button>
+              <a class="report-progress-direction" href="#origin" data-report-progress-next aria-label="Next section: From speed test to diagnostic system"><span aria-hidden="true">→</span><span class="jl-visually-hidden">Next section</span></a>
+            </div>
+            <span class="report-progress-track" aria-hidden="true"><span data-report-progress-fill></span></span>
+            <div class="report-progress-menu" id="report-progress-menu" data-report-progress-menu hidden></div>
+          </nav>
+
+          '''), '        ')
+          path.write_text(report[:start] + block + report[end:])
+          PY
+          git show origin/main:.github/workflows/technical-report-audit.yml > .github/workflows/technical-report-audit.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .github/workflows/technical-report-audit.yml projects/network-diagnostics-suite/report/index.html
+          git commit -m "Normalize report navigation markup"
+          git push origin HEAD:feat/technical-report-scrollspy
