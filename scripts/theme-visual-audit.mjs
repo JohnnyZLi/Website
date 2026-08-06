@@ -102,6 +102,7 @@ try {
   const printPage = await printContext.newPage();
   await printPage.goto(`${baseUrl}/projects/network-diagnostics-suite/report/`, { waitUntil: "networkidle" });
   const printProblems = [];
+  await printPage.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
   let printState = await printPage.evaluate(() => ({ theme: document.documentElement.dataset.theme, themeColor: document.querySelector('meta[name="theme-color"]')?.content }));
   if (printState.theme !== "light" || printState.themeColor?.toLowerCase() !== "#f2efe8") printProblems.push("beforeprint did not force light paper theme");
   await printPage.emulateMedia({ media: "print" });
