@@ -23,78 +23,39 @@ jobs:
 
           css_path = Path("technical-report.css")
           css = css_path.read_text()
-          old_css = '''.report-principle {
-            margin-top: 46px;
-            padding: 30px 0;
-            border-top: 2px solid var(--jl-color-accent);
-            border-bottom: 1px solid var(--rule);
-          }
-          '''.replace('          ', '')
-          new_css = '''.report-principle {
-            margin-top: 46px;
-            padding: 30px 0;
-            border-top: 2px solid var(--jl-color-accent);
-          }
-          '''.replace('          ', '')
-          if old_css not in css:
-              raise SystemExit("Report principle boundary block did not match")
-          css_path.write_text(css.replace(old_css, new_css))
+          old_css = ".report-principle {\n  margin-top: 46px;\n  padding: 30px 0;\n  border-top: 2px solid var(--jl-color-accent);\n  border-bottom: 1px solid var(--rule);\n}"
+          new_css = ".report-principle {\n  margin-top: 46px;\n  padding: 30px 0;\n  border-top: 2px solid var(--jl-color-accent);\n}"
+          if css.count(old_css) != 1:
+              raise SystemExit(f"Expected one report principle boundary block, found {css.count(old_css)}")
+          css_path.write_text(css.replace(old_css, new_css, 1))
 
           audit_path = Path("scripts/technical-report-visual-audit.mjs")
           audit = audit_path.read_text()
-          old_nodes = '''      const metadata = document.querySelector(".report-meta");
-                const timeline = document.querySelector(".report-timeline article");
-                const reportGrids ='''.replace('                ', '      ')
-          new_nodes = '''      const metadata = document.querySelector(".report-meta");
-                const timeline = document.querySelector(".report-timeline article");
-                const principle = document.querySelector(".report-principle");
-                const firstSection = document.querySelector(".report-section");
-                const reportGrids ='''.replace('                ', '      ')
-          if old_nodes not in audit:
-              raise SystemExit("Visual audit node setup did not match")
-          audit = audit.replace(old_nodes, new_nodes)
+          old_nodes = '      const timeline = document.querySelector(".report-timeline article");\n      const reportGrids ='
+          new_nodes = '      const timeline = document.querySelector(".report-timeline article");\n      const principle = document.querySelector(".report-principle");\n      const firstSection = document.querySelector(".report-section");\n      const reportGrids ='
+          if audit.count(old_nodes) != 1:
+              raise SystemExit(f"Expected one visual audit node anchor, found {audit.count(old_nodes)}")
+          audit = audit.replace(old_nodes, new_nodes, 1)
 
-          old_metrics = '''        timelineDisplay: timeline ? getComputedStyle(timeline).display : null,
-                reportGrids,
-          '''.replace('                ', '        ')
-          new_metrics = '''        timelineDisplay: timeline ? getComputedStyle(timeline).display : null,
-                principleBottomBorder: principle ? Number.parseFloat(getComputedStyle(principle).borderBottomWidth) : null,
-                firstSectionTopBorder: firstSection ? Number.parseFloat(getComputedStyle(firstSection).borderTopWidth) : null,
-                reportGrids,
-          '''.replace('                ', '        ')
-          if old_metrics not in audit:
-              raise SystemExit("Visual audit metric block did not match")
-          audit = audit.replace(old_metrics, new_metrics)
+          old_metrics = '        timelineDisplay: timeline ? getComputedStyle(timeline).display : null,\n        reportGrids,'
+          new_metrics = '        timelineDisplay: timeline ? getComputedStyle(timeline).display : null,\n        principleBottomBorder: principle ? Number.parseFloat(getComputedStyle(principle).borderBottomWidth) : null,\n        firstSectionTopBorder: firstSection ? Number.parseFloat(getComputedStyle(firstSection).borderTopWidth) : null,\n        reportGrids,'
+          if audit.count(old_metrics) != 1:
+              raise SystemExit(f"Expected one visual audit metric anchor, found {audit.count(old_metrics)}")
+          audit = audit.replace(old_metrics, new_metrics, 1)
 
-          old_checks = '''    const expectedTimeline = viewport.width <= 420 ? "block" : "grid";
-              if (metrics.timelineDisplay !== expectedTimeline) problems.push(`timeline display is ${metrics.timelineDisplay}, expected ${expectedTimeline}`);
-              for (const [gridIndex, grid] of metrics.reportGrids.entries()) {
-          '''.replace('              ', '    ')
-          new_checks = '''    const expectedTimeline = viewport.width <= 420 ? "block" : "grid";
-              if (metrics.timelineDisplay !== expectedTimeline) problems.push(`timeline display is ${metrics.timelineDisplay}, expected ${expectedTimeline}`);
-              if (metrics.principleBottomBorder !== 0) problems.push(`report principle adds a duplicate bottom rule at ${metrics.principleBottomBorder}px`);
-              if (metrics.firstSectionTopBorder === null || metrics.firstSectionTopBorder < 1) problems.push("first report section is missing its boundary rule");
-              for (const [gridIndex, grid] of metrics.reportGrids.entries()) {
-          '''.replace('              ', '    ')
-          if old_checks not in audit:
-              raise SystemExit("Visual audit boundary check anchor did not match")
-          audit_path.write_text(audit.replace(old_checks, new_checks))
+          old_checks = '    if (metrics.timelineDisplay !== expectedTimeline) problems.push(`timeline display is ${metrics.timelineDisplay}, expected ${expectedTimeline}`);\n    for (const [gridIndex, grid] of metrics.reportGrids.entries()) {'
+          new_checks = '    if (metrics.timelineDisplay !== expectedTimeline) problems.push(`timeline display is ${metrics.timelineDisplay}, expected ${expectedTimeline}`);\n    if (metrics.principleBottomBorder !== 0) problems.push(`report principle adds a duplicate bottom rule at ${metrics.principleBottomBorder}px`);\n    if (metrics.firstSectionTopBorder === null || metrics.firstSectionTopBorder < 1) problems.push("first report section is missing its boundary rule");\n    for (const [gridIndex, grid] of metrics.reportGrids.entries()) {'
+          if audit.count(old_checks) != 1:
+              raise SystemExit(f"Expected one visual audit check anchor, found {audit.count(old_checks)}")
+          audit_path.write_text(audit.replace(old_checks, new_checks, 1))
 
           validator_path = Path("scripts/validate-technical-report.mjs")
           validator = validator_path.read_text()
-          old_validator = '''if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");
-
-          const reportGridBlock ='''
-          new_validator = '''if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");
-
-          const reportPrincipleBlock = styles.match(/\\.report-principle \\{([^}]*)\\}/)?.[1] ?? "";
-          if (/border-bottom\\s*:/.test(reportPrincipleBlock)) fail("Report principle must not duplicate the following section boundary.");
-          if (!/border-top\\s*:/.test(reportPrincipleBlock)) fail("Report principle must retain its accent top rule.");
-
-          const reportGridBlock ='''
-          if old_validator not in validator:
-              raise SystemExit("Static validator anchor did not match")
-          validator_path.write_text(validator.replace(old_validator, new_validator))
+          old_validator = 'if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");\n\nconst reportGridBlock ='
+          new_validator = 'if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");\n\nconst reportPrincipleBlock = styles.match(/\\.report-principle \\{([^}]*)\\}/)?.[1] ?? "";\nif (/border-bottom\\s*:/.test(reportPrincipleBlock)) fail("Report principle must not duplicate the following section boundary.");\nif (!/border-top\\s*:/.test(reportPrincipleBlock)) fail("Report principle must retain its accent top rule.");\n\nconst reportGridBlock ='
+          if validator.count(old_validator) != 1:
+              raise SystemExit(f"Expected one static validator anchor, found {validator.count(old_validator)}")
+          validator_path.write_text(validator.replace(old_validator, new_validator, 1))
           PY
           rm .github/workflows/fix-report-principle-boundary.yml
           git config user.name github-actions[bot]
