@@ -44,8 +44,7 @@
 
 .case-hero .case-actions .case-action:not(.case-action-primary),
 .case-hero .case-summary > .text-link,
-.report-summary .report-actions > [data-print-report],
-.report-summary .report-actions > a[href*="github.com/JohnnyZLi/Network-Diagnostics-Suite"] {
+.report-summary .report-actions > .report-action-resource {
   width: 100%;
   min-height: 0;
   margin: 0;
@@ -77,60 +76,42 @@
   display: none;
 }
 
-.report-summary .report-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 24px;
-  row-gap: 0;
-  align-items: start;
-  margin-top: 30px;
-}
-
-.report-summary .report-actions > .report-action {
-  display: inline-flex;
-  gap: 9px;
-  align-items: center;
-}
-
-.report-summary .report-actions > a[href="https://network.johnnyli.dev"] {
+.report-summary .report-actions > .report-action-primary {
+  --jl-button-min-height: var(--jl-control-height-lg);
+  --jl-button-gap: 9px;
+  --jl-button-padding-inline: 20px;
+  --jl-button-border-color: var(--jl-color-accent);
+  --jl-button-radius: 6px;
+  --jl-button-background: var(--jl-color-accent);
+  --jl-button-color: var(--jl-color-on-accent);
+  --jl-button-font-size: 0.95rem;
+  --jl-button-font-weight: 600;
+  --jl-button-hover-border-color: var(--jl-color-accent-hover);
+  --jl-button-hover-background: var(--jl-color-accent-hover);
+  --jl-button-hover-color: var(--jl-color-on-accent);
   grid-column: 1;
   grid-row: 1;
-  align-self: start;
-  width: 100%;
-  min-height: var(--jl-control-height-lg);
-  margin: 0;
-  padding: 0 20px;
-  border: 1px solid var(--jl-color-accent);
-  border-radius: 6px;
-  background: var(--jl-color-accent);
-  color: var(--jl-color-on-accent);
-  font-size: 0.95rem;
-  font-weight: 600;
-  justify-content: center;
 }
 
-.report-summary .report-actions > [data-print-report] {
+.report-summary .report-actions > .report-action-resource:first-of-type {
   grid-column: 2;
   grid-row: 1;
-  cursor: pointer;
 }
 
-.report-summary .report-actions > a[href*="github.com/JohnnyZLi/Network-Diagnostics-Suite"] {
+.report-summary .report-actions > .report-action-resource:last-child {
   grid-column: 2;
   grid-row: 2;
 }
 
 .case-hero .case-actions .case-action:not(.case-action-primary) span,
 .case-hero .case-summary > .text-link span,
-.report-summary .report-actions > [data-print-report] span,
-.report-summary .report-actions > a[href*="github.com/JohnnyZLi/Network-Diagnostics-Suite"] span {
+.report-summary .report-actions > .report-action-resource span {
   color: var(--jl-color-accent-decorative);
 }
 
 .case-hero .case-actions .case-action:not(.case-action-primary):focus-visible,
 .case-hero .case-summary > .text-link:focus-visible,
-.report-summary .report-actions > [data-print-report]:focus-visible,
-.report-summary .report-actions > a[href*="github.com/JohnnyZLi/Network-Diagnostics-Suite"]:focus-visible {
+.report-summary .report-actions > .report-action-resource:focus-visible {
   border-bottom-color: var(--jl-color-accent-hover);
   background: transparent;
   color: var(--jl-color-accent-hover);
@@ -139,8 +120,7 @@
 @media (hover: hover) {
   .case-hero .case-actions .case-action:not(.case-action-primary):hover,
   .case-hero .case-summary > .text-link:hover,
-  .report-summary .report-actions > [data-print-report]:hover,
-  .report-summary .report-actions > a[href*="github.com/JohnnyZLi/Network-Diagnostics-Suite"]:hover {
+  .report-summary .report-actions > .report-action-resource:hover {
     border-bottom-color: var(--jl-color-accent-hover);
     background: transparent;
     color: var(--jl-color-accent-hover);
@@ -175,26 +155,13 @@
     margin-top: 4px;
   }
 
-  .report-summary .report-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .report-summary .report-actions > a[href="https://network.johnnyli.dev"],
-  .report-summary .report-actions > [data-print-report],
-  .report-summary .report-actions > a[href*="github.com/JohnnyZLi/Network-Diagnostics-Suite"] {
+  .report-summary .report-actions > .report-action-primary,
+  .report-summary .report-actions > .report-action-resource {
     grid-column: 1;
+    grid-row: auto;
   }
 
-  .report-summary .report-actions > a[href="https://network.johnnyli.dev"] {
-    grid-row: 1;
-  }
-
-  .report-summary .report-actions > [data-print-report] {
-    grid-row: 2;
+  .report-summary .report-actions > .report-action-resource:first-of-type {
     margin-top: 12px;
-  }
-
-  .report-summary .report-actions > a[href*="github.com/JohnnyZLi/Network-Diagnostics-Suite"] {
-    grid-row: 3;
   }
 }

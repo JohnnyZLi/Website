@@ -19,7 +19,8 @@
     "DS-HEADER-001": {
       "evidence": [
         {"type": "contains", "file": "index.html", "values": ["jl-global-header", "jl-global-header__inner", "jl-site-identity"]},
-        {"type": "contains", "file": ".github/workflows/visual-audit.yml", "values": ["headerInnerHeight", "expectedInnerHeight", "expectedOuterHeight"]}
+        {"type": "contains", "file": ".github/workflows/visual-audit.yml", "values": ["headerInnerHeight", "expectedInnerHeight", "expectedOuterHeight"]},
+        {"type": "contains", "file": "projects/network-diagnostics-suite/report/index.html", "values": ["class=\"jl-global-header\"", "jl-global-header__inner", "jl-site-identity"]}
       ]
     },
     "DS-SITES-001": {
@@ -34,12 +35,14 @@
     },
     "DS-PRIMITIVE-001": {
       "evidence": [
-        {"type": "contains", "file": "scripts/validate-design-system-integration.mjs", "values": ["Case-study actions still duplicate shared structure", "Standalone content-primitives asset"]}
+        {"type": "contains", "file": "scripts/validate-design-system-integration.mjs", "values": ["Case-study actions still duplicate shared structure", "Standalone content-primitives asset"]},
+        {"type": "contains", "file": "scripts/validate-technical-report.mjs", "values": ["class=\"report-actions jl-actions\"", "report-action-primary jl-button jl-button--primary", "report-table-wrap jl-table-region"]}
       ]
     },
     "DS-RESP-001": {
       "evidence": [
-        {"type": "contains", "file": ".github/workflows/visual-audit.yml", "values": ["width: 320", "document overflow"]}
+        {"type": "contains", "file": ".github/workflows/visual-audit.yml", "values": ["width: 320", "document overflow"]},
+        {"type": "contains", "file": "scripts/technical-report-visual-audit.mjs", "values": ["width: 320", "horizontal overflow", "metadataColumns", "timelineDisplay"]}
       ]
     },
     "DS-RESP-002": {
@@ -48,7 +51,8 @@
     },
     "DS-A11Y-001": {
       "evidence": [
-        {"type": "contains", "file": ".github/workflows/visual-audit.yml", "values": ["page.keyboard.press('Escape')", "regain focus after Escape", "aria-expanded"]}
+        {"type": "contains", "file": ".github/workflows/visual-audit.yml", "values": ["page.keyboard.press('Escape')", "regain focus after Escape", "aria-expanded"]},
+        {"type": "contains", "file": "scripts/technical-report-visual-audit.mjs", "values": ["keyboard action order", "forcedColors", "reducedMotion"]}
       ]
     },
     "DS-A11Y-002": {
@@ -62,7 +66,8 @@
     },
     "DS-OWN-001": {
       "evidence": [
-        {"type": "contains", "file": "scripts/validate-design-system-integration.mjs", "values": ["Portfolio wrapper reimplements shared behavior", "Motion script still performs header enhancement"]}
+        {"type": "contains", "file": "scripts/validate-design-system-integration.mjs", "values": ["Portfolio wrapper reimplements shared behavior", "Motion script still performs header enhancement"]},
+        {"type": "contains", "file": "scripts/validate-technical-report.mjs", "values": ["backdrop-filter", "re-owns the shared header surface"]}
       ]
     },
     "DS-WORKFLOW-001": {
@@ -74,7 +79,9 @@
     "DS-TEST-001": {
       "evidence": [
         {"type": "file-exists", "file": ".github/workflows/visual-audit.yml"},
-        {"type": "contains", "file": ".github/workflows/design-system-conformance.yml", "values": ["consumer-conformance.yml@", "design-system:integration", "design-system:conformance"]}
+        {"type": "file-exists", "file": ".github/workflows/technical-report-audit.yml"},
+        {"type": "contains", "file": ".github/workflows/design-system-conformance.yml", "values": ["consumer-conformance.yml@", "design-system:integration", "design-system:conformance"]},
+        {"type": "contains", "file": ".github/workflows/technical-report-audit.yml", "values": ["validate-technical-report.mjs", "technical-report-visual-audit.mjs", "technical-report-visual-audit"]}
       ]
     },
     "DS-PERF-001": {
