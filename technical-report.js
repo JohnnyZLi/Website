@@ -73,12 +73,12 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
       const transitionOverride = reducedMotion.matches ? 'transition: none !important;' : '';
       if (dynamicStyleSheet) {
         dynamicStyleSheet.replaceSync(`
-          [data-report-toc-indicator] {
+          .report-toc-indicator[data-report-toc-indicator] {
             --report-toc-indicator-y: ${indicatorY};
             --report-toc-indicator-height: ${indicatorHeight};
             ${transitionOverride}
           }
-          [data-report-progress-fill] {
+          .report-progress-fill[data-report-progress-fill] {
             --report-progress: ${progressValue};
             ${transitionOverride}
           }
