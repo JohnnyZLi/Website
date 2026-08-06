@@ -14,12 +14,13 @@
     "design-system:conformance": "node node_modules/@johnnyzli/web-design-system/scripts/conformance-runner.mjs",
     "technical-report:check": "node scripts/validate-technical-report.mjs",
     "technical-report:visual": "node scripts/technical-report-visual-audit.mjs",
+    "theme:visual": "node scripts/theme-visual-audit.mjs",
     "performance:baseline": "node scripts/performance-baseline.mjs",
     "lint:html": "html-validate \"index.html\" \"projects/**/*.html\"",
     "lint:css": "stylelint \"**/*.css\" --ignore-pattern \"assets/design-system/**/*.css\""
   },
   "dependencies": {
-    "@johnnyzli/web-design-system": "github:JohnnyZLi/Web-Design-System#abb6c44f588afe09e8f593a8c467b564ac9fef86"
+    "@johnnyzli/web-design-system": "github:JohnnyZLi/Web-Design-System#dcea54daa01691103bff5803af39a1c8e0cad203"
   },
   "devDependencies": {
     "html-validate": "11.5.6",
