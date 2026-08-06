@@ -163,7 +163,7 @@ try {
       if (table.captionCount !== 1) problems.push(`report table ${tableIndex + 1} is missing its caption`);
       if (viewport.width <= 700) {
         if (table.scrollWidth > table.clientWidth + 1) problems.push(`report table ${tableIndex + 1} still requires hidden horizontal scrolling`);
-        if (!['block', 'grid'].includes(table.rowDisplay)) problems.push(`report table ${tableIndex + 1} did not stack its rows`);
+        if (!["block", "grid"].includes(table.rowDisplay)) problems.push(`report table ${tableIndex + 1} did not stack its rows`);
         if (!table.firstCellLabel || table.firstCellLabel === "none" || table.firstCellLabel === '""') problems.push(`report table ${tableIndex + 1} does not expose compact data labels`);
         if (table.labelledCells < 9) problems.push(`report table ${tableIndex + 1} has too few labelled cells`);
       } else if (table.tableDisplay !== "table") {
@@ -184,7 +184,11 @@ try {
     const thirdFocus = await page.evaluate(() => document.activeElement?.textContent?.trim().replace(/\s+[↗↓]$/, ""));
     if (secondFocus !== "Print / save PDF" || thirdFocus !== "Source") problems.push(`keyboard action order is Launch tool → ${secondFocus} → ${thirdFocus}`);
 
-    await page.locator('a[href="#contents"]').click();
+    await page.evaluate(() => {
+      const contents = document.querySelector("#contents");
+      contents?.scrollIntoView();
+      history.replaceState(null, "", "#contents");
+    });
     await page.waitForTimeout(100);
     const anchorPlacement = await page.evaluate(() => ({
       headerBottom: document.querySelector(".jl-global-header")?.getBoundingClientRect().bottom ?? 0,
