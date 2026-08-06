@@ -57,6 +57,8 @@ requireFragments(styles, [
   ".report-abstract-lede",
   ".bar-fill-direct",
   ".bar-fill-worker",
+  ".report-grid article:nth-child(n + 3)",
+  ".report-grid article + article",
   "@media (max-width: 900px)",
   "@media (max-width: 420px)",
   "@media (forced-colors: active)",
@@ -68,6 +70,11 @@ if (/#[\da-f]{3,8}\b/i.test(styles) || /\b(?:rgb|rgba|hsl|hsla)\(/i.test(styles)
   fail("Technical report stylesheet contains raw color values instead of shared tokens.");
 }
 if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");
+
+const reportGridBlock = styles.match(/\.report-grid \{([^}]*)\}/)?.[1] ?? "";
+if (/border(?:-top|-right|-bottom|-left)?\s*:/.test(reportGridBlock)) fail("Report grids must not draw an outer container border.");
+const reportGridItemBlock = styles.match(/\.report-grid article \{([^}]*)\}/)?.[1] ?? "";
+if (/border-bottom\s*:/.test(reportGridItemBlock)) fail("Report grid cells must not create a bottom outer border.");
 
 requireFragments(actions, [
   ".report-summary .report-actions > .report-action-primary",

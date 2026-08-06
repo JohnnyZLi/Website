@@ -28,7 +28,26 @@ try {
       const marker = document.querySelector(".report-intro .report-number");
       const metadata = document.querySelector(".report-meta");
       const timeline = document.querySelector(".report-timeline article");
-      const root = getComputedStyle(document.documentElement);
+const reportGrids = [...document.querySelectorAll(".report-grid")].map((grid) => {
+  const gridStyle = getComputedStyle(grid);
+  const items = [...grid.querySelectorAll(":scope > article")].map((item) => {
+    const itemStyle = getComputedStyle(item);
+    return {
+      borderTop: Number.parseFloat(itemStyle.borderTopWidth),
+      borderRight: Number.parseFloat(itemStyle.borderRightWidth),
+      borderBottom: Number.parseFloat(itemStyle.borderBottomWidth),
+      borderLeft: Number.parseFloat(itemStyle.borderLeftWidth),
+    };
+  });
+  return {
+    borderTop: Number.parseFloat(gridStyle.borderTopWidth),
+    borderRight: Number.parseFloat(gridStyle.borderRightWidth),
+    borderBottom: Number.parseFloat(gridStyle.borderBottomWidth),
+    borderLeft: Number.parseFloat(gridStyle.borderLeftWidth),
+    items,
+  };
+});
+const root = getComputedStyle(document.documentElement);
       const markerStyle = marker ? getComputedStyle(marker) : null;
       return {
         title: document.title,
@@ -42,6 +61,7 @@ try {
         markerFontFamily: markerStyle?.fontFamily ?? null,
         metadataColumns: metadata ? getComputedStyle(metadata).gridTemplateColumns.split(" ").length : null,
         timelineDisplay: timeline ? getComputedStyle(timeline).display : null,
+        reportGrids,
         actionLabels: [...document.querySelectorAll(".report-actions > *")].map((element) => element.textContent.trim().replace(/\s+[↗↓]$/, "")),
         inlineStyles: document.querySelectorAll("[style]").length,
         embeddedStyles: document.querySelectorAll("style").length,
@@ -62,7 +82,24 @@ try {
     if (metrics.metadataColumns !== expectedColumns) problems.push(`metadata has ${metrics.metadataColumns} columns, expected ${expectedColumns}`);
     const expectedTimeline = viewport.width <= 420 ? "block" : "grid";
     if (metrics.timelineDisplay !== expectedTimeline) problems.push(`timeline display is ${metrics.timelineDisplay}, expected ${expectedTimeline}`);
-    if (metrics.inlineStyles !== 0) problems.push("inline style attributes remain");
+for (const [gridIndex, grid] of metrics.reportGrids.entries()) {
+  if (grid.items.length !== 4) problems.push(`report grid ${gridIndex + 1} has ${grid.items.length} items, expected 4`);
+  if (grid.borderTop !== 0 || grid.borderRight !== 0 || grid.borderBottom !== 0 || grid.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} has an outer container border`);
+  const [first, second, third, fourth] = grid.items;
+  if (!first || !second || !third || !fourth) continue;
+  if (viewport.width > 600) {
+    if (first.borderTop !== 0 || first.borderBottom !== 0 || first.borderLeft !== 0 || first.borderRight < 1) problems.push(`report grid ${gridIndex + 1} first cell does not expose only the internal column divider`);
+    if (second.borderTop !== 0 || second.borderRight !== 0 || second.borderBottom !== 0 || second.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} second cell has an outer border`);
+    if (third.borderTop < 1 || third.borderRight < 1 || third.borderBottom !== 0 || third.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} third cell does not expose only internal dividers`);
+    if (fourth.borderTop < 1 || fourth.borderRight !== 0 || fourth.borderBottom !== 0 || fourth.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} fourth cell has an outer border`);
+  } else {
+    if (first.borderTop !== 0 || first.borderRight !== 0 || first.borderBottom !== 0 || first.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} first stacked cell has an outer border`);
+    for (const [itemIndex, item] of grid.items.slice(1).entries()) {
+      if (item.borderTop < 1 || item.borderRight !== 0 || item.borderBottom !== 0 || item.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} stacked cell ${itemIndex + 2} does not use only an internal top divider`);
+    }
+  }
+}
+if (metrics.inlineStyles !== 0) problems.push("inline style attributes remain");
     if (metrics.embeddedStyles !== 0) problems.push("embedded stylesheet remains");
 
     const launch = page.locator(".report-action-primary");
