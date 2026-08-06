@@ -83,6 +83,7 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
             ${transitionOverride}
           }
         `);
+        if (activeIndex >= 0) progressFill.style.setProperty('--report-progress', progressValue);
         return;
       }
 
