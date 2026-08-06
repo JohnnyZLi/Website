@@ -1,0 +1,193 @@
+name: Apply report open grids
+
+on:
+  push:
+    branches:
+      - fix/report-open-grids
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: fix/report-open-grids
+      - name: Correct report grids and add regression coverage
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          css_path = Path("technical-report.css")
+          css = css_path.read_text()
+          old_grid = '''.report-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-top: 48px;
+            border-top: 1px solid var(--rule);
+          }
+
+          .report-grid article {
+            min-width: 0;
+            padding: 26px 28px 30px;
+            border-bottom: 1px solid var(--rule);
+          }
+
+          .report-grid article:nth-child(odd) {
+            border-right: 1px solid var(--rule);
+          }
+          '''.replace('          ', '')
+          new_grid = '''.report-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin-top: 48px;
+          }
+
+          .report-grid article {
+            min-width: 0;
+            padding: 26px 28px 30px;
+          }
+
+          .report-grid article:nth-child(odd) {
+            border-right: 1px solid var(--rule);
+          }
+
+          .report-grid article:nth-child(n + 3) {
+            border-top: 1px solid var(--rule);
+          }
+          '''.replace('          ', '')
+          if old_grid not in css:
+              raise SystemExit("Desktop report-grid block did not match")
+          css = css.replace(old_grid, new_grid)
+
+          old_mobile = '''  .report-grid article {
+            padding: 25px 0 28px;
+            border-right: 0;
+          }
+          '''.replace('          ', '')
+          new_mobile = '''  .report-grid article {
+            padding: 25px 0 28px;
+            border-top: 0;
+            border-right: 0;
+          }
+
+          .report-grid article + article {
+            border-top: 1px solid var(--rule);
+          }
+          '''.replace('          ', '')
+          if old_mobile not in css:
+              raise SystemExit("Mobile report-grid block did not match")
+          css = css.replace(old_mobile, new_mobile)
+          css_path.write_text(css)
+
+          audit_path = Path("scripts/technical-report-visual-audit.mjs")
+          audit = audit_path.read_text()
+          old_metrics_setup = '''      const timeline = document.querySelector(".report-timeline article");
+                const root = getComputedStyle(document.documentElement);
+          '''.replace('                ', '      ')
+          new_metrics_setup = '''      const timeline = document.querySelector(".report-timeline article");
+                const reportGrids = [...document.querySelectorAll(".report-grid")].map((grid) => {
+                  const gridStyle = getComputedStyle(grid);
+                  const items = [...grid.querySelectorAll(":scope > article")].map((item) => {
+                    const itemStyle = getComputedStyle(item);
+                    return {
+                      borderTop: Number.parseFloat(itemStyle.borderTopWidth),
+                      borderRight: Number.parseFloat(itemStyle.borderRightWidth),
+                      borderBottom: Number.parseFloat(itemStyle.borderBottomWidth),
+                      borderLeft: Number.parseFloat(itemStyle.borderLeftWidth),
+                    };
+                  });
+                  return {
+                    borderTop: Number.parseFloat(gridStyle.borderTopWidth),
+                    borderRight: Number.parseFloat(gridStyle.borderRightWidth),
+                    borderBottom: Number.parseFloat(gridStyle.borderBottomWidth),
+                    borderLeft: Number.parseFloat(gridStyle.borderLeftWidth),
+                    items,
+                  };
+                });
+                const root = getComputedStyle(document.documentElement);
+          '''.replace('                ', '      ')
+          if old_metrics_setup not in audit:
+              raise SystemExit("Visual audit setup block did not match")
+          audit = audit.replace(old_metrics_setup, new_metrics_setup)
+
+          old_metric_value = '''        timelineDisplay: timeline ? getComputedStyle(timeline).display : null,
+                actionLabels:'''.replace('                ', '        ')
+          new_metric_value = '''        timelineDisplay: timeline ? getComputedStyle(timeline).display : null,
+                reportGrids,
+                actionLabels:'''.replace('                ', '        ')
+          if old_metric_value not in audit:
+              raise SystemExit("Visual audit metrics block did not match")
+          audit = audit.replace(old_metric_value, new_metric_value)
+
+          old_problem_anchor = '''    if (metrics.timelineDisplay !== expectedTimeline) problems.push(`timeline display is ${metrics.timelineDisplay}, expected ${expectedTimeline}`);
+              if (metrics.inlineStyles !== 0) problems.push("inline style attributes remain");
+          '''.replace('              ', '    ')
+          new_problem_anchor = '''    if (metrics.timelineDisplay !== expectedTimeline) problems.push(`timeline display is ${metrics.timelineDisplay}, expected ${expectedTimeline}`);
+              for (const [gridIndex, grid] of metrics.reportGrids.entries()) {
+                if (grid.items.length !== 4) problems.push(`report grid ${gridIndex + 1} has ${grid.items.length} items, expected 4`);
+                if (grid.borderTop !== 0 || grid.borderRight !== 0 || grid.borderBottom !== 0 || grid.borderLeft !== 0) {
+                  problems.push(`report grid ${gridIndex + 1} has an outer container border`);
+                }
+                const [first, second, third, fourth] = grid.items;
+                if (!first || !second || !third || !fourth) continue;
+                if (viewport.width > 600) {
+                  if (first.borderTop !== 0 || first.borderBottom !== 0 || first.borderLeft !== 0 || first.borderRight < 1) problems.push(`report grid ${gridIndex + 1} first cell does not expose only the internal column divider`);
+                  if (second.borderTop !== 0 || second.borderRight !== 0 || second.borderBottom !== 0 || second.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} second cell has an outer border`);
+                  if (third.borderTop < 1 || third.borderRight < 1 || third.borderBottom !== 0 || third.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} third cell does not expose only internal dividers`);
+                  if (fourth.borderTop < 1 || fourth.borderRight !== 0 || fourth.borderBottom !== 0 || fourth.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} fourth cell has an outer border`);
+                } else {
+                  if (first.borderTop !== 0 || first.borderRight !== 0 || first.borderBottom !== 0 || first.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} first stacked cell has an outer border`);
+                  for (const [itemIndex, item] of grid.items.slice(1).entries()) {
+                    if (item.borderTop < 1 || item.borderRight !== 0 || item.borderBottom !== 0 || item.borderLeft !== 0) problems.push(`report grid ${gridIndex + 1} stacked cell ${itemIndex + 2} does not use only an internal top divider`);
+                  }
+                }
+              }
+              if (metrics.inlineStyles !== 0) problems.push("inline style attributes remain");
+          '''.replace('              ', '    ')
+          if old_problem_anchor not in audit:
+              raise SystemExit("Visual audit problem block did not match")
+          audit = audit.replace(old_problem_anchor, new_problem_anchor)
+          audit_path.write_text(audit)
+
+          validator_path = Path("scripts/validate-technical-report.mjs")
+          validator = validator_path.read_text()
+          old_required = '''  ".bar-fill-worker",
+            "@media (max-width: 900px)",
+          '''.replace('            ', '  ')
+          new_required = '''  ".bar-fill-worker",
+            ".report-grid article:nth-child(n + 3)",
+            ".report-grid article + article",
+            "@media (max-width: 900px)",
+          '''.replace('            ', '  ')
+          if old_required not in validator:
+              raise SystemExit("Validator required-fragment block did not match")
+          validator = validator.replace(old_required, new_required)
+
+          old_validation = '''if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");
+          '''
+          new_validation = '''if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");
+
+          const reportGridBlock = styles.match(/\\.report-grid \\{([^}]*)\\}/)?.[1] ?? "";
+          if (/border(?:-top|-right|-bottom|-left)?\\s*:/.test(reportGridBlock)) {
+            fail("Report grids must not draw an outer container border.");
+          }
+          const reportGridItemBlock = styles.match(/\\.report-grid article \\{([^}]*)\\}/)?.[1] ?? "";
+          if (/border-bottom\\s*:/.test(reportGridItemBlock)) {
+            fail("Report grid cells must not create a bottom outer border.");
+          }
+          '''
+          if old_validation not in validator:
+              raise SystemExit("Validator border check anchor did not match")
+          validator = validator.replace(old_validation, new_validation)
+          validator_path.write_text(validator)
+          PY
+          rm .github/workflows/apply-report-open-grids.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add technical-report.css scripts/technical-report-visual-audit.mjs scripts/validate-technical-report.mjs .github/workflows/apply-report-open-grids.yml
+          git commit -m "Use internal dividers for report grids"
+          git push origin HEAD:fix/report-open-grids
