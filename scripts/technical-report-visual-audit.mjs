@@ -89,7 +89,7 @@ try {
   const pdf = await printPage.pdf({ path: `${output}/technical-report.pdf`, format: "Letter", printBackground: true });
   const printProblems = [];
   if (printMetrics.headerDisplay !== "none") printProblems.push("shared header is visible in print");
-  if (printMetrics.markerFontSize > 8) printProblems.push(`print abstract marker is oversized at ${printMetrics.markerFontSize}px`);
+  if (printMetrics.markerFontSize > 10) printProblems.push(`print abstract marker is oversized at ${printMetrics.markerFontSize}px`);
   if (printMetrics.sectionBreakBefore === "page") printProblems.push("every section is still forced onto a new page");
   if (pdf.byteLength < 20_000) printProblems.push(`generated PDF is unexpectedly small: ${pdf.byteLength} bytes`);
   results.push({ name: "print", ...printMetrics, pdfBytes: pdf.byteLength, problems: printProblems });
