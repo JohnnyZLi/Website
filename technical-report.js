@@ -132,6 +132,7 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
       sections.forEach((section, sectionIndex) => {
         if (section.getBoundingClientRect().top <= readingLine) index = sectionIndex;
       });
+      if (index < 0 && activeIndex >= 0) index = activeIndex;
       if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) {
         index = sections.length - 1;
       }
