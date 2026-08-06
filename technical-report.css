@@ -164,6 +164,7 @@ body {
 }
 
 .report-toc li {
+  position: relative;
   counter-increment: toc;
   border-top: 1px solid var(--rule);
 }
@@ -180,6 +181,7 @@ body {
   color: var(--muted);
   font-size: 0.76rem;
   line-height: 1.4;
+  transition: color 160ms ease, transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .report-toc a::before {
@@ -617,7 +619,6 @@ body {
   color: var(--jl-color-accent-soft);
 }
 
-
 .report-toc-list {
   position: relative;
 }
@@ -643,14 +644,6 @@ body {
 
 .report-toc-indicator.is-visible {
   opacity: 1;
-}
-
-.report-toc li {
-  position: relative;
-}
-
-.report-toc a {
-  transition: color 160ms ease, transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .report-toc li.is-active a {
@@ -723,7 +716,6 @@ body {
     break-inside: avoid;
   }
 }
-
 
 @media (max-width: 820px) {
   .report-toc {
