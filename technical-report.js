@@ -78,9 +78,15 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
             --report-toc-indicator-height: ${indicatorHeight};
             ${transitionOverride}
           }
-          .report-progress-fill[data-report-progress-fill] {
+          [data-report-progress-fill][data-report-progress-fill] {
             --report-progress: ${progressValue};
             ${transitionOverride}
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .report-toc-indicator[data-report-toc-indicator],
+            [data-report-progress-fill][data-report-progress-fill] {
+              transition: none !important;
+            }
           }
         `);
         return;
