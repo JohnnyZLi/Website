@@ -1,0 +1,54 @@
+name: Finalize report navigation styling
+
+on:
+  push:
+    branches: ["feat/shared-dark-mode"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: feat/shared-dark-mode
+      - name: Correct progress selector and reduced motion
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          script = Path('technical-report.js')
+          text = script.read_text()
+          old = '.report-progress-fill[data-report-progress-fill] {'
+          new = '[data-report-progress-fill][data-report-progress-fill] {'
+          if old not in text:
+              raise SystemExit('progress selector was not found')
+          script.write_text(text.replace(old, new, 1))
+
+          css = Path('technical-report.css')
+          text = css.read_text()
+          block = '''
+
+@media (prefers-reduced-motion: reduce) {
+  .report-toc a,
+  .report-toc-indicator,
+  .report-progress-chevron,
+  .report-progress-track > span {
+    transition: none !important;
+  }
+}
+'''
+          if block.strip() not in text:
+              text += block
+          css.write_text(text)
+          PY
+          rm .github/workflows/finalize-report-navigation.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "Finalize report navigation styling"
+          git push origin HEAD:feat/shared-dark-mode
