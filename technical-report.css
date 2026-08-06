@@ -659,7 +659,7 @@ body {
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 760px) {
   .report-table-wrap {
     overflow: visible;
   }
@@ -792,6 +792,12 @@ body {
   .bar-row {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .report-code {
+    overflow-x: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 }
 
