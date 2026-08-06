@@ -13,7 +13,9 @@ const files = [
   ["tokens/tokens.css", "tokens.css"],
   ["styles/foundations.css", "foundations.css"],
   ["styles/site-identity.css", "site-identity.css"],
+  ["styles/theme-control.css", "theme-control.css"],
   ["styles/content-primitives.css", "content-primitives.css"],
+  ["scripts/theme-bootstrap.js", "theme-bootstrap.js"],
   ["scripts/site-controls.js", "site-controls.js"],
   ["version.json", "version.json"],
 ];
