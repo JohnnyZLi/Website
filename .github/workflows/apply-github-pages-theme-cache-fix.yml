@@ -1,11 +1,12 @@
 name: Apply GitHub Pages theme cache fix
 
 on:
-  push:
+  pull_request:
     branches:
-      - fix/github-pages-theme-cache
-    paths:
-      - .github/workflows/apply-github-pages-theme-cache-fix.yml
+      - main
+    types:
+      - opened
+      - synchronize
   workflow_dispatch:
 
 permissions:
@@ -13,6 +14,7 @@ permissions:
 
 jobs:
   apply:
+    if: github.head_ref == 'fix/github-pages-theme-cache'
     runs-on: ubuntu-latest
     steps:
       - name: Check out branch
