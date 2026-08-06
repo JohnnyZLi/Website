@@ -1,5 +1,7 @@
 name: Generate versioned Sites entry
 
+# This one-time workflow is intentionally modified after landing so the
+# already-registered workflow receives a matching push event on main.
 on:
   push:
     branches:
