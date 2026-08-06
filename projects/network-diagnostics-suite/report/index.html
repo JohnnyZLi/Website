@@ -4,11 +4,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A technical report on how Network Diagnostics Suite evolved from a browser speed test into a shared browser, desktop, and command-line diagnostic system.">
+    <meta name="author" content="Johnny Li">
+    <meta name="keywords" content="network diagnostics, speed testing, M-Lab, NDT7, Cloudflare R2, Avalonia, report schema">
     <meta name="theme-color" content="#f2efe8">
     <meta property="og:title" content="Network Diagnostics Suite Technical Report — Johnny Li">
     <meta property="og:description" content="Measurement methodology, M-Lab benchmarking, transport investigation, native architecture, report compatibility, privacy, and validation.">
     <meta property="og:type" content="article">
+    <meta property="og:url" content="https://johnnyli.dev/projects/network-diagnostics-suite/report/">
+    <meta property="og:image" content="https://johnnyli.dev/assets/network-diagnostics-report-social.svg">
+    <meta property="article:published_time" content="2026-08-05T00:00:00-07:00">
+    <meta property="article:modified_time" content="2026-08-05T21:49:00-07:00">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Network Diagnostics Suite Technical Report — Johnny Li">
+    <meta name="twitter:description" content="Measurement methodology, M-Lab benchmarking, transport investigation, native architecture, report compatibility, privacy, and validation.">
+    <meta name="twitter:image" content="https://johnnyli.dev/assets/network-diagnostics-report-social.svg">
     <title>Network Diagnostics Suite Technical Report — Johnny Li</title>
+    <link rel="canonical" href="https://johnnyli.dev/projects/network-diagnostics-suite/report/">
     <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../../../assets/design-system/tokens.css">
     <link rel="stylesheet" href="../../../assets/design-system/foundations.css">
@@ -51,7 +62,7 @@
         <div class="report-hero-grid">
           <h1 id="report-title">From browser speed test to <em>cross-platform diagnostics.</em></h1>
           <div class="report-summary">
-            <p>How benchmarking against the M-Lab test surfaced through Google Search exposed a delivery bottleneck, and how the project evolved into compatible browser, desktop, and command-line measurement clients.</p>
+            <p>How benchmarking against the M-Lab test surfaced through Google Search exposed a delivery bottleneck, and how the project evolved into compatible browser, desktop, and command-line interface (CLI) measurement clients.</p>
             <div class="report-actions jl-actions">
               <a class="report-action report-action-primary jl-button jl-button--primary" href="https://network.johnnyli.dev" target="_blank" rel="noreferrer">Launch tool <span aria-hidden="true">↗</span></a>
               <button class="report-action report-action-resource jl-button" type="button" data-print-report>Print / save PDF <span aria-hidden="true">↓</span></button>
@@ -60,11 +71,12 @@
           </div>
         </div>
         <dl class="report-meta">
-          <div><dt>Author</dt><dd>Johnny Li</dd></div>
-          <div><dt>Published</dt><dd>August 2026</dd></div>
+          <div><dt>Revision</dt><dd><time datetime="2026-08-05">1 · 2026-08-05</time></dd></div>
+          <div><dt>Project baseline</dt><dd><a class="report-baseline" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/commit/b1c549c5c83c2101c8530d861e79710bf894f1ca" target="_blank" rel="noreferrer"><code>b1c549c</code></a></dd></div>
           <div><dt>Scope</dt><dd>Browser · Desktop · CLI</dd></div>
           <div><dt>Report schema</dt><dd>2.0</dd></div>
         </dl>
+        <p class="report-print-provenance">Johnny Li · Revision 1 · 2026-08-05 · Network Diagnostics Suite baseline b1c549c · johnnyli.dev/projects/network-diagnostics-suite/report/</p>
       </section>
 
       <div class="report-layout shell">
@@ -89,9 +101,11 @@
 
         <article class="report-article">
           <section class="report-intro" aria-labelledby="abstract-heading">
-            <p class="report-number">Abstract</p>
-            <h2 id="abstract-heading">A connection-quality system built around evidence boundaries.</h2>
-            <p class="report-abstract-lede">Network Diagnostics Suite began as a browser test for throughput and latency under load. It became a shared measurement system after the browser’s limits, disagreements with M-Lab, and the need for operating-system evidence made a single-client design inadequate.</p>
+            <div class="report-heading-group">
+              <p class="report-number">Abstract</p>
+              <h2 id="abstract-heading">A connection-quality system built around evidence boundaries.</h2>
+              <p class="report-abstract-lede">Network Diagnostics Suite began as a browser test for throughput and latency under load. It became a shared measurement system after the browser’s limits, disagreements with M-Lab, and the need for operating-system evidence made a single-client design inadequate.</p>
+            </div>
             <div class="report-principle">
               <strong>Report only what the active client actually measured.</strong>
               <span>Browser failures remain request loss. Packet loss, routes, Wi-Fi, resolver timing, path MTU, and interface evidence require native access. Missing evidence is shown as “Not measured,” not guessed.</span>
@@ -99,26 +113,30 @@
           </section>
 
           <section class="report-section" id="origin" aria-labelledby="origin-heading">
-            <p class="report-number">01</p>
-            <h2 id="origin-heading">From speed test to diagnostic system</h2>
-            <p class="report-lede">The project began with a practical question: <em>why can a fast connection still feel bad?</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">01</p>
+              <h2 id="origin-heading">From speed test to diagnostic system</h2>
+              <p class="report-lede">The project began with a practical question: <em>why can a fast connection still feel bad?</em></p>
+            </div>
             <div class="report-prose">
               <p>Ordinary speed tests compress a connection into download and upload headlines. Those numbers matter, but they do not show whether latency rises during transfer, whether one flow behaves differently from several, whether the result is still ramping, or whether failures occur around an otherwise healthy average.</p>
               <p>The browser application therefore measured idle latency, loaded latency during download and upload, latency distributions, jitter, request failures, single-flow and aggregate throughput, and connection-count scaling. The design kept the barrier to entry low: no installation, account, telemetry, or project-operated result database.</p>
               <p>That browser-first scope exposed the next problem. Several questions users naturally ask—packet loss, gateway health, traceroute, DNS resolver timing, route choice, Wi-Fi condition, path MTU, and local-link capacity—cannot be answered truthfully by webpage JavaScript. The architecture expanded instead of relabeling browser approximations.</p>
             </div>
             <div class="report-grid">
-              <article><p class="label">Browser</p><h3>Immediate connection quality</h3><p>First-party transfer, responsiveness under load, request loss, scaling, endpoint selection, and locally stored reports.</p></article>
-              <article><p class="label">Desktop</p><h3>Native diagnostic workbench</h3><p>Connection Check, Quick, Full, and Stress plus operating-system, interface, route, resolver, path, and LAN evidence.</p></article>
-              <article><p class="label">CLI</p><h3>Scriptable deep probe</h3><p>Repeatable ICMP, traceroute, DNS, MTU, TCP/TLS, Wi-Fi, routing, optional Internet transfer, and two-machine LAN testing.</p></article>
-              <article><p class="label">Report</p><h3>Compatible evidence envelope</h3><p>Schema 2.0 carries producer identity, plan, endpoint context, measurements, findings, and optional native or LAN sections.</p></article>
+              <div class="report-grid-item"><p class="label">Browser</p><h3>Immediate connection quality</h3><p>First-party transfer, responsiveness under load, request loss, scaling, endpoint selection, and locally stored reports.</p></div>
+              <div class="report-grid-item"><p class="label">Desktop</p><h3>Native diagnostic workbench</h3><p>Connection Check, Quick, Full, and Stress plus operating-system, interface, route, resolver, path, and local area network (LAN) evidence.</p></div>
+              <div class="report-grid-item"><p class="label">CLI</p><h3>Scriptable deep probe</h3><p>Repeatable Internet Control Message Protocol (ICMP), traceroute, Domain Name System (DNS), Maximum Transmission Unit (MTU), TCP/TLS, Wi-Fi, routing, optional Internet transfer, and two-machine LAN testing.</p></div>
+              <div class="report-grid-item"><p class="label">Report</p><h3>Compatible evidence envelope</h3><p>Schema 2.0 carries producer identity, plan, endpoint context, measurements, findings, and optional native or LAN sections.</p></div>
             </div>
           </section>
 
           <section class="report-section" id="browser-boundary" aria-labelledby="browser-heading">
-            <p class="report-number">02</p>
-            <h2 id="browser-heading">The browser boundary</h2>
-            <p class="report-lede">A browser can measure application behavior precisely without having <em>raw network visibility.</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">02</p>
+              <h2 id="browser-heading">The browser boundary</h2>
+              <p class="report-lede">A browser can measure application behavior precisely without having <em>raw network visibility.</em></p>
+            </div>
             <div class="report-prose">
               <p>Idle latency uses uncached requests to the project’s ping endpoint. Successful requests produce minimum, maximum, mean, median, 95th percentile, and consecutive-sample jitter. Failed or timed-out requests divided by attempts produce browser request loss.</p>
               <p>That value is not packet loss. Transmission Control Protocol may retransmit below the browser, while failures can originate in Domain Name System resolution, Transport Layer Security setup, HTTP handling, extensions, browser scheduling, endpoint behavior, or the path itself. The browser cannot isolate those layers.</p>
@@ -127,21 +145,24 @@
           </section>
 
           <section class="report-section" id="mlab" aria-labelledby="mlab-heading">
-            <p class="report-number">03</p>
-            <h2 id="mlab-heading">Benchmarking against the M-Lab test used by Google Search</h2>
-            <p class="report-lede">A large download gap became evidence that the test might be measuring <em>its own delivery path.</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">03</p>
+              <h2 id="mlab-heading">Benchmarking against the M-Lab test used by Google Search</h2>
+              <p class="report-lede">A large download gap became evidence that the test might be measuring <em>its own delivery path.</em></p>
+            </div>
             <div class="report-prose">
-              <p>Early comparisons repeatedly showed M-Lab reporting much higher download speed while upload stayed close. One observed pair was approximately 381 Mbps through M-Lab versus 182 Mbps through Network Diagnostics Suite. A later comparison showed 328.7 Mbps down and 86.2 Mbps up through M-Lab, versus roughly 198–206 Mbps down and 85–91 Mbps up through the project.</p>
+              <p>Early comparisons repeatedly showed M-Lab reporting much higher download speed while upload stayed close. One observed pair was approximately 381 Mbps through M-Lab versus 182 Mbps through Network Diagnostics Suite. A later comparison showed 328.7 Mbps down and 86.2 Mbps up through M-Lab, versus roughly 198–206 Mbps down and 85–91 Mbps up through the project.<a class="report-citation" href="#ref-2" aria-label="Reference 2">[2]</a><a class="report-citation" href="#ref-4" aria-label="Reference 4">[4]</a></p>
               <p>The close upload values mattered. They weakened the idea that the browser, access connection, or all Cloudflare traffic was universally capped near 200 Mbps. The discrepancy was concentrated in the project’s download implementation.</p>
-              <p>Research into NDT7 corrected another assumption: M-Lab was not simply opening many parallel browser downloads. NDT7 uses one long-lived WebSocket over one TCP connection, usually to a nearby well-provisioned server, with BBR where available and server-side TCP instrumentation. It measures application-level goodput over a mature measurement path.<a class="report-citation" href="#ref-1" aria-label="Reference 1">[1]</a><a class="report-citation" href="#ref-3" aria-label="Reference 3">[3]</a></p>
+              <p>Research into Network Diagnostic Tool version 7 (NDT7) corrected another assumption: M-Lab was not simply opening many parallel browser downloads. NDT7 uses one long-lived WebSocket over one TCP connection, usually to a nearby well-provisioned server, with Bottleneck Bandwidth and Round-trip propagation time (BBR) where available and server-side TCP instrumentation. It measures application-level goodput over a mature measurement path.<a class="report-citation" href="#ref-1" aria-label="Reference 1">[1]</a><a class="report-citation" href="#ref-3" aria-label="Reference 3">[3]</a></p>
             </div>
             <section class="report-table-wrap jl-table-region" tabindex="0" aria-label="Observed comparison between M-Lab and Network Diagnostics Suite">
               <table class="report-table">
+                <caption class="report-table-caption">Development observations across the M-Lab and project measurement paths</caption>
                 <thead><tr><th scope="col">Development observation</th><th scope="col">M-Lab</th><th scope="col">Network Diagnostics Suite</th><th scope="col">Interpretation</th></tr></thead>
                 <tbody>
-                  <tr><th scope="row">Early comparison</th><td>≈381 Mbps down</td><td>≈182 Mbps down</td><td>The gap was too large to dismiss without isolating the serving path.</td></tr>
-                  <tr><th scope="row">Later comparison</th><td>328.7 down / 86.2 up</td><td>≈198–206 down / 85–91 up</td><td>Upload agreement pointed toward a download-specific bottleneck.</td></tr>
-                  <tr><th scope="row">Post-change observation</th><td>Not run concurrently</td><td>≈370.1 median / 366.3 steady down</td><td>The earlier 180–200 Mbps ceiling was not an unavoidable browser limit.</td></tr>
+                  <tr><th scope="row">Early comparison</th><td data-label="M-Lab">≈381 Mbps down</td><td data-label="Network Diagnostics Suite">≈182 Mbps down</td><td data-label="Interpretation">The gap was too large to dismiss without isolating the serving path.</td></tr>
+                  <tr><th scope="row">Later comparison</th><td data-label="M-Lab">328.7 down / 86.2 up</td><td data-label="Network Diagnostics Suite">≈198–206 down / 85–91 up</td><td data-label="Interpretation">Upload agreement pointed toward a download-specific bottleneck.</td></tr>
+                  <tr><th scope="row">Post-change observation</th><td data-label="M-Lab">Not run concurrently</td><td data-label="Network Diagnostics Suite">≈370.1 median / 366.3 steady down</td><td data-label="Interpretation">The earlier 180–200 Mbps ceiling was not an unavoidable browser limit.</td></tr>
                 </tbody>
               </table>
             </section>
@@ -149,53 +170,61 @@
           </section>
 
           <section class="report-section" id="delivery-path" aria-labelledby="delivery-heading">
-            <p class="report-number">04</p>
-            <h2 id="delivery-heading">Finding the download bottleneck</h2>
-            <p class="report-lede">The clearest experiment compared the connection through <em>two project-controlled delivery paths.</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">04</p>
+              <h2 id="delivery-heading">Finding the download bottleneck</h2>
+              <p class="report-lede">The clearest experiment compared the connection through <em>two project-controlled delivery paths.</em></p>
+            </div>
             <div class="report-prose">
               <p>The initial engine repeatedly requested a dynamically composed Worker stream. Even with cache hits, concurrency, and modern protocol negotiation, throughput oscillated and frequently settled near 200 Mbps. Request turnover could create brief peaks without sustaining the same rate.</p>
               <p>The project then added a large deterministic incompressible object on a direct R2 custom domain while retaining the Worker stream as an explicit comparison. The direct path delivered 283.2 Mbps whole-phase and 270.9 Mbps steady, while the Worker path delivered 159.7 Mbps whole-phase and 157.9 Mbps steady. Upload remained around 97 Mbps through either route. Cloudflare’s cache and range-request documentation informed the direct delivery design.<a class="report-citation" href="#ref-6" aria-label="Reference 6">[6]</a><a class="report-citation" href="#ref-7" aria-label="Reference 7">[7]</a></p>
               <p>That A/B result showed the project’s own Worker path materially limiting download delivery. The browser was measuring both the user’s connection and avoidable server-side response construction.</p>
             </div>
-            <div class="report-bars" role="img" aria-label="Direct R2 steady throughput was 270.9 megabits per second compared with 157.9 megabits per second through the Worker stream">
-              <div class="bar-row"><div><strong>Direct R2 object</strong><small>270.9 Mbps steady</small></div><div class="bar-track"><span class="bar-fill-direct"></span></div></div>
-              <div class="bar-row"><div><strong>Worker stream</strong><small>157.9 Mbps steady</small></div><div class="bar-track"><span class="bar-fill-worker"></span></div></div>
-            </div>
+            <figure class="report-bars">
+              <figcaption>Steady-state throughput by project-controlled delivery path</figcaption>
+              <div class="bar-row"><div><strong>Direct R2 object</strong><small>270.9 Mbps steady</small></div><div class="bar-track" aria-hidden="true"><span class="bar-fill-direct"></span></div></div>
+              <div class="bar-row"><div><strong>Worker stream</strong><small>157.9 Mbps steady</small></div><div class="bar-track" aria-hidden="true"><span class="bar-fill-worker"></span></div></div>
+            </figure>
             <div class="report-timeline">
-              <article><a class="report-commit" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/commit/6ed3cdb" target="_blank" rel="noreferrer" aria-label="Commit 6ed3cdb"><code>6ed3cdb</code></a><div><h3>Move download testing to first-party static edge assets</h3><p>Introduced deterministic static payloads, an excluded warm-up, and a Worker fallback.</p></div></article>
-              <article><a class="report-commit" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/commit/4bacb7e" target="_blank" rel="noreferrer" aria-label="Commit 4bacb7e"><code>4bacb7e</code></a><div><h3>Use long-lived segmented Worker responses</h3><p>Reduced routine request turnover and recorded request generations and lifecycle evidence.</p></div></article>
-              <article><a class="report-commit" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/commit/7b27ea8" target="_blank" rel="noreferrer" aria-label="Commit 7b27ea8"><code>7b27ea8</code></a><div><h3>Add direct R2 download A/B path</h3><p>Added direct range delivery, validation, cache evidence, and explicit Worker comparison.</p></div></article>
-              <article><a class="report-commit" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/commit/8ec174d" target="_blank" rel="noreferrer" aria-label="Commit 8ec174d"><code>8ec174d</code></a><div><h3>Make automatic R2 delivery the default</h3><p>Retained Worker delivery as a fallback and advanced comparison rather than an assumed equivalent.</p></div></article>
+              <article><a class="report-commit" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/commit/6ed3cdb4fc9ef49d5e23f56de38353fcdf9c1c4e" target="_blank" rel="noreferrer" aria-label="Commit 6ed3cdb"><code>6ed3cdb</code></a><div><h3>Move download testing to first-party static edge assets</h3><p>Introduced deterministic static payloads, an excluded warm-up, and a Worker fallback.</p></div></article>
+              <article><a class="report-commit" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/commit/4bacb7e281d64af28af7c029204fd5091050dbc5" target="_blank" rel="noreferrer" aria-label="Commit 4bacb7e"><code>4bacb7e</code></a><div><h3>Use long-lived segmented Worker responses</h3><p>Reduced routine request turnover and recorded request generations and lifecycle evidence.</p></div></article>
+              <article><a class="report-commit" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/commit/7b27ea8682ad1130d729f232695ab534fa5a91a7" target="_blank" rel="noreferrer" aria-label="Commit 7b27ea8"><code>7b27ea8</code></a><div><h3>Add direct R2 download A/B path</h3><p>Added direct range delivery, validation, cache evidence, and explicit Worker comparison.</p></div></article>
+              <article><a class="report-commit" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/commit/8ec174d7b6e082568a985877717e8af6081ad4a4" target="_blank" rel="noreferrer" aria-label="Commit 8ec174d"><code>8ec174d</code></a><div><h3>Make automatic R2 delivery the default</h3><p>Retained Worker delivery as a fallback and advanced comparison rather than an assumed equivalent.</p></div></article>
             </div>
             <p class="report-note">The goal was not to force the same number as M-Lab. It was to remove project-created bottlenecks so that disagreement reflected methodology and path differences rather than an inefficient payload implementation.</p>
           </section>
 
           <section class="report-section" id="measurement-plan" aria-labelledby="plan-heading">
-            <p class="report-number">05</p>
-            <h2 id="plan-heading">A shared measurement plan</h2>
-            <p class="report-lede">Profiles became contracts rather than loose labels for <em>roughly how long a test runs.</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">05</p>
+              <h2 id="plan-heading">A shared measurement plan</h2>
+              <p class="report-lede">Profiles became contracts rather than loose labels for <em>roughly how long a test runs.</em></p>
+            </div>
             <div class="report-prose">
-              <p>The browser, desktop application, and opt-in CLI Internet-transfer mode consume the same canonical profile contract. It defines idle samples, stage duration, byte ceilings, sample count, aggregate connection count, service checks, comparison allocation, and Stress scaling stages.</p>
+              <p>The browser, desktop application, and opt-in CLI Internet-transfer mode consume the same canonical profile contract. It defines idle samples, stage duration, byte ceilings, sample count, aggregate connection count, service checks, comparison allocation, and Stress scaling stages.<a class="report-citation" href="#ref-9" aria-label="Reference 9">[9]</a></p>
               <p>Single uses one connection in each direction. Aggregate uses the profile’s configured parallel connection count. Compare runs independent single and aggregate stages so the methods do not compete. Stress measures download scaling at 1, 2, 4, 8, and 10 connections before upload comparison.</p>
               <p>Each client computes the actual stage sequence, estimated time, and maximum transfer before starting. Caps are ceilings, not promised consumption. A slower connection reaches the duration first; a fast connection may reach the byte ceiling first.</p>
             </div>
             <section class="report-table-wrap jl-table-region" tabindex="0" aria-label="Native measurement profile limits">
               <table class="report-table">
+                <caption class="report-table-caption">Native profile duration, transfer ceilings, and diagnostic scope</caption>
                 <thead><tr><th scope="col">Profile</th><th scope="col">Base estimate</th><th scope="col">Download cap</th><th scope="col">Upload cap</th><th scope="col">Deep diagnostics</th></tr></thead>
                 <tbody>
-                  <tr><th scope="row">Connection Check</th><td>15 seconds</td><td>20 MB</td><td>8 MB</td><td>No</td></tr>
-                  <tr><th scope="row">Quick</th><td>20 seconds</td><td>600 MB</td><td>128 MB</td><td>No</td></tr>
-                  <tr><th scope="row">Full</th><td>35 seconds</td><td>900 MB</td><td>256 MB</td><td>Yes</td></tr>
-                  <tr><th scope="row">Stress</th><td>60 seconds</td><td>3 GB</td><td>512 MB</td><td>Yes</td></tr>
+                  <tr><th scope="row">Connection Check</th><td data-label="Base estimate">15 seconds</td><td data-label="Download cap">20 MB</td><td data-label="Upload cap">8 MB</td><td data-label="Deep diagnostics">No</td></tr>
+                  <tr><th scope="row">Quick</th><td data-label="Base estimate">20 seconds</td><td data-label="Download cap">600 MB</td><td data-label="Upload cap">128 MB</td><td data-label="Deep diagnostics">No</td></tr>
+                  <tr><th scope="row">Full</th><td data-label="Base estimate">35 seconds</td><td data-label="Download cap">900 MB</td><td data-label="Upload cap">256 MB</td><td data-label="Deep diagnostics">Yes</td></tr>
+                  <tr><th scope="row">Stress</th><td data-label="Base estimate">60 seconds</td><td data-label="Download cap">3 GB</td><td data-label="Upload cap">512 MB</td><td data-label="Deep diagnostics">Yes</td></tr>
                 </tbody>
               </table>
             </section>
           </section>
 
           <section class="report-section" id="interpretation" aria-labelledby="interpretation-heading">
-            <p class="report-number">06</p>
-            <h2 id="interpretation-heading">Throughput and responsiveness</h2>
-            <p class="report-lede">An average stays useful, but the <em>shape of the transfer</em> explains more.</p>
+            <div class="report-heading-group">
+              <p class="report-number">06</p>
+              <h2 id="interpretation-heading">Throughput and responsiveness</h2>
+              <p class="report-lede">An average stays useful, but the <em>shape of the transfer</em> explains more.</p>
+            </div>
             <div class="report-prose">
               <p>Throughput uses successfully transferred payload bytes over elapsed wall time. Progress is sampled every 250 milliseconds. Intervals shorter than 100 milliseconds are excluded from graph and interval-derived statistics so a few terminal bytes cannot create an impossible peak; those bytes remain in the whole-phase average.</p>
               <p>The engine also reports steady-state rate after the initial ramp, retained peak, coefficient of variation, stability, ramp ratio, and classifications such as cap-limited, still-ramping, declining, unstable, or qualified. Multi-sample download stages report medians rather than allowing one outlier to define the profile.</p>
@@ -212,36 +241,42 @@ parallel gain = (aggregate steady Mbps ÷ single steady Mbps - 1) × 100</code><
           </section>
 
           <section class="report-section" id="endpoint-context" aria-labelledby="endpoint-heading">
-            <p class="report-number">07</p>
-            <h2 id="endpoint-heading">Endpoint and transport context</h2>
-            <p class="report-lede">A speed result is incomplete without identifying <em>where and how it was measured.</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">07</p>
+              <h2 id="endpoint-heading">Endpoint and transport context</h2>
+              <p class="report-lede">A speed result is incomplete without identifying <em>where and how it was measured.</em></p>
+            </div>
             <div class="report-prose">
-              <p>Before a run, the browser and native core probe configured endpoint candidates and select the lowest-latency available origin. Reports preserve candidate success and failure, selected origin, edge location, network name, autonomous system number, negotiated protocol, Transport Layer Security version, and Internet Protocol version when available.</p>
+              <p>Before a run, the browser and native core probe configured endpoint candidates and select the lowest-latency available origin. Reports preserve candidate success and failure, selected origin, edge location, network name, autonomous system number, negotiated protocol, Transport Layer Security version, and Internet Protocol version when available.<a class="report-citation" href="#ref-5" aria-label="Reference 5">[5]</a></p>
               <p>The desktop and CLI can select a source interface. HTTP/1.1, HTTP/2, and LAN sockets bind to the interface’s source address. Managed ICMP, traceroute, DNS, and the exact HTTP/3 request remain routed by the operating system because their portable APIs do not provide equivalent source-interface binding. The report states that scope rather than implying complete isolation.</p>
               <p>The native engine sends a separate HTTPS request requiring HTTP version 3.0 exactly. Browsers cannot make an equivalent portable exact-version request, so the web client records the protocol observed through Navigation Timing instead. Observed and forced protocol evidence remain distinct.<a class="report-citation" href="#ref-8" aria-label="Reference 8">[8]</a></p>
             </div>
           </section>
 
           <section class="report-section" id="native" aria-labelledby="native-heading">
-            <p class="report-number">08</p>
-            <h2 id="native-heading">The native core</h2>
-            <p class="report-lede">Deeper evidence moved into a shared engine instead of being duplicated across <em>a GUI and a command line.</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">08</p>
+              <h2 id="native-heading">The native core</h2>
+              <p class="report-lede">Deeper evidence moved into a shared engine instead of being duplicated across <em>a graphical interface and a command line.</em></p>
+            </div>
             <div class="report-prose">
-              <p>NetworkDiagnostics.Core on .NET 10 owns planning, endpoint selection, Internet transfers, ICMP, gateway testing, traceroute, resolver timing, path MTU, TCP and TLS phases, interfaces, Wi-Fi, routes, LAN testing, findings, capability reporting, and serialization.</p>
+              <p>NetworkDiagnostics.Core on .NET 10 owns planning, endpoint selection, Internet transfers, ICMP, gateway testing, traceroute, resolver timing, path MTU, TCP and TLS phases, interfaces, Wi-Fi, routes, LAN testing, findings, capability reporting, and serialization.<a class="report-citation" href="#ref-10" aria-label="Reference 10">[10]</a></p>
               <p>Avalonia provides the Windows, macOS, and Linux desktop host. The application adds a workbench for profiles, methods, progress, cancellation, comparison, history, import, export, settings, and detailed evidence. The command-line host preserves repeatable deep-only diagnostics and can explicitly opt into the same Internet-transfer plans.</p>
             </div>
             <div class="report-grid">
-              <article><p class="label">Core</p><h3>One implementation of native measurement</h3><p>Planning, transfer enforcement, diagnostics, findings, capabilities, and report serialization.</p></article>
-              <article><p class="label">Desktop</p><h3>Interactive workbench</h3><p>Cross-platform native controls, local history, comparison, and evidence-oriented result views.</p></article>
-              <article><p class="label">CLI</p><h3>Automation and repeatability</h3><p>Scriptable diagnostics, output paths, interface selection, endpoint overrides, and LAN server/client modes.</p></article>
-              <article><p class="label">Platforms</p><h3>Five packaged targets</h3><p>Windows x64, Apple Silicon macOS, Intel macOS, Linux x64, and Linux ARM64.</p></article>
+              <div class="report-grid-item"><p class="label">Core</p><h3>One implementation of native measurement</h3><p>Planning, transfer enforcement, diagnostics, findings, capabilities, and report serialization.</p></div>
+              <div class="report-grid-item"><p class="label">Desktop</p><h3>Interactive workbench</h3><p>Cross-platform native controls, local history, comparison, and evidence-oriented result views.</p></div>
+              <div class="report-grid-item"><p class="label">CLI</p><h3>Automation and repeatability</h3><p>Scriptable diagnostics, output paths, interface selection, endpoint overrides, and LAN server/client modes.</p></div>
+              <div class="report-grid-item"><p class="label">Platforms</p><h3>Five packaged targets</h3><p>Windows x64, Apple Silicon macOS, Intel macOS, Linux x64, and Linux ARM64.</p></div>
             </div>
           </section>
 
           <section class="report-section" id="reports" aria-labelledby="reports-heading">
-            <p class="report-number">09</p>
-            <h2 id="reports-heading">Schema 2.0 and findings parity</h2>
-            <p class="report-lede">Richer evidence did not require incompatible <em>browser and native report silos.</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">09</p>
+              <h2 id="reports-heading">Schema 2.0 and findings parity</h2>
+              <p class="report-lede">Richer evidence did not require incompatible <em>browser and native report silos.</em></p>
+            </div>
             <div class="report-prose">
               <p>Schema 2.0 is a combined envelope for producer identity, run metadata, transfer plan, endpoint selection, interface scope, network context, Internet measurements, deep diagnostics, optional LAN results, and deterministic findings.</p>
               <p>Compatibility remains additive. The browser importer accepts historical native schemas 1.0, 1.1, and 1.2 as well as 2.0. Unknown optional fields are ignored. Missing native sections mean the scope was not run or was unavailable and render as “Not measured,” not failure.</p>
@@ -269,9 +304,11 @@ parallel gain = (aggregate steady Mbps ÷ single steady Mbps - 1) × 100</code><
           </section>
 
           <section class="report-section" id="lan" aria-labelledby="lan-heading">
-            <p class="report-number">10</p>
-            <h2 id="lan-heading">LAN isolation and interface binding</h2>
-            <p class="report-lede">A second trusted machine removes the public Internet without pretending to remove <em>the local endpoints.</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">10</p>
+              <h2 id="lan-heading">LAN isolation and interface binding</h2>
+              <p class="report-lede">A second trusted machine removes the public Internet without pretending to remove <em>the local endpoints.</em></p>
+            </div>
             <div class="report-prose">
               <p>The optional LAN server listens on a configurable TCP port. The client measures request/response latency, generated download traffic, and generated upload traffic with a configurable duration and parallel stream count.</p>
               <p>This removes the provider, public transit, and public test platform. It does not remove either machine’s operating system, CPU, adapter, firewall, switch, access point, cabling, or TCP implementation. A preferably wired server with capacity above the expected client rate is recommended.</p>
@@ -280,9 +317,11 @@ parallel gain = (aggregate steady Mbps ÷ single steady Mbps - 1) × 100</code><
           </section>
 
           <section class="report-section" id="privacy" aria-labelledby="privacy-heading">
-            <p class="report-number">11</p>
-            <h2 id="privacy-heading">Privacy and accuracy</h2>
-            <p class="report-lede">Privacy is implemented through minimization, while accuracy begins by <em>stating the remaining dependencies.</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">11</p>
+              <h2 id="privacy-heading">Privacy and accuracy</h2>
+              <p class="report-lede">Privacy is implemented through minimization, while accuracy begins by <em>stating the remaining dependencies.</em></p>
+            </div>
             <div class="report-prose">
               <p>The project has no accounts, cookies, analytics, advertising, telemetry, or project-operated result database. Browser history remains in that browser. Native reports remain on the user’s computer. Imported reports are not uploaded.</p>
               <p>No retained result does not mean invisible traffic. Cloudflare necessarily processes traffic sent to default endpoints. Full and Stress service checks contact the named providers. User-supplied endpoints and LAN targets remain outside the project’s trust boundary.</p>
@@ -292,36 +331,42 @@ parallel gain = (aggregate steady Mbps ÷ single steady Mbps - 1) × 100</code><
           </section>
 
           <section class="report-section" id="validation" aria-labelledby="validation-heading">
-            <p class="report-number">12</p>
-            <h2 id="validation-heading">Validation and release engineering</h2>
-            <p class="report-lede">The project’s contracts are useful only when browsers, native targets, and report readers <em>continue to agree.</em></p>
+            <div class="report-heading-group">
+              <p class="report-number">12</p>
+              <h2 id="validation-heading">Validation and release engineering</h2>
+              <p class="report-lede">The project’s contracts are useful only when browsers, native targets, and report readers <em>continue to agree.</em></p>
+            </div>
             <div class="report-prose">
               <p>Continuous integration validates design-system integration, TypeScript, browser and Worker tests, production builds, the native core, deep-probe tests, desktop builds, profile contracts, report compatibility, and findings parity.</p>
               <p>Concurrent native download workers reserve bytes before reading so committed measured payload cannot exceed the configured stage ceiling. Cancellation preserves partial evidence rather than converting an interrupted run into an empty failure.</p>
               <p>Desktop and CLI workflows package self-contained artifacts for five runtime targets with checksums and local privacy notes. macOS artifacts are valid application bundles but remain unsigned until Developer ID signing and notarization credentials are configured.</p>
             </div>
             <div class="report-grid">
-              <article><p class="label">Contracts</p><h3>Profiles and schemas</h3><p>Shared fixtures prevent browser and native definitions from drifting independently.</p></article>
-              <article><p class="label">Parity</p><h3>TypeScript and C# findings</h3><p>Representative reports must produce the same rule identifiers across engines.</p></article>
-              <article><p class="label">Packaging</p><h3>Five native targets</h3><p>Self-contained outputs and checksums make artifacts inspectable and reproducible.</p></article>
-              <article><p class="label">Boundaries</p><h3>Failures remain explicit</h3><p>Unsupported, unavailable, partial, and cancelled states are preserved rather than guessed away.</p></article>
+              <div class="report-grid-item"><p class="label">Contracts</p><h3>Profiles and schemas</h3><p>Shared fixtures prevent browser and native definitions from drifting independently.</p></div>
+              <div class="report-grid-item"><p class="label">Parity</p><h3>TypeScript and C# findings</h3><p>Representative reports must produce the same rule identifiers across engines.</p></div>
+              <div class="report-grid-item"><p class="label">Packaging</p><h3>Five native targets</h3><p>Self-contained outputs and checksums make artifacts inspectable and reproducible.</p></div>
+              <div class="report-grid-item"><p class="label">Boundaries</p><h3>Failures remain explicit</h3><p>Unsupported, unavailable, partial, and cancelled states are preserved rather than guessed away.</p></div>
             </div>
           </section>
 
           <section class="report-section" id="lessons" aria-labelledby="lessons-heading">
-            <p class="report-number">13</p>
-            <h2 id="lessons-heading">Lessons and next work</h2>
+            <div class="report-heading-group">
+              <p class="report-number">13</p>
+              <h2 id="lessons-heading">Lessons and next work</h2>
+            </div>
             <div class="report-prose">
               <p>The project’s largest improvements came from treating disagreement as evidence. M-Lab’s higher result was not dismissed as “a different server,” and it was not used as a number that had to be copied. It triggered a transport investigation that revealed a real bottleneck in the project’s Worker delivery path.</p>
               <p>The same pattern shaped the rest of the system. Browser request failures were not relabeled as packet loss. A native probe was added. One aggregate throughput number was not treated as the connection’s full capacity. Single, aggregate, and scaling stages were separated. Missing fields were not guessed. Schema compatibility made absence explicit.</p>
               <p>Future work should continue in that direction: more controlled cross-client comparison fixtures, signed and notarized desktop packages, broader platform validation of Wi-Fi and route parsers, and longitudinal comparison tools that help users distinguish a temporary route from a persistent local fault.</p>
             </div>
-            <blockquote class="report-quote">A useful diagnostic tool does not need to know everything. It needs to make clear what it observed, what it inferred, and what remains unknown.</blockquote>
+            <p class="report-quote">A useful diagnostic tool does not need to know everything. It needs to make clear what it observed, what it inferred, and what remains unknown.</p>
           </section>
 
           <section class="report-section" id="references" aria-labelledby="references-heading">
-            <p class="report-number">References</p>
-            <h2 id="references-heading">Primary sources and project records</h2>
+            <div class="report-heading-group">
+              <p class="report-number">References</p>
+              <h2 id="references-heading">Primary sources and project records</h2>
+            </div>
             <ol class="references">
               <li id="ref-1"><span>Measurement Lab, <a href="https://github.com/m-lab/ndt-server/blob/main/spec/ndt7-protocol.md" target="_blank" rel="noreferrer">“ndt7 protocol specification.”</a></span></li>
               <li id="ref-2"><span>Measurement Lab, <a href="https://www.measurementlab.net/tests/ndt/" target="_blank" rel="noreferrer">“NDT (Network Diagnostic Tool).”</a></span></li>
@@ -331,8 +376,8 @@ parallel gain = (aggregate steady Mbps ÷ single steady Mbps - 1) × 100</code><
               <li id="ref-6"><span>Cloudflare, <a href="https://developers.cloudflare.com/cache/interaction-cloudflare-products/r2/" target="_blank" rel="noreferrer">“Enable cache in an R2 bucket.”</a></span></li>
               <li id="ref-7"><span>Cloudflare, <a href="https://developers.cloudflare.com/cache/concepts/default-cache-behavior/" target="_blank" rel="noreferrer">“Default Cache Behavior: client-side range requests.”</a></span></li>
               <li id="ref-8"><span>World Wide Web Consortium, <a href="https://www.w3.org/TR/resource-timing/" target="_blank" rel="noreferrer">“Resource Timing.”</a></span></li>
-              <li id="ref-9"><span>Network Diagnostics Suite, <a href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/blob/main/docs/methodology.md" target="_blank" rel="noreferrer">“Measurement methodology.”</a></span></li>
-              <li id="ref-10"><span>Network Diagnostics Suite, <a href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/blob/main/README.md" target="_blank" rel="noreferrer">architecture, profiles, compatibility, privacy, and deployment record.</a></span></li>
+              <li id="ref-9"><span>Network Diagnostics Suite, <a href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/blob/b1c549c5c83c2101c8530d861e79710bf894f1ca/docs/methodology.md" target="_blank" rel="noreferrer">“Measurement methodology.”</a></span></li>
+              <li id="ref-10"><span>Network Diagnostics Suite, <a href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/blob/b1c549c5c83c2101c8530d861e79710bf894f1ca/README.md" target="_blank" rel="noreferrer">architecture, profiles, compatibility, privacy, and deployment record.</a></span></li>
             </ol>
           </section>
         </article>

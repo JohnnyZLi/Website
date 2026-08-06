@@ -90,20 +90,6 @@ body {
   line-height: 1.55;
 }
 
-.report-actions {
-  --jl-actions-gap: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 24px;
-  row-gap: 0;
-  align-items: start;
-  margin-top: 30px;
-}
-
-.report-actions .report-action {
-  width: 100%;
-}
-
 .report-meta {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -133,6 +119,19 @@ body {
   line-height: 1.4;
 }
 
+.report-baseline {
+  border-bottom: 1px solid var(--jl-color-accent-decorative);
+  color: var(--ink);
+}
+
+.report-baseline code {
+  font: 0.82rem var(--jl-font-mono);
+}
+
+.report-print-provenance {
+  display: none;
+}
+
 .report-layout {
   display: grid;
   grid-template-columns: var(--report-rail) minmax(0, 1fr);
@@ -145,6 +144,7 @@ body {
 .report-toc {
   position: sticky;
   top: 116px;
+  scroll-margin-top: 110px;
 }
 
 .report-toc p {
@@ -194,7 +194,11 @@ body {
 }
 
 .report-intro {
-  padding-bottom: 84px;
+  padding-bottom: 44px;
+}
+
+.report-intro + .report-section {
+  padding-top: 62px;
 }
 
 .report-intro h2,
@@ -304,16 +308,16 @@ body {
   margin-top: 48px;
 }
 
-.report-grid article {
+.report-grid-item {
   min-width: 0;
   padding: 26px 28px 30px;
 }
 
-.report-grid article:nth-child(odd) {
+.report-grid-item:nth-child(odd) {
   border-right: 1px solid var(--rule);
 }
 
-.report-grid article:nth-child(n + 3) {
+.report-grid-item:nth-child(n + 3) {
   border-top: 1px solid var(--rule);
 }
 
@@ -333,7 +337,7 @@ body {
   letter-spacing: -0.035em;
 }
 
-.report-grid article > p:last-child {
+.report-grid-item > p:last-child {
   margin: 14px 0 0;
   color: var(--muted);
   font-size: 0.88rem;
@@ -345,6 +349,17 @@ body {
   --jl-table-region-radius: 0;
   --jl-table-region-background: transparent;
   margin-top: 46px;
+}
+
+.report-table-caption {
+  padding: 0 0 14px;
+  color: var(--muted);
+  font-family: var(--jl-font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
 }
 
 .report-table {
@@ -391,9 +406,20 @@ body {
 }
 
 .report-bars {
-  margin-top: 46px;
-  padding: 28px;
-  border: 1px solid var(--rule);
+  margin: 46px 0 0;
+  padding: 24px 0 28px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.report-bars figcaption {
+  margin-bottom: 24px;
+  color: var(--muted);
+  font-family: var(--jl-font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .bar-row {
@@ -633,21 +659,88 @@ body {
   }
 }
 
+@media (max-width: 760px) {
+  .report-table-wrap {
+    overflow: visible;
+  }
+
+  .report-table {
+    display: block;
+    min-width: 0;
+  }
+
+  .report-table thead {
+    position: absolute;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .report-table tbody,
+  .report-table tr,
+  .report-table th,
+  .report-table td {
+    display: block;
+    width: auto;
+  }
+
+  .report-table tbody tr {
+    padding: 20px 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .report-table tbody tr:last-child {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .report-table th,
+  .report-table td {
+    padding: 0;
+    border: 0;
+  }
+
+  .report-table tbody th {
+    width: auto;
+    margin-bottom: 12px;
+    font-size: 1rem;
+  }
+
+  .report-table tbody td {
+    display: grid;
+    grid-template-columns: minmax(112px, 0.45fr) minmax(0, 1fr);
+    gap: 16px;
+    padding: 7px 0;
+  }
+
+  .report-table tbody td::before {
+    color: var(--clay);
+    content: attr(data-label);
+    font-family: var(--jl-font-mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    line-height: 1.45;
+    text-transform: uppercase;
+  }
+}
+
 @media (max-width: 600px) {
   .report-hero {
     padding-top: 50px;
   }
 
   .report-hero h1 {
-    font-size: clamp(3.2rem, 14vw, 4.7rem);
+    font-size: clamp(3.05rem, 14vw, 4.7rem);
   }
 
   .report-summary {
     margin-top: 38px;
-  }
-
-  .report-actions {
-    grid-template-columns: 1fr;
   }
 
   .report-meta {
@@ -658,6 +751,19 @@ body {
     columns: 1;
   }
 
+  .report-intro h2,
+  .report-section h2 {
+    font-size: clamp(2.25rem, 11.5vw, 3.25rem);
+  }
+
+  .report-intro {
+    padding-bottom: 36px;
+  }
+
+  .report-intro + .report-section {
+    padding-top: 54px;
+  }
+
   .report-section {
     padding: 72px 0 80px;
   }
@@ -666,26 +772,32 @@ body {
     display: block;
   }
 
-  .report-grid article {
+  .report-grid-item {
     padding: 25px 0 28px;
     border-top: 0;
   }
 
-  .report-grid article:nth-child(odd) {
+  .report-grid-item:nth-child(odd) {
     border-right: 0;
   }
 
-  .report-grid article:nth-child(n + 3) {
+  .report-grid-item:nth-child(n + 3) {
     border-top: 0;
   }
 
-  .report-grid article:nth-child(n + 2) {
+  .report-grid-item:nth-child(n + 2) {
     border-top: 1px solid var(--rule);
   }
 
   .bar-row {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .report-code {
+    overflow-x: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -696,6 +808,11 @@ body {
 
   .report-timeline h3 {
     margin-top: 12px;
+  }
+
+  .report-table tbody td {
+    grid-template-columns: minmax(98px, 0.42fr) minmax(0, 1fr);
+    gap: 12px;
   }
 }
 
@@ -751,7 +868,7 @@ body {
 
   .report-hero {
     overflow: visible;
-    padding: 0 0 0.35in;
+    padding: 0 0 0.3in;
     border-bottom: 1px solid var(--rule);
   }
 
@@ -765,30 +882,30 @@ body {
 
   .report-hero-grid {
     display: block;
-    margin-top: 0.27in;
+    margin-top: 0.25in;
   }
 
   .report-hero h1 {
     max-width: 7.2in;
-    font-size: 38pt;
+    font-size: 36pt;
     line-height: 0.96;
   }
 
   .report-summary {
     max-width: 6.5in;
-    margin: 0.27in 0 0;
+    margin: 0.24in 0 0;
     padding: 0;
   }
 
   .report-summary > p {
-    font-size: 11pt;
-    line-height: 1.48;
+    font-size: 10.5pt;
+    line-height: 1.45;
   }
 
   .report-meta {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    margin-top: 0.34in;
-    padding-top: 0.18in;
+    margin-top: 0.3in;
+    padding-top: 0.16in;
   }
 
   .report-meta dt {
@@ -796,7 +913,14 @@ body {
   }
 
   .report-meta dd {
-    font-size: 8.3pt;
+    font-size: 8.1pt;
+  }
+
+  .report-print-provenance {
+    display: block;
+    margin: 0.18in 0 0;
+    color: var(--muted);
+    font: 6.8pt/1.4 var(--jl-font-mono);
   }
 
   .report-layout {
@@ -806,60 +930,75 @@ body {
   }
 
   .report-intro {
-    padding: 0.46in 0 0.5in;
+    padding: 0.4in 0 0.36in;
   }
 
+  .report-intro + .report-section,
   .report-section {
-    padding: 0.44in 0 0.5in;
+    padding: 0.34in 0 0.4in;
     break-before: auto;
   }
 
+  .report-heading-group {
+    break-after: avoid-page;
+    break-inside: avoid-page;
+  }
+
   .report-number {
-    margin-bottom: 0.15in;
+    margin-bottom: 0.13in;
     font-size: 7pt;
-    break-after: avoid;
+    break-after: avoid-page;
   }
 
   .report-intro h2,
   .report-section h2 {
-    font-size: 25pt;
+    font-size: 23pt;
     line-height: 1;
+    break-after: avoid-page;
   }
 
   .report-abstract-lede,
   .report-lede {
-    margin-top: 0.28in;
-    font-size: 15.5pt;
+    margin-top: 0.22in;
+    font-size: 14pt;
+    break-after: avoid-page;
   }
 
   .report-prose {
     max-width: none;
-    margin-top: 0.26in;
+    margin-top: 0.22in;
   }
 
   .report-prose p {
     font-size: 9.2pt;
-    line-height: 1.58;
+    line-height: 1.55;
+    orphans: 3;
+    widows: 3;
+  }
+
+  .report-heading-group + .report-prose,
+  .report-prose p:first-child {
+    break-before: avoid-page;
   }
 
   .report-prose p + p {
-    margin-top: 0.14in;
+    margin-top: 0.13in;
   }
 
   .report-principle,
   .report-bars,
   .report-code,
   .report-quote {
-    break-inside: avoid;
+    break-inside: avoid-page;
   }
 
   .report-principle {
-    margin-top: 0.28in;
-    padding: 0.18in 0;
+    margin-top: 0.24in;
+    padding: 0.16in 0;
   }
 
   .report-principle strong {
-    font-size: 15pt;
+    font-size: 14.5pt;
   }
 
   .report-principle span,
@@ -869,35 +1008,79 @@ body {
   }
 
   .report-grid {
-    margin-top: 0.28in;
+    margin-top: 0.24in;
   }
 
-  .report-grid article {
-    padding: 0.14in;
+  .report-grid-item {
+    padding: 0.13in;
   }
 
   .report-grid h3 {
-    margin-top: 0.16in;
+    margin-top: 0.14in;
     font-size: 9pt;
   }
 
-  .report-grid article > p:last-child {
+  .report-grid-item > p:last-child {
     font-size: 7.3pt;
   }
 
+  .report-table-caption {
+    font-size: 6.5pt;
+  }
+
   .report-table {
+    display: table;
     min-width: 0;
     font-size: 7.1pt;
   }
 
+  .report-table thead {
+    position: static;
+    overflow: visible;
+    width: auto;
+    height: auto;
+    margin: 0;
+    clip: auto;
+    clip-path: none;
+    white-space: normal;
+  }
+
+  .report-table tbody {
+    display: table-row-group;
+  }
+
+  .report-table tr {
+    display: table-row;
+    padding: 0;
+    border: 0;
+  }
+
   .report-table th,
   .report-table td {
+    display: table-cell;
+    width: auto;
     padding: 0.08in 0.09in;
+    border-top: 1px solid var(--rule);
+  }
+
+  .report-table tbody th {
+    width: 22%;
+    margin: 0;
+    font-size: inherit;
+  }
+
+  .report-table tbody td::before {
+    content: none;
   }
 
   .report-bars {
-    margin-top: 0.28in;
-    padding: 0.17in;
+    margin-top: 0.24in;
+    padding: 0.13in 0 0.15in;
+  }
+
+  .report-bars figcaption {
+    margin-bottom: 0.12in;
+    font-size: 6.5pt;
   }
 
   .bar-row strong {
@@ -909,11 +1092,11 @@ body {
   }
 
   .report-timeline {
-    margin-top: 0.28in;
+    margin-top: 0.24in;
   }
 
   .report-timeline article {
-    padding: 0.12in 0;
+    padding: 0.11in 0;
   }
 
   .report-timeline h3 {
@@ -925,17 +1108,26 @@ body {
   }
 
   .report-code {
-    margin-top: 0.28in;
-    padding: 0.18in;
+    margin-top: 0.24in;
+    padding: 0.16in;
     font-size: 7pt;
   }
 
   .report-quote {
-    font-size: 16pt;
+    font-size: 15pt;
   }
 
   .references li {
     font-size: 7.4pt;
+    orphans: 2;
+    widows: 2;
+  }
+
+  .references a[href^="http"]::after {
+    content: " <" attr(href) ">";
+    font-family: var(--jl-font-mono);
+    font-size: 0.82em;
+    overflow-wrap: anywhere;
   }
 
   a {
@@ -947,6 +1139,6 @@ body {
   h3,
   tr,
   .report-timeline article {
-    break-inside: avoid;
+    break-inside: avoid-page;
   }
 }
