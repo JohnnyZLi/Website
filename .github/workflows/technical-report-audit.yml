@@ -9,6 +9,7 @@ on:
       - "project-actions.css"
       - "scripts/validate-technical-report.mjs"
       - "scripts/technical-report-visual-audit.mjs"
+      - "scripts/technical-report-visual-baseline.json"
       - ".github/workflows/technical-report-audit.yml"
       - "package.json"
   workflow_dispatch:
@@ -28,6 +29,10 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm install --no-save playwright@1.54.1
       - run: npx playwright install --with-deps chromium
+      - name: Install PDF inspection tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes poppler-utils
       - run: npm run lint
       - run: node scripts/validate-technical-report.mjs
       - name: Start static site
