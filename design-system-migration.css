@@ -1,8 +1,9 @@
+@import url("assets/design-system/theme.css");
 @import url("assets/design-system/content-primitives.css");
 @import url("project-actions.css");
 
 /* Portfolio expression of the shared Johnny Li design system.
-   Shared header structure, controls, and compact menu geometry are package-owned. */
+   Shared header structure, controls, compact menu geometry, and themes are package-owned. */
 
 :root {
   --paper: var(--jl-color-canvas);
@@ -34,19 +35,13 @@ body {
 :focus-visible {
   outline: 2px solid var(--jl-color-focus-ring);
   outline-offset: 3px;
-  box-shadow: 0 0 0 5px var(--jl-color-focus-gap-light);
+  box-shadow: 0 0 0 5px var(--_jl-focus-gap-color);
 }
 
 .contact-section {
   --_jl-focus-gap-color: var(--jl-color-focus-gap-dark);
   background: var(--jl-color-surface-inverse);
   color: var(--jl-color-text-inverse);
-}
-
-.contact-section :focus-visible,
-.case-next :focus-visible,
-.output-grid pre :focus-visible {
-  box-shadow: 0 0 0 5px var(--jl-color-focus-gap-dark);
 }
 
 .work-description,
