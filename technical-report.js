@@ -39,6 +39,7 @@ if (toc instanceof HTMLElement && progress instanceof HTMLElement) {
       compactList.className = 'report-progress-list';
       compactList.querySelectorAll('a').forEach((link) => {
         link.removeAttribute('aria-current');
+        link.removeAttribute('data-report-section-link');
         link.setAttribute('data-report-progress-link', '');
       });
       progressMenu.append(compactList);
