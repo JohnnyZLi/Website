@@ -1,17 +1,16 @@
 name: Apply fitted header sync
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/fix-attached-control-visuals
-    paths:
-      - .github/workflows/apply-fitted-header-sync.yml
+      - main
 
 permissions:
   contents: write
 
 jobs:
   sync:
+    if: github.head_ref == 'agent/fix-attached-control-visuals'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
