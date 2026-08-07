@@ -57,6 +57,7 @@ jobs:
         run: |
           npm ci --no-audit --no-fund
           npm run design-system:sync
+          git add package.json package-lock.json design-system.lock.json assets/design-system index.html projects site-switcher.js portfolio-navigation.js
           npm run design-system:check
           npm run design-system:integration
 
