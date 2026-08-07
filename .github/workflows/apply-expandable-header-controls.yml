@@ -1,0 +1,57 @@
+name: Apply expandable header controls
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/apply-expandable-header-controls.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out consumer branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: agent/expandable-header-controls
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Pin shared source
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          commit = "6d464092dfd8a87236a10f8181c3845ca6a2a9e0"
+          lock_path = Path("design-system.lock.json")
+          lock = json.loads(lock_path.read_text())
+          lock["sourceCommit"] = commit
+          lock_path.write_text(json.dumps(lock, indent=2) + "\n")
+
+          package_path = Path("package.json")
+          package = json.loads(package_path.read_text())
+          package["dependencies"]["@johnnyzli/web-design-system"] = f"github:JohnnyZLi/Web-Design-System#{commit}"
+          package_path.write_text(json.dumps(package, indent=2) + "\n")
+          PY
+      - name: Install shared candidate
+        run: npm install --no-audit --no-fund --no-package-lock
+      - name: Regenerate shared assets and cache keys
+        run: npm run design-system:sync
+      - name: Validate regenerated state
+        run: |
+          npm run design-system:integration
+          npm run lint
+      - name: Commit generated consumer update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add design-system.lock.json package.json assets/design-system index.html projects site-switcher.js portfolio-navigation.js
+          git commit -m "Adopt expandable header controls"
+          npm run design-system:check
+          git push origin HEAD:agent/expandable-header-controls
