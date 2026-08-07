@@ -5,11 +5,13 @@ on:
   push:
     branches: ["main"]
     paths:
+      - "index.html"
+      - "projects/**/*.html"
       - "site-switcher.js"
+      - "portfolio-navigation.js"
       - "assets/design-system/site-controls.js"
       - "assets/design-system/theme-bootstrap.js"
       - "assets/design-system/theme-control.css"
-      - "_headers"
       - "scripts/production-theme-smoke.mjs"
       - ".github/workflows/production-theme-smoke.yml"
 
