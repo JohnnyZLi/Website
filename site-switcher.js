@@ -1,12 +1,8 @@
-import { installSiteSwitcher } from "./assets/design-system/site-controls.js";
-
-const {
-  installSiteSwitcher: installVersionedSiteSwitcher = installSiteSwitcher,
-} = await import("./assets/design-system/site-controls.js?v=1.9.0-icon-settings");
+const { installSiteSwitcher } = await import("./assets/design-system/site-controls.js?v=9114a8833555584f3e5a15659ac03ab3898d2e6f");
 
 for (const root of document.querySelectorAll("[data-site-switcher]")) {
   if (!(root instanceof HTMLElement)) continue;
-  installVersionedSiteSwitcher(root, {
+  installSiteSwitcher(root, {
     currentSite: "portfolio",
     populate: true,
     onBeforeOpen: () => {
