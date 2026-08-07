@@ -22,4 +22,8 @@ jobs:
         design-system.conformance.json
         package.json
         assets/design-system
+        index.html
+        projects/*.html
+        site-switcher.js
+        portfolio-navigation.js
       product-name: portfolio

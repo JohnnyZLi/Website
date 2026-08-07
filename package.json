@@ -9,7 +9,7 @@
     "lint": "npm run lint:html && npm run lint:css",
     "design-system:update": "node scripts/update-design-system.mjs",
     "design-system:sync": "node scripts/sync-design-system.mjs",
-    "design-system:check": "npm run design-system:sync && git diff --exit-code -- assets/design-system",
+    "design-system:check": "npm run design-system:sync && git diff --exit-code -- assets/design-system index.html projects site-switcher.js portfolio-navigation.js",
     "design-system:integration": "node scripts/validate-design-system-integration.mjs",
     "design-system:conformance": "node node_modules/@johnnyzli/web-design-system/scripts/conformance-runner.mjs",
     "technical-report:check": "node scripts/validate-technical-report.mjs",

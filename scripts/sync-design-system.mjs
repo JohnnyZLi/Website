@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 const packageRoot = resolve("node_modules/@johnnyzli/web-design-system");
@@ -56,4 +56,54 @@ await writeFile(
   ].join("\n"),
   "utf8",
 );
+
+const projectEntries = await readdir(resolve("projects"), { withFileTypes: true });
+const htmlFiles = [
+  resolve("index.html"),
+  ...projectEntries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".html"))
+    .map((entry) => resolve("projects", entry.name)),
+];
+
+const versionReference = (content, pattern) => content.replace(
+  new RegExp(`(${pattern})(?:\\?v=[^\"'\\s>]*)?`, "g"),
+  `$1?v=${sourceCommit}`,
+);
+
+const sharedReferences = [
+  "(?:\\.\\./)*assets/design-system/theme-bootstrap\\.js",
+  "(?:\\.\\./)*assets/design-system/tokens\\.css",
+  "(?:\\.\\./)*assets/design-system/foundations\\.css",
+  "(?:\\.\\./)*assets/design-system/site-identity\\.css",
+  "(?:\\.\\./)*assets/design-system/theme-control\\.css",
+  "(?:\\.\\./)*site-switcher\\.js",
+  "(?:\\.\\./)*portfolio-navigation\\.js",
+];
+for (const path of htmlFiles) {
+  let content = await readFile(path, "utf8");
+  for (const reference of sharedReferences) content = versionReference(content, reference);
+  await writeFile(path, content, "utf8");
+}
+
+const rewriteWrapperImport = async (path, marker, exportName) => {
+  const content = await readFile(resolve(path), "utf8");
+  const markerIndex = content.indexOf(marker);
+  if (markerIndex < 0) throw new Error(`${path} is missing its shared-controller installation loop.`);
+  const body = content.slice(markerIndex);
+  const prefix = `const { ${exportName} } = await import(\"./assets/design-system/site-controls.js?v=${sourceCommit}\");\n\n`;
+  await writeFile(resolve(path), `${prefix}${body}`, "utf8");
+};
+
+await rewriteWrapperImport(
+  "site-switcher.js",
+  'for (const root of document.querySelectorAll("[data-site-switcher]")) {',
+  "installSiteSwitcher",
+);
+await rewriteWrapperImport(
+  "portfolio-navigation.js",
+  'for (const header of document.querySelectorAll(".jl-global-header")) {',
+  "installHeaderMenu",
+);
+
 console.log(`Synced ${packageMetadata.name} v${packageMetadata.version} at ${sourceCommit}.`);
+console.log(`Versioned shared browser entry points with source commit ${sourceCommit}.`);
