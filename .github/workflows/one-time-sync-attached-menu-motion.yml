@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   sync:
-    if: github.head_ref == 'agent/sync-attached-menu-motion'
+    if: github.head_ref == 'agent/sync-attached-menu-motion' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -31,10 +31,17 @@ jobs:
           import json, os, re
           from pathlib import Path
           sha = os.environ['WDS_SOURCE_COMMIT']
+
+          package_path = Path('package.json')
+          package = json.loads(package_path.read_text())
+          package['dependencies']['@johnnyzli/web-design-system'] = f'github:JohnnyZLi/Web-Design-System#{sha}'
+          package_path.write_text(json.dumps(package, indent=2) + '\n')
+
           lock_path = Path('design-system.lock.json')
           lock = json.loads(lock_path.read_text())
           lock['sourceCommit'] = sha
           lock_path.write_text(json.dumps(lock, indent=2) + '\n')
+
           source_path = Path('assets/design-system/SOURCE.md')
           text = source_path.read_text()
           text, count = re.subn(r'Source commit: [0-9a-f]+', f'Source commit: {sha}', text, count=1)
@@ -42,6 +49,9 @@ jobs:
               raise SystemExit('Could not update Portfolio design-system source metadata')
           source_path.write_text(text)
           PY
+
+      - name: Refresh dependency lock
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
 
       - name: Sync and validate shared assets
         run: |
