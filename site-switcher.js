@@ -1,4 +1,4 @@
-const { installSiteSwitcher } = await import("./assets/design-system/site-controls.js?v=2201d8cc1b3953927618b2f6a942e90057e35c07");
+const { installSiteSwitcher } = await import("./assets/design-system/site-controls.js?v=3bfa0c6897c30ebfe5feffa1349c3811d29fa8bb");
 
 for (const root of document.querySelectorAll("[data-site-switcher]")) {
   if (!(root instanceof HTMLElement)) continue;
