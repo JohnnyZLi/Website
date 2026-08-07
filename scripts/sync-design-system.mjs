@@ -57,23 +57,19 @@ await writeFile(
   "utf8",
 );
 
-const collectHtml = async (directory) => {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const pages = [];
-  for (const entry of entries) {
-    const path = resolve(directory, entry.name);
-    if (entry.isDirectory()) pages.push(...await collectHtml(path));
-    if (entry.isFile() && entry.name.endsWith(".html")) pages.push(path);
-  }
-  return pages;
-};
+const projectEntries = await readdir(resolve("projects"), { withFileTypes: true });
+const htmlFiles = [
+  resolve("index.html"),
+  ...projectEntries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".html"))
+    .map((entry) => resolve("projects", entry.name)),
+];
 
 const versionReference = (content, pattern) => content.replace(
   new RegExp(`(${pattern})(?:\\?v=[^\"'\\s>]*)?`, "g"),
   `$1?v=${sourceCommit}`,
 );
 
-const htmlFiles = [resolve("index.html"), ...await collectHtml(resolve("projects"))];
 const sharedReferences = [
   "(?:\\.\\./)*assets/design-system/theme-bootstrap\\.js",
   "(?:\\.\\./)*assets/design-system/tokens\\.css",
