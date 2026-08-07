@@ -48,6 +48,8 @@ try {
             linkCount: document.querySelectorAll("[data-site-switcher-menu] a[href]").length,
             themeButtons: document.querySelectorAll("button[data-theme-preference]").length,
             selectedButton: document.querySelector('[data-theme-preference][aria-pressed="true"]')?.getAttribute("data-theme-preference") ?? null,
+            settingsButtons: document.querySelectorAll("[data-settings-button]").length,
+            settingsMenus: document.querySelectorAll("[data-settings-menu]").length,
           };
         });
         const problems = [];
@@ -58,11 +60,16 @@ try {
         if (state.linkCount !== 3) problems.push(`Sites menu has ${state.linkCount} links`);
         if (state.themeButtons !== 3) problems.push(`Appearance has ${state.themeButtons} options`);
         if (state.selectedButton !== theme) problems.push(`selected option is ${state.selectedButton}`);
+        if (state.settingsButtons !== 1 || state.settingsMenus !== 1) problems.push("Settings control was not installed exactly once");
         const expectedThemeColor = theme === "dark" ? "#171714" : "#f2efe8";
         if (state.themeColor?.toLowerCase() !== expectedThemeColor) problems.push(`theme-color is ${state.themeColor}`);
 
-        const switcher = page.locator("[data-site-switcher-button]").first();
-        await switcher.click();
+        const settingsButton = page.locator("[data-settings-button]").first();
+        await settingsButton.click();
+        const settingsVisible = await page.locator("[data-settings-menu]").first().isVisible();
+        const sitesHidden = !(await page.locator("[data-site-switcher-menu]").first().isVisible());
+        if (!settingsVisible || !sitesHidden) problems.push("Settings menu did not open independently of Sites");
+
         const opposite = theme === "dark" ? "light" : "dark";
         await page.locator(`[data-theme-preference="${opposite}"]`).first().click();
         await page.waitForFunction((value) => document.documentElement.dataset.theme === value, opposite);
@@ -72,10 +79,12 @@ try {
           stored: localStorage.getItem("jl-theme"),
           cookie: document.cookie,
           pressed: document.querySelector('[data-theme-preference][aria-pressed="true"]')?.getAttribute("data-theme-preference"),
+          settingsOpen: document.querySelector("[data-settings-button]")?.getAttribute("aria-expanded"),
         }));
         if (changed.preference !== opposite || changed.theme !== opposite || changed.stored !== opposite || changed.pressed !== opposite) {
           problems.push("Appearance selection did not synchronize state");
         }
+        if (changed.settingsOpen !== "true") problems.push("Settings menu closed while choosing an appearance option");
         if (!changed.cookie.includes(`jl-theme=${opposite}`)) problems.push("Appearance preference cookie missing");
         results.push({ routeName, viewportName, theme, state, changed, problems });
         await context.close();
