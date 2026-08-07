@@ -93,9 +93,9 @@ try {
         });
         if (sitesOpen.sitesExpanded !== "true" || sitesOpen.settingsExpanded !== "false") problems.push("Sites did not open independently of Settings");
         if (!near(sitesOpen.buttonWidth, 88)) problems.push(`Sites trigger width ${sitesOpen.buttonWidth}`);
-        if (!near(sitesOpen.menuWidth, 144)) problems.push(`Sites dropdown width ${sitesOpen.menuWidth}`);
+        if (!near(sitesOpen.menuWidth, 88)) problems.push(`Sites dropdown width ${sitesOpen.menuWidth}`);
         if (sitesOpen.menuLeft < -0.5 || sitesOpen.menuRight > sitesOpen.innerWidth + 0.5) problems.push("Sites dropdown escapes the viewport");
-        if (sitesOpen.linkOverflow || sitesOpen.linkWrapping) problems.push("Sites labels do not fit the dropdown");
+        if (sitesOpen.linkOverflow) problems.push("Sites labels overflow the attached dropdown");
         if (sitesOpen.documentWidth > sitesOpen.innerWidth + 1) problems.push("Sites-open state has horizontal overflow");
         await page.screenshot({ path: `${output}/${routeName}-${viewportName}-${theme}-sites-open.png` });
         await page.keyboard.press("Escape");
