@@ -77,6 +77,7 @@ jobs:
             const expectedInnerHeight = compactHeader ? 68 : 82;
             const expectedOuterHeight = compactHeader ? 69 : 83;
             const expectedButtonHeight = compactHeader ? 40 : 44;
+            const fittedSitesWidth = metrics.viewportWidth <= 420 ? 116 : 136;
             if (metrics.overflow) problems.push('document overflow');
             if (metrics.h1Count !== 1) problems.push(`expected one h1, found ${metrics.h1Count}`);
             if (!near(metrics.headerInnerHeight, expectedInnerHeight)) problems.push(`header inner ${metrics.headerInnerHeight}, expected ${expectedInnerHeight}`);
@@ -84,7 +85,10 @@ jobs:
             if (!metrics.sitesButton) {
               problems.push('Sites button missing');
             } else {
-              if (!near(metrics.sitesButton.width, 88)) problems.push(`Sites width ${metrics.sitesButton.width}`);
+              const widthAllowed = screenshotPrefix === 'local'
+                ? near(metrics.sitesButton.width, fittedSitesWidth)
+                : near(metrics.sitesButton.width, fittedSitesWidth) || near(metrics.sitesButton.width, 88);
+              if (!widthAllowed) problems.push(`Sites width ${metrics.sitesButton.width}`);
               if (!near(metrics.sitesButton.height, expectedButtonHeight)) problems.push(`Sites height ${metrics.sitesButton.height}, expected ${expectedButtonHeight}`);
               if (metrics.sitesButton.fontSize !== '13px') problems.push(`Sites font size ${metrics.sitesButton.fontSize}`);
               if (metrics.sitesButton.fontWeight !== '700') problems.push(`Sites font weight ${metrics.sitesButton.fontWeight}`);
@@ -97,10 +101,52 @@ jobs:
             if ((await sitesMenu.locator('a').count()) !== 3) problems.push('Sites menu does not contain three links');
             if ((await sitesMenu.locator('a[aria-current="page"]').count()) !== 1) problems.push('Sites menu current-page state is incorrect');
             if ((await sitesButton.getAttribute('aria-expanded')) !== 'true') problems.push('Sites button did not expose expanded state');
+            const sitesOpenGeometry = await page.evaluate(() => {
+              const button = document.querySelector('.jl-site-switcher__button');
+              const menu = document.querySelector('#owned-sites-menu');
+              const links = [...document.querySelectorAll('#owned-sites-menu a')];
+              return {
+                buttonWidth: button?.getBoundingClientRect().width ?? null,
+                menuWidth: menu?.getBoundingClientRect().width ?? null,
+                linkOverflow: links.some((link) => link.scrollWidth > link.clientWidth + 1),
+                linkWrapping: links.some((link) => getComputedStyle(link).whiteSpace !== 'nowrap'),
+              };
+            });
+            if (screenshotPrefix === 'local') {
+              if (!near(sitesOpenGeometry.buttonWidth, sitesOpenGeometry.menuWidth)) problems.push('Sites extension does not match trigger width');
+              if (sitesOpenGeometry.linkOverflow) problems.push('Sites label overflows its attached extension');
+              if (sitesOpenGeometry.linkWrapping) problems.push('Sites label wraps in fitted attached extension');
+            }
             await page.screenshot({ path: `visual-audit/${screenshotPrefix}-${name}-${viewportName}-sites-open.png` });
             await page.keyboard.press('Escape');
             if (await sitesMenu.isVisible()) problems.push('Sites menu did not close with Escape');
             if (!(await sitesButton.evaluate((element) => document.activeElement === element))) problems.push('Sites button did not regain focus after Escape');
+
+            const settingsButton = page.locator('[data-settings-button]');
+            const settingsMenu = page.locator('[data-settings-menu]');
+            await settingsButton.click();
+            await settingsMenu.waitFor({ state: 'visible' });
+            if ((await settingsMenu.locator('[data-theme-preference]').count()) !== 3) problems.push('Settings rail does not contain three theme options');
+            if ((await settingsButton.getAttribute('aria-expanded')) !== 'true') problems.push('Settings button did not expose expanded state');
+            const settingsOpenGeometry = await page.evaluate(() => {
+              const button = document.querySelector('[data-settings-button]');
+              const menu = document.querySelector('[data-settings-menu]');
+              const buttonStyle = button ? getComputedStyle(button) : null;
+              return {
+                buttonWidth: button?.getBoundingClientRect().width ?? null,
+                menuWidth: menu?.getBoundingClientRect().width ?? null,
+                focused: document.activeElement === button,
+                boxShadow: buttonStyle?.boxShadow ?? 'none',
+              };
+            });
+            if (screenshotPrefix === 'local') {
+              if (!near(settingsOpenGeometry.buttonWidth, settingsOpenGeometry.menuWidth)) problems.push('Settings extension does not match trigger width');
+              if (settingsOpenGeometry.focused && settingsOpenGeometry.boxShadow === 'none') problems.push('Open Settings trigger lost its complete inset focus treatment');
+            }
+            await page.screenshot({ path: `visual-audit/${screenshotPrefix}-${name}-${viewportName}-settings-open.png` });
+            await page.keyboard.press('Escape');
+            if (await settingsMenu.isVisible()) problems.push('Settings rail did not close with Escape');
+            if (!(await settingsButton.evaluate((element) => document.activeElement === element))) problems.push('Settings button did not regain focus after Escape');
 
             const nav = page.locator('[data-header-menu], [data-portfolio-nav]').first();
             const navButton = page.locator('[data-header-menu-button], [data-portfolio-nav-button]').first();
