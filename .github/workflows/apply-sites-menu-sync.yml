@@ -30,6 +30,6 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add assets/design-system design-system.lock.json package.json package-lock.json index.html projects site-switcher.js portfolio-navigation.js scripts/validate-design-system-integration.mjs
+          git add assets/design-system design-system.lock.json package.json package-lock.json index.html projects site-switcher.js portfolio-navigation.js scripts/validate-design-system-integration.mjs scripts/theme-visual-audit.mjs scripts/technical-report-visual-baseline.json
           git commit -m "Sync corrected Sites menu geometry"
           git push origin HEAD:agent/fix-sites-menu-actual
