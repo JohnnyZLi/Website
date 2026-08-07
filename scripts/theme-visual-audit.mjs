@@ -18,6 +18,8 @@ const viewports = [
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const results = [];
+const near = (actual, expected, tolerance = 0.75) =>
+  typeof actual === "number" && Math.abs(actual - expected) <= tolerance;
 
 const addPreference = async (context, preference) => {
   await context.addInitScript((value) => localStorage.setItem("jl-theme", value), preference);
@@ -64,11 +66,55 @@ try {
         const expectedThemeColor = theme === "dark" ? "#171714" : "#f2efe8";
         if (state.themeColor?.toLowerCase() !== expectedThemeColor) problems.push(`theme-color is ${state.themeColor}`);
 
+        const sitesButton = page.locator("[data-site-switcher-button]").first();
+        const sitesMenu = page.locator("[data-site-switcher-menu]").first();
         const settingsButton = page.locator("[data-settings-button]").first();
+        const settingsMenu = page.locator("[data-settings-menu]").first();
+
+        await sitesButton.click();
+        await sitesMenu.waitFor({ state: "visible" });
+        const sitesOpen = await page.evaluate(() => {
+          const button = document.querySelector("[data-site-switcher-button]");
+          const menu = document.querySelector("[data-site-switcher-menu]");
+          const links = [...document.querySelectorAll("[data-site-switcher-menu] a[href]")];
+          return {
+            sitesExpanded: button?.getAttribute("aria-expanded"),
+            settingsExpanded: document.querySelector("[data-settings-button]")?.getAttribute("aria-expanded"),
+            buttonWidth: button?.getBoundingClientRect().width ?? null,
+            menuWidth: menu?.getBoundingClientRect().width ?? null,
+            documentWidth: document.documentElement.scrollWidth,
+            innerWidth: window.innerWidth,
+            linkOverflow: links.some((link) => link.scrollWidth > link.clientWidth + 1),
+            linkWrapping: links.some((link) => getComputedStyle(link).whiteSpace !== "nowrap"),
+          };
+        });
+        if (sitesOpen.sitesExpanded !== "true" || sitesOpen.settingsExpanded !== "false") problems.push("Sites did not open independently of Settings");
+        if (!near(sitesOpen.buttonWidth, sitesOpen.menuWidth)) problems.push("Sites extension does not match its trigger width");
+        if (sitesOpen.linkOverflow || sitesOpen.linkWrapping) problems.push("Sites labels do not fit the attached extension");
+        if (sitesOpen.documentWidth > sitesOpen.innerWidth + 1) problems.push("Sites-open state has horizontal overflow");
+        await page.screenshot({ path: `${output}/${routeName}-${viewportName}-${theme}-sites-open.png` });
+        await page.keyboard.press("Escape");
+
         await settingsButton.click();
-        const settingsVisible = await page.locator("[data-settings-menu]").first().isVisible();
-        const sitesHidden = !(await page.locator("[data-site-switcher-menu]").first().isVisible());
-        if (!settingsVisible || !sitesHidden) problems.push("Settings menu did not open independently of Sites");
+        await settingsMenu.waitFor({ state: "visible" });
+        const settingsOpen = await page.evaluate(() => {
+          const button = document.querySelector("[data-settings-button]");
+          const menu = document.querySelector("[data-settings-menu]");
+          return {
+            settingsExpanded: button?.getAttribute("aria-expanded"),
+            sitesExpanded: document.querySelector("[data-site-switcher-button]")?.getAttribute("aria-expanded"),
+            buttonWidth: button?.getBoundingClientRect().width ?? null,
+            menuWidth: menu?.getBoundingClientRect().width ?? null,
+            focused: document.activeElement === button,
+            documentWidth: document.documentElement.scrollWidth,
+            innerWidth: window.innerWidth,
+          };
+        });
+        if (settingsOpen.settingsExpanded !== "true" || settingsOpen.sitesExpanded !== "false") problems.push("Settings did not open independently of Sites");
+        if (!near(settingsOpen.buttonWidth, settingsOpen.menuWidth)) problems.push("Settings extension does not match its trigger width");
+        if (settingsOpen.focused) problems.push("Pointer-open Settings trigger retained focus");
+        if (settingsOpen.documentWidth > settingsOpen.innerWidth + 1) problems.push("Settings-open state has horizontal overflow");
+        await page.screenshot({ path: `${output}/${routeName}-${viewportName}-${theme}-settings-open.png` });
 
         const opposite = theme === "dark" ? "light" : "dark";
         await page.locator(`[data-theme-preference="${opposite}"]`).first().click();
@@ -86,7 +132,7 @@ try {
         }
         if (changed.settingsOpen !== "true") problems.push("Settings menu closed while choosing an appearance option");
         if (!changed.cookie.includes(`jl-theme=${opposite}`)) problems.push("Appearance preference cookie missing");
-        results.push({ routeName, viewportName, theme, state, changed, problems });
+        results.push({ routeName, viewportName, theme, state, sitesOpen, settingsOpen, changed, problems });
         await context.close();
       }
     }
