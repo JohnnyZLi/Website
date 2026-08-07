@@ -134,13 +134,21 @@ for (const forbidden of [".portfolio-nav-toggle", "@media (max-width: 900px)", "
 
 if (/^\s*@layer\b/m.test(identityStyles)) fail("Shared header must remain unlayered.");
 requireFragments(identityStyles, [
-  ".jl-global-header__inner", "grid-template-columns: auto minmax(0, 1fr) auto", "width: 88px;",
+  ".jl-global-header__inner", "grid-template-columns: auto minmax(0, 1fr) auto",
   "height: var(--jl-control-height-md);", "font-family: var(--jl-font-ui);", "font-size: 13px;",
   "font-weight: 700;", "line-height: 1;", '.jl-site-switcher__button > [aria-hidden="true"]',
   "border-right: 2px solid currentColor;", "border-bottom: 2px solid currentColor;",
   ".jl-header-menu-toggle", ".jl-global-header__nav.jl-header-menu--open",
-  "right: var(--jl-layout-gutter);", "left: var(--jl-layout-gutter);", "@media (max-width: 360px)", "@media (forced-colors: active)",
+  "right: var(--jl-layout-gutter);", "left: var(--jl-layout-gutter);", "@media (forced-colors: active)",
 ], "Shared header and compact-menu contract");
+const legacyHeaderGeometry = identityStyles.includes("width: 88px;")
+  && identityStyles.includes("@media (max-width: 360px)")
+  && identityStyles.includes("width: calc(100% - 16px);");
+const fittedHeaderGeometry = identityStyles.includes("grid-template-columns: 136px var(--jl-control-height-md);")
+  && identityStyles.includes("@media (max-width: 420px)")
+  && identityStyles.includes("grid-template-columns: 116px 40px;")
+  && identityStyles.includes("width: 116px;");
+if (!legacyHeaderGeometry && !fittedHeaderGeometry) fail("Shared header geometry is neither the approved legacy nor fitted transition contract.");
 
 requireFragments(primitives, [
   ".jl-actions {", "display: flex;", "flex-wrap: wrap;", ".jl-button {", "display: inline-flex;",
