@@ -77,11 +77,14 @@ try {
           const button = document.querySelector("[data-site-switcher-button]");
           const menu = document.querySelector("[data-site-switcher-menu]");
           const links = [...document.querySelectorAll("[data-site-switcher-menu] a[href]")];
+          const menuRect = menu?.getBoundingClientRect();
           return {
             sitesExpanded: button?.getAttribute("aria-expanded"),
             settingsExpanded: document.querySelector("[data-settings-button]")?.getAttribute("aria-expanded"),
             buttonWidth: button?.getBoundingClientRect().width ?? null,
-            menuWidth: menu?.getBoundingClientRect().width ?? null,
+            menuWidth: menuRect?.width ?? null,
+            menuLeft: menuRect?.left ?? null,
+            menuRight: menuRect?.right ?? null,
             documentWidth: document.documentElement.scrollWidth,
             innerWidth: window.innerWidth,
             linkOverflow: links.some((link) => link.scrollWidth > link.clientWidth + 1),
@@ -89,8 +92,10 @@ try {
           };
         });
         if (sitesOpen.sitesExpanded !== "true" || sitesOpen.settingsExpanded !== "false") problems.push("Sites did not open independently of Settings");
-        if (!near(sitesOpen.buttonWidth, sitesOpen.menuWidth)) problems.push("Sites extension does not match its trigger width");
-        if (sitesOpen.linkOverflow || sitesOpen.linkWrapping) problems.push("Sites labels do not fit the attached extension");
+        if (!near(sitesOpen.buttonWidth, 88)) problems.push(`Sites trigger width ${sitesOpen.buttonWidth}`);
+        if (!near(sitesOpen.menuWidth, 144)) problems.push(`Sites dropdown width ${sitesOpen.menuWidth}`);
+        if (sitesOpen.menuLeft < -0.5 || sitesOpen.menuRight > sitesOpen.innerWidth + 0.5) problems.push("Sites dropdown escapes the viewport");
+        if (sitesOpen.linkOverflow || sitesOpen.linkWrapping) problems.push("Sites labels do not fit the dropdown");
         if (sitesOpen.documentWidth > sitesOpen.innerWidth + 1) problems.push("Sites-open state has horizontal overflow");
         await page.screenshot({ path: `${output}/${routeName}-${viewportName}-${theme}-sites-open.png` });
         await page.keyboard.press("Escape");

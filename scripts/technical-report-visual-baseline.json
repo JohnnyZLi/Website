@@ -3,10 +3,10 @@
   "runner": "ubuntu-24.04",
   "playwright": "1.54.1",
   "hashes": {
-    "desktop": "5e744445a83384b359b64bec2ba1b50e64552cea1feb0204af927bb826b09aa8",
-    "narrow-desktop": "c7a8eaee8cd8f0c1193c2044c3c375fa6abe7234b1dccb18aa08bbd56d9f4757",
-    "mobile": "3d875bc85d28464159b416900eec7e797ce8d29d21e1921a9d09ba9a23f3ea84",
-    "minimum": "0f82b74e1dbcbd7ae7c61027eb0ed4e464407e09d1c019bb017e335881247d24",
-    "forced-colors": "5e5cf0a6e7f872052c97d60f30dddb0f2766e3dfc64e6b611a2778143616aebf"
+    "desktop": "6165ef274bfdcf537618e588fc65443338aa7f64e912ca3a5b2760578b534aad",
+    "narrow-desktop": "269b63b4e8643a19db3ab9cae27eb27ba41045b1a1c7cebe4c72f1ff04f89877",
+    "mobile": "7c390d1f19d759edd5fa5bbd1c8d22192d20d94e4b53e06af60404169353bd7c",
+    "minimum": "fd9d42ca54d81334557b374373cf8aeaa40b096188cd518706a564e9f2d030f3",
+    "forced-colors": "fb051bc244cd8aeabeb6ba6f9402da5a6c827b15b3e806520002f74abf0cb762"
   }
 }
