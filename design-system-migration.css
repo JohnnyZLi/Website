@@ -43,8 +43,9 @@ body {
   color: var(--jl-color-text-inverse);
 }
 
-:root[data-theme="dark"] .contact-section {
-  background: #171714;
+:root[data-theme="dark"] .contact-section,
+:root[data-theme="dark"] .case-next {
+  background: #000000;
 }
 
 .contact-section .section-kicker-light {
