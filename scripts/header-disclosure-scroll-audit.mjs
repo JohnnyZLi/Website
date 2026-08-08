@@ -33,13 +33,15 @@ try {
     const y = rect.top + rect.height / 2;
     const hit = document.elementFromPoint(x, y);
     const hero = document.querySelector(".hero");
+    const heroStyle = hero ? getComputedStyle(hero) : null;
     return {
       expanded: document.querySelector("[data-settings-button]")?.getAttribute("aria-expanded"),
       optionTop: rect.top,
       optionBottom: rect.bottom,
       viewportHeight: window.innerHeight,
       hitTarget: hit === option || option.contains(hit),
-      heroOverflow: hero ? getComputedStyle(hero).overflow : null,
+      heroOverflowX: heroStyle?.overflowX ?? null,
+      heroOverflowY: heroStyle?.overflowY ?? null,
     };
   });
 
@@ -47,7 +49,8 @@ try {
   if (state.expanded !== "true") problems.push("Settings closed while scrolling.");
   if (state.optionTop < 0 || state.optionBottom > state.viewportHeight) problems.push("Regression target left the viewport.");
   if (!state.hitTarget) problems.push("The bottom Settings option is clipped after scrolling near the hero boundary.");
-  if (state.heroOverflow !== "visible") problems.push(`Open homepage hero overflow is ${state.heroOverflow}, expected visible.`);
+  if (state.heroOverflowX !== "clip") problems.push(`Open homepage hero overflow-x is ${state.heroOverflowX}, expected clip.`);
+  if (state.heroOverflowY !== "visible") problems.push(`Open homepage hero overflow-y is ${state.heroOverflowY}, expected visible.`);
 
   if (problems.length) throw new Error(problems.join(" "));
   console.log("Scrolled header disclosure audit passed.");
