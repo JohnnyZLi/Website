@@ -43,6 +43,10 @@ body {
   color: var(--jl-color-text-inverse);
 }
 
+.contact-section .section-kicker-light {
+  border-top: 0;
+}
+
 .contact-title em,
 .contact-links a:hover,
 .contact-links a:focus-visible,
