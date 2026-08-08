@@ -28,19 +28,19 @@ jobs:
           npm install --no-audit --no-fund
           npm run design-system:update
           npm install --no-audit --no-fund
-      - name: Synchronize and validate
+      - name: Synchronize and pre-commit validate
         run: |
           npm run design-system:sync
-          npm run design-system:check
           npm run design-system:integration
           npm run design-system:conformance
           npm run lint:html
           npm run lint:css
-      - name: Commit generated sync and remove this workflow
+      - name: Commit generated sync, verify drift, and remove this workflow
         run: |
           rm .github/workflows/pr-sync-full-header-design-system.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Sync full-header disclosure behavior"
+          npm run design-system:check
           git push origin HEAD:agent/sync-full-header-design-system
