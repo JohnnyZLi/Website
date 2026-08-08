@@ -77,8 +77,8 @@ body {
 }
 
 /* In dark mode, Works rows sink into a true-black wash. The wash extends
-   beyond the content shell and feathers gradually back into the canvas, so
-   the interaction reads as a row-level darkening rather than a clipped box. */
+   slightly beyond the content shell and feathers gradually back into the
+   canvas, so the interaction reads as row-level darkening rather than a box. */
 :root[data-theme="dark"] .work-item {
   position: relative;
   isolation: isolate;
@@ -87,9 +87,9 @@ body {
 :root[data-theme="dark"] .work-item::before {
   position: absolute;
   top: 1px;
-  right: -64px;
+  right: -24px;
   bottom: 1px;
-  left: -64px;
+  left: -24px;
   z-index: 0;
   background: linear-gradient(
     90deg,
