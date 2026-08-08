@@ -82,9 +82,3 @@ body {
     --shell: calc(100% - 32px);
   }
 }
-
-:root[data-theme="dark"] .contact-section,
-:root[data-theme="dark"] .case-next,
-:root[data-theme="dark"] .output-grid pre {
-  --_jl-focus-gap-color: var(--jl-color-focus-gap-light);
-}
