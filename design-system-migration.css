@@ -91,6 +91,7 @@ body {
   bottom: 1px;
   left: -24px;
   z-index: 0;
+  display: none;
   background: linear-gradient(
     90deg,
     transparent 0,
@@ -116,6 +117,10 @@ body {
 }
 
 @media (hover: hover) {
+  :root[data-theme="dark"] .work-item::before {
+    display: block;
+  }
+
   :root[data-theme="dark"] .work-item:hover {
     background-color: transparent;
   }
