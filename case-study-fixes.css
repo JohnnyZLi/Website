@@ -60,7 +60,7 @@
 }
 
 .case-next h2 {
-  color: var(--paper);
+  color: var(--jl-color-text-inverse);
 }
 
 .case-next h2 em {
@@ -79,11 +79,12 @@
     color-mix(in srgb, var(--jl-color-accent-decorative) 24%, transparent),
     transparent 42%
   );
+  color: var(--jl-color-text-inverse);
   box-shadow: inset 5px 0 0 var(--jl-color-accent);
 }
 
 .case-next a {
-  color: var(--paper);
+  color: var(--jl-color-text-inverse);
   border-bottom-color: var(--jl-color-accent-soft);
 }
 
