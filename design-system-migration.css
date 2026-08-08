@@ -43,6 +43,10 @@ body {
   color: var(--jl-color-text-inverse);
 }
 
+:root[data-theme="dark"] .contact-section {
+  background: #1c1917;
+}
+
 .contact-section .section-kicker-light {
   border-top: 0;
 }
