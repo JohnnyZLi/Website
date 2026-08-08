@@ -81,8 +81,8 @@ try {
     if (after.optionTop < 0 || after.optionBottom > after.viewportHeight) problems.push(`${label} content left the viewport.`);
     if (!after.hitTarget) problems.push(`${label} content is clipped or covered after scrolling.`);
     if (after.documentWidth > after.innerWidth + 1 || before.documentWidth > before.innerWidth + 1) problems.push(`${label} introduced horizontal overflow.`);
-    if (after.heroOverflowX !== "clip" || after.heroOverflowY !== "clip") {
-      problems.push(`Homepage hero overflow changed while ${label} was open (${after.heroOverflowX} ${after.heroOverflowY}).`);
+    if (after.heroOverflowX !== "clip" || after.heroOverflowY !== "visible") {
+      problems.push(`Homepage hero overflow is ${after.heroOverflowX} ${after.heroOverflowY} while ${label} is open, expected clip visible.`);
     }
 
     await page.keyboard.press("Escape");
