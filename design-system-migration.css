@@ -77,8 +77,8 @@ body {
 }
 
 /* In dark mode, Works rows stay true black through the full content shell.
-   The fade begins only after the divider endpoints, then dissolves outward
-   across the page gutters to the viewport edges. */
+   The fade begins only after the divider endpoints and ends within a short
+   exterior spill, so the highlight remains tied to the row rather than the viewport. */
 :root[data-theme="dark"] .work-item {
   position: relative;
   isolation: isolate;
@@ -91,7 +91,7 @@ body {
   left: 50%;
   z-index: 0;
   display: none;
-  width: 100vw;
+  width: min(100vw, calc(100% + 128px));
   background: #000000;
   opacity: 0;
   content: "";
