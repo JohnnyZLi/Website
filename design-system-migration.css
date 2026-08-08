@@ -76,6 +76,45 @@ body {
   color: var(--jl-color-text);
 }
 
+/* In dark mode, Works rows sink into a true-black wash that feathers out at
+   the shell edges instead of ending as a hard rectangular slab. */
+:root[data-theme="dark"] .work-item {
+  position: relative;
+  isolation: isolate;
+}
+
+:root[data-theme="dark"] .work-item::before {
+  position: absolute;
+  inset: 6px 0;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0,
+    #000000 3%,
+    #000000 97%,
+    transparent 100%
+  );
+  opacity: 0;
+  content: "";
+  pointer-events: none;
+  transition: opacity 420ms var(--ease-out);
+}
+
+:root[data-theme="dark"] .work-item > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (hover: hover) {
+  :root[data-theme="dark"] .work-item:hover {
+    background-color: transparent;
+  }
+
+  :root[data-theme="dark"] .work-item:hover::before {
+    opacity: 1;
+  }
+}
+
 /* Remove the portfolio's legacy animated-nav underline from the shared header. */
 .jl-global-header a::after {
   display: none;
