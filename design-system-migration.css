@@ -15,6 +15,7 @@
   --rule: var(--jl-color-rule-strong);
   --ease-out: var(--jl-motion-ease-out);
   --shell: min(var(--jl-layout-portfolio-max), calc(100vw - 104px));
+  --_jl-work-hover-fill: rgba(165, 93, 69, 0.055);
 }
 
 body {
@@ -76,15 +77,19 @@ body {
   color: var(--jl-color-text);
 }
 
-/* In dark mode, Works rows stay true black through the full content shell.
-   The fade begins only after the divider endpoints and ends within a short
-   exterior spill, so the highlight remains tied to the row rather than the viewport. */
-:root[data-theme="dark"] .work-item {
+/* Works rows share one hover geometry across themes. The fill stays solid
+   through the divider endpoints, then fades across a short exterior spill.
+   Only the hover fill color changes between light and dark modes. */
+.work-item {
   position: relative;
   isolation: isolate;
 }
 
-:root[data-theme="dark"] .work-item::before {
+:root[data-theme="dark"] {
+  --_jl-work-hover-fill: #000000;
+}
+
+.work-item::before {
   position: absolute;
   top: 1px;
   bottom: 1px;
@@ -92,7 +97,7 @@ body {
   z-index: 0;
   display: none;
   width: min(100vw, calc(100% + 128px));
-  background: #000000;
+  background: var(--_jl-work-hover-fill);
   opacity: 0;
   content: "";
   pointer-events: none;
@@ -114,21 +119,21 @@ body {
   transition: opacity 420ms var(--ease-out);
 }
 
-:root[data-theme="dark"] .work-item > * {
+.work-item > * {
   position: relative;
   z-index: 1;
 }
 
 @media (hover: hover) {
-  :root[data-theme="dark"] .work-item::before {
+  .work-item::before {
     display: block;
   }
 
-  :root[data-theme="dark"] .work-item:hover {
+  .work-item:hover {
     background-color: transparent;
   }
 
-  :root[data-theme="dark"] .work-item:hover::before {
+  .work-item:hover::before {
     opacity: 1;
   }
 }
