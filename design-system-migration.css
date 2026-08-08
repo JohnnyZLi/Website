@@ -77,9 +77,10 @@ body {
   color: var(--jl-color-text);
 }
 
-/* The shared control is fixed while open, but the homepage header lives inside
-   the hero's isolated/clipped stacking context. Let the disclosure escape
-   vertically and raise that context above later sections only while it is open. */
+/* The shared top bar is viewport-fixed while a disclosure is open, but the
+   homepage header lives inside the hero's isolated/clipped stacking context.
+   Let the complete bar escape vertically and lift that context above later
+   sections only while Sites or Settings is open. */
 .hero:has([data-site-switcher-button][aria-expanded="true"]),
 .hero:has([data-settings-button][aria-expanded="true"]) {
   z-index: var(--jl-z-menu);
