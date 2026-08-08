@@ -43,6 +43,14 @@ body {
   color: var(--jl-color-text-inverse);
 }
 
+.contact-title em,
+.contact-links a:hover,
+.contact-links a:focus-visible,
+.contact-section footer a:hover,
+.contact-section footer a:focus-visible {
+  color: var(--jl-color-text-inverse);
+}
+
 .contact-section :focus-visible,
 .case-next :focus-visible,
 .output-grid pre :focus-visible {
