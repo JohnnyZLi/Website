@@ -77,6 +77,15 @@ body {
   color: var(--jl-color-text);
 }
 
+/* The homepage header lives inside a clipped hero so the decorative glow does
+   not bleed into Works. Keep horizontal clipping, but release the vertical axis
+   while an attached disclosure is open so it remains visible while scrolling. */
+.hero:has([data-site-switcher-button][aria-expanded="true"]),
+.hero:has([data-settings-button][aria-expanded="true"]) {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
 /* Works rows share one hover geometry across themes. The fill stays solid
    through the divider endpoints, then fades across a short exterior spill.
    Only the hover fill color changes between light and dark modes. */
