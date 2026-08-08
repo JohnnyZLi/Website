@@ -59,6 +59,11 @@
   color: var(--clay-text);
 }
 
+.case-next {
+  background: var(--jl-color-surface-inverse);
+  color: var(--jl-color-text-inverse);
+}
+
 .case-next h2 {
   color: var(--jl-color-text-inverse);
 }
