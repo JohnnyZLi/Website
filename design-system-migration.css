@@ -76,9 +76,8 @@ body {
   color: var(--jl-color-text);
 }
 
-/* In dark mode, Works rows sink into a true-black wash. The wash extends
-   slightly beyond the content shell and feathers gradually back into the
-   canvas, so the interaction reads as row-level darkening rather than a box. */
+/* In dark mode, Works rows sink into a true-black wash that feathers gradually
+   to full transparency at the shell edges, avoiding any visible rectangular cap. */
 :root[data-theme="dark"] .work-item {
   position: relative;
   isolation: isolate;
@@ -86,10 +85,7 @@ body {
 
 :root[data-theme="dark"] .work-item::before {
   position: absolute;
-  top: 1px;
-  right: -24px;
-  bottom: 1px;
-  left: -24px;
+  inset: 1px 0;
   z-index: 0;
   display: none;
   background: linear-gradient(
