@@ -77,6 +77,14 @@ body {
   color: var(--jl-color-text);
 }
 
+/* The homepage header lives inside a clipped hero so the decorative glow does
+   not bleed into Works. Release that clip only while an attached disclosure is
+   open so Sites and Settings can extend past the hero boundary while scrolling. */
+.hero:has(.jl-site-switcher__button[aria-expanded="true"]),
+.hero:has(.jl-settings-button[aria-expanded="true"]) {
+  overflow: visible;
+}
+
 /* Works rows share one hover geometry across themes. The fill stays solid
    through the divider endpoints, then fades across a short exterior spill.
    Only the hover fill color changes between light and dark modes. */
