@@ -77,6 +77,15 @@ body {
   color: var(--jl-color-text);
 }
 
+/* The shared control is fixed while open, but the homepage header still lives
+   inside the clipped hero. Release only the vertical axis so the fixed menu can
+   escape that ancestor while retaining horizontal glow containment. */
+.hero:has([data-site-switcher-button][aria-expanded="true"]),
+.hero:has([data-settings-button][aria-expanded="true"]) {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
 /* Works rows share one hover geometry across themes. The fill stays solid
    through the divider endpoints, then fades across a short exterior spill.
    Only the hover fill color changes between light and dark modes. */
