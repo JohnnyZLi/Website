@@ -77,11 +77,12 @@ body {
   color: var(--jl-color-text);
 }
 
-/* The shared control is fixed while open, but the homepage header still lives
-   inside the clipped hero. Release only the vertical axis so the fixed menu can
-   escape that ancestor while retaining horizontal glow containment. */
+/* The shared control is fixed while open, but the homepage header lives inside
+   the hero's isolated/clipped stacking context. Let the disclosure escape
+   vertically and raise that context above later sections only while it is open. */
 .hero:has([data-site-switcher-button][aria-expanded="true"]),
 .hero:has([data-settings-button][aria-expanded="true"]) {
+  z-index: var(--jl-z-menu);
   overflow-x: clip;
   overflow-y: visible;
 }
