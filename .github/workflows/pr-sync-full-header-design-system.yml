@@ -1,0 +1,46 @@
+name: PR full-header design-system sync
+
+on:
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: github.head_ref == 'agent/sync-full-header-design-system' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out PR branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: agent/sync-full-header-design-system
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Resolve and reinstall latest reviewed design system
+        run: |
+          npm install --no-audit --no-fund
+          npm run design-system:update
+          npm install --no-audit --no-fund
+      - name: Synchronize and pre-commit validate
+        run: |
+          npm run design-system:sync
+          npm run design-system:integration
+          npm run design-system:conformance
+          npm run lint:html
+          npm run lint:css
+      - name: Commit generated sync, verify drift, and remove this workflow
+        run: |
+          rm .github/workflows/pr-sync-full-header-design-system.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Sync transform-free full-header behavior"
+          npm run design-system:check
+          git push origin HEAD:agent/sync-full-header-design-system
