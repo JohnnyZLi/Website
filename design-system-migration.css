@@ -77,12 +77,13 @@ body {
   color: var(--jl-color-text);
 }
 
-/* The shared top bar is viewport-fixed while a disclosure is open, but the
-   homepage header lives inside the hero's isolated/clipped stacking context.
-   Let the complete bar escape vertically and lift that context above later
-   sections only while Sites or Settings is open. */
+/* The shared top bar is viewport-fixed while a disclosure is open and during
+   its dismissal animation, but the homepage header lives inside the hero's
+   isolated/clipped stacking context. Let the complete bar escape vertically
+   and keep that context above later sections until the exit animation ends. */
 .hero:has([data-site-switcher-button][aria-expanded="true"]),
-.hero:has([data-settings-button][aria-expanded="true"]) {
+.hero:has([data-settings-button][aria-expanded="true"]),
+.hero:has(.jl-global-header[data-jl-header-disclosure-exit]) {
   z-index: var(--jl-z-menu);
   overflow-x: clip;
   overflow-y: visible;
