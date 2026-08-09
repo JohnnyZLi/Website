@@ -89,6 +89,28 @@ body {
   overflow-y: visible;
 }
 
+/* On wide portfolio viewports, let the header use the screen instead of the
+   content shell. Keep identity and controls edge-anchored while the nav stays
+   centered independently of the unequal side content. */
+@media (min-width: 1024px) {
+  .jl-global-header__inner {
+    width: calc(100% - 80px);
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  .jl-site-identity {
+    justify-self: start;
+  }
+
+  .jl-global-header__nav {
+    justify-self: center;
+  }
+
+  .jl-global-header__actions {
+    justify-self: end;
+  }
+}
+
 /* Works rows share one hover geometry across themes. The fill stays solid
    through the divider endpoints, then fades across a short exterior spill.
    Only the hover fill color changes between light and dark modes. */
