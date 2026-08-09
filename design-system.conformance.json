@@ -147,8 +147,8 @@
       ]
     },
     "DS-RESP-002": {
-      "status": "manual-passed",
-      "reason": "Repository owner completed actual 200 percent browser zoom review across the homepage and all case studies on 2026-07-29; no blocking overflow or loss of access was found."
+      "status": "manual-pending",
+      "reason": "The 2026-07-29 actual 200 percent browser zoom review predates the approved 2026-08-09 wide-desktop Portfolio header rail adapter. Automated desktop, mobile, and 320px audits pass; refresh the real browser-zoom review before renewing manual acceptance."
     },
     "DS-A11Y-001": {
       "evidence": [
@@ -173,8 +173,8 @@
       ]
     },
     "DS-A11Y-002": {
-      "status": "manual-passed",
-      "reason": "Repository owner completed forced-colors, reduced-motion, keyboard, and assistive-technology review on 2026-07-29; no blocking issue was found."
+      "status": "manual-pending",
+      "reason": "The 2026-07-29 forced-colors, reduced-motion, keyboard, and assistive-technology review predates the approved 2026-08-09 wide-desktop Portfolio header rail adapter. Automated keyboard, theme, reduced-motion, and visual checks pass; refresh the human accessibility spot-check before renewing manual acceptance."
     },
     "DS-STATE-002": {
       "evidence": [
