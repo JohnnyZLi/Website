@@ -83,7 +83,7 @@
           "type": "contains",
           "file": ".github/workflows/visual-audit.yml",
           "values": [
-            "Sites menu does not contain three links",
+            "Sites menu does not contain four links",
             "Sites menu current-page state is incorrect",
             "aria-current=\"page\""
           ]
