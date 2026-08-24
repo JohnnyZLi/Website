@@ -28,19 +28,16 @@ jobs:
 
           path = Path('index.html')
           text = path.read_text()
-          old = '''            <h1 id="intro-heading">
-              <span class="hero-line">I make</span>
-              <span class="hero-line">network <em>behavior</em></span>
-              <span class="hero-line"><em>visible.</em></span>
-            </h1>'''
-          new = '''            <h1 id="intro-heading">
-              <span class="hero-line">Networks, systems,</span>
-              <span class="hero-line">and infrastructure—</span>
-              <span class="hero-line">built to be <em>understood.</em></span>
-            </h1>'''
-          if old not in text:
-              raise SystemExit('Expected hero markup was not found; refusing a broad replacement.')
-          path.write_text(text.replace(old, new, 1))
+          replacements = [
+              ('<span class="hero-line">I make</span>', '<span class="hero-line">Networks, systems,</span>'),
+              ('<span class="hero-line">network <em>behavior</em></span>', '<span class="hero-line">and infrastructure—</span>'),
+              ('<span class="hero-line"><em>visible.</em></span>', '<span class="hero-line">built to be <em>understood.</em></span>'),
+          ]
+          for old, new in replacements:
+              if text.count(old) != 1:
+                  raise SystemExit(f'Expected exactly one hero token: {old}')
+              text = text.replace(old, new, 1)
+          path.write_text(text)
           PY
 
       - name: Remove one-time workflow
