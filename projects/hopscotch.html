@@ -154,27 +154,16 @@ TLS / HTTP            NOT REACHED</code></pre>
 
       <section class="case-section shell" aria-labelledby="validation-heading">
         <div class="case-section-label"><span>06</span><h2 id="validation-heading">Engineering evidence</h2></div>
-        <div class="case-section-content decision-grid">
-          <article>
-            <p class="decision-number">Replay</p>
-            <h3>Deterministic outcomes</h3>
-            <p>Scenario state, protocol transitions, packet outcomes, and historical seeks are tested as product contracts instead of relying on animation timing.</p>
-          </article>
-          <article>
-            <p class="decision-number">Capture</p>
-            <h3>Real PCAP/PCAPNG paths</h3>
-            <p>Validation includes hostile/truncated capture handling, immutable frame lineage, conversation indexing, flow reconstruction, and replay of real capture fixtures.</p>
-          </article>
-          <article>
-            <p class="decision-number">Perf</p>
-            <h3>Versioned budgets</h3>
-            <p>Production profiling enforces structural limits for linked JavaScript/CSS, representative DOM and heap use, dense Builder/AS fixtures, and repeated time-machine churn.</p>
-          </article>
-          <article>
-            <p class="decision-number">Compat</p>
-            <h3>Multiple rendering paths</h3>
-            <p>Chrome default, SwiftShader, disabled-WebGL, and Firefox semantic paths are exercised so the interface does not quietly depend on one GPU or browser configuration.</p>
-          </article>
+        <div class="case-section-content">
+          <div class="metric-grid">
+            <div><strong>v9</strong><span>canonical scenario schema</span></div>
+            <div><strong>A–L</strong><span>implemented product tracks</span></div>
+            <div><strong>4</strong><span>browser and render paths</span></div>
+            <div><strong>0</strong><span>invented missing capture bytes</span></div>
+          </div>
+          <div class="validation-copy">
+            <p><code>npm run check</code> exercises Builder, Journey, capture, measurement, navigation, native-companion, CLI, troubleshooting, and explanation contracts before the production build. Production profiling then checks versioned bundle, DOM, heap, and semantic budgets alongside real PCAP/PCAPNG replay across Chrome default, disabled-WebGL, SwiftShader, and Firefox semantic paths.</p>
+          </div>
         </div>
       </section>
 
