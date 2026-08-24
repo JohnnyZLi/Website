@@ -14,12 +14,12 @@ const viewports = [
   ["mobile", { width: 390, height: 844 }],
   ["minimum", { width: 320, height: 700 }],
 ];
+const near = (actual, expected, tolerance = 0.75) =>
+  typeof actual === "number" && Math.abs(actual - expected) <= tolerance;
 
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const results = [];
-const near = (actual, expected, tolerance = 0.75) =>
-  typeof actual === "number" && Math.abs(actual - expected) <= tolerance;
 
 const addPreference = async (context, preference) => {
   await context.addInitScript((value) => localStorage.setItem("jl-theme", value), preference);
@@ -59,7 +59,7 @@ try {
         if (state.preference !== theme || state.theme !== theme) problems.push(`resolved ${state.preference}/${state.theme}, expected ${theme}`);
         if (!state.colorScheme.includes(theme)) problems.push(`color-scheme is ${state.colorScheme}`);
         if (state.documentWidth > state.innerWidth + 1) problems.push("horizontal overflow");
-        if (state.linkCount !== 3) problems.push(`Sites menu has ${state.linkCount} links`);
+        if (state.linkCount !== 4) problems.push(`Sites menu has ${state.linkCount} links`);
         if (state.themeButtons !== 3) problems.push(`Appearance has ${state.themeButtons} options`);
         if (state.selectedButton !== theme) problems.push(`selected option is ${state.selectedButton}`);
         if (state.settingsButtons !== 1 || state.settingsMenus !== 1) problems.push("Settings control was not installed exactly once");
