@@ -108,6 +108,16 @@ body {
   background: color-mix(in srgb, var(--jl-color-canvas) 72%, transparent);
 }
 
+/* The four-line headline is taller than the supporting copy. Center the
+   desktop aside against the headline block instead of pinning it to the
+   headline baseline, while preserving the stacked tablet/mobile layout. */
+@media (min-width: 901px) {
+  .hero-aside {
+    align-self: center;
+    padding-bottom: 0;
+  }
+}
+
 /* The shared top bar is viewport-fixed while a disclosure is open and during
    its dismissal animation, but the homepage header lives inside the hero's
    isolated/clipped stacking context. Let the complete bar escape vertically
