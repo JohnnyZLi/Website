@@ -83,6 +83,21 @@ body {
   color: var(--jl-color-text);
 }
 
+/* On the homepage, treat the sticky header as a translucent layer over the
+   hero instead of an opaque cap. The hero's warm field remains continuous
+   through the bar while the package-owned controls keep their solid surfaces
+   and contrast. */
+.hero > .jl-global-header {
+  border-bottom-color: color-mix(in srgb, var(--jl-color-rule) 72%, transparent);
+  background: color-mix(in srgb, var(--jl-color-canvas) 80%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.06);
+  backdrop-filter: blur(10px) saturate(1.06);
+}
+
+:root[data-theme="dark"] .hero > .jl-global-header {
+  background: color-mix(in srgb, var(--jl-color-canvas) 72%, transparent);
+}
+
 /* The shared top bar is viewport-fixed while a disclosure is open and during
    its dismissal animation, but the homepage header lives inside the hero's
    isolated/clipped stacking context. Let the complete bar escape vertically
