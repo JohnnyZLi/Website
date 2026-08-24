@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - portfolio/refine-hero-copy
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   refine:
+    if: github.event_name == 'push' || github.head_ref == 'portfolio/refine-hero-copy'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
