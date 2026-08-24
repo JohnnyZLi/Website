@@ -1,4 +1,4 @@
-const { installHeaderMenu } = await import("./assets/design-system/site-controls.js?v=11da218c3eb864013f051dddea644c19ea9847e4");
+const { installHeaderMenu } = await import("./assets/design-system/site-controls.js?v=15656860a830c931756d643a4b69be97c0015159");
 
 for (const header of document.querySelectorAll(".jl-global-header")) {
   if (!(header instanceof HTMLElement)) continue;
