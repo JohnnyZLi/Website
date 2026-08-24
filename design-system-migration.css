@@ -27,6 +27,12 @@ body {
   font-family: var(--jl-font-ui);
 }
 
+/* Keep the editorial principle visually subordinate to the domain lines and
+   inside the headline column without compressing the primary sans-serif type. */
+.hero-line em {
+  font-size: 0.84em;
+}
+
 ::selection {
   background: var(--jl-color-selection-background);
   color: var(--jl-color-selection-text);
