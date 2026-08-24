@@ -6,6 +6,14 @@
   color: var(--clay);
 }
 
+/* Keep the hero principle at full headline scale while giving it a deliberate
+   two-line editorial measure: “built to be” / “understood”. */
+h1 .hero-line em {
+  display: inline-block;
+  max-width: 5.35em;
+  font-size: 1em;
+}
+
 .contact-title {
   color: var(--clay);
 }
