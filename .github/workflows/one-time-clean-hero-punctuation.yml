@@ -1,0 +1,47 @@
+name: One-time clean hero punctuation
+
+on:
+  push:
+    branches:
+      - portfolio/hero-without-punctuation
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: portfolio/hero-without-punctuation
+          fetch-depth: 0
+
+      - name: Clean portfolio hero punctuation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text()
+          replacements = [
+              ('<span class="hero-line">and infrastructure—</span>', '<span class="hero-line">and infrastructure</span>'),
+              ('<span class="hero-line"><em>built to be understood.</em></span>', '<span class="hero-line"><em>built to be understood</em></span>'),
+          ]
+          for old, new in replacements:
+              if text.count(old) != 1:
+                  raise SystemExit(f'Expected exactly one hero token: {old}')
+              text = text.replace(old, new, 1)
+          path.write_text(text)
+          PY
+
+      - name: Remove one-time workflow
+        run: rm .github/workflows/one-time-clean-hero-punctuation.yml
+
+      - name: Commit hero punctuation cleanup
+        run: |
+          git config user.name "Johnny"
+          git config user.email "92900710+JohnnyZLi@users.noreply.github.com"
+          git add index.html .github/workflows/one-time-clean-hero-punctuation.yml
+          git commit -m "Clean portfolio hero punctuation"
+          git push origin HEAD:portfolio/hero-without-punctuation
