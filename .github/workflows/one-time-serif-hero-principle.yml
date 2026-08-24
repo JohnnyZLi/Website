@@ -1,0 +1,43 @@
+name: One-time serif hero principle
+
+on:
+  push:
+    branches:
+      - portfolio/serif-hero-principle
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: portfolio/serif-hero-principle
+          fetch-depth: 0
+
+      - name: Apply hero typography refinement
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text()
+          old = '<span class="hero-line">built to be <em>understood.</em></span>'
+          new = '<span class="hero-line"><em>built to be understood.</em></span>'
+          if text.count(old) != 1:
+              raise SystemExit('Expected exactly one current hero principle line.')
+          path.write_text(text.replace(old, new, 1))
+          PY
+
+      - name: Remove one-time workflow
+        run: rm .github/workflows/one-time-serif-hero-principle.yml
+
+      - name: Commit refinement
+        run: |
+          git config user.name "Johnny"
+          git config user.email "92900710+JohnnyZLi@users.noreply.github.com"
+          git add index.html .github/workflows/one-time-serif-hero-principle.yml
+          git commit -m "Refine hero principle typography"
+          git push origin HEAD:portfolio/serif-hero-principle
