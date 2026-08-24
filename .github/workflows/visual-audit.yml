@@ -38,6 +38,7 @@ jobs:
 
           const pages = [
             ['home', '/'],
+            ['hopscotch', '/projects/hopscotch.html'],
             ['network-config-auditor', '/projects/network-config-auditor.html'],
             ['ospf-resiliency-lab', '/projects/ospf-resiliency-lab.html'],
             ['network-diagnostics-suite', '/projects/network-diagnostics-suite.html'],
@@ -99,7 +100,9 @@ jobs:
             const sitesMenu = page.locator('#owned-sites-menu');
             await sitesButton.click();
             await sitesMenu.waitFor({ state: 'visible' });
-            if ((await sitesMenu.locator('a').count()) !== 3) problems.push('Sites menu does not contain three links');
+            const siteLinkCount = await sitesMenu.locator('a').count();
+            if (screenshotPrefix === 'local' && siteLinkCount !== 4) problems.push('Sites menu does not contain four links');
+            if (screenshotPrefix === 'production' && ![3, 4].includes(siteLinkCount)) problems.push('Production Sites menu has an unexpected link count');
             if ((await sitesMenu.locator('a[aria-current="page"]').count()) !== 1) problems.push('Sites menu current-page state is incorrect');
             if ((await sitesButton.getAttribute('aria-expanded')) !== 'true') problems.push('Sites button did not expose expanded state');
             const sitesOpenGeometry = await page.evaluate(() => {
@@ -187,6 +190,10 @@ jobs:
               for (const [name, path] of pages) {
                 const page = await context.newPage();
                 const response = await page.goto(`${baseUrl}${path}`, { waitUntil: 'networkidle' });
+                if (screenshotPrefix === 'production' && name === 'hopscotch' && response?.status() === 404) {
+                  await page.close();
+                  continue;
+                }
                 const entry = await inspectPage(page, { name, viewportName, path, screenshotPrefix });
                 if (!response || !response.ok()) entry.problems.push(`HTTP ${response?.status() ?? 'no response'}`);
                 report.push(entry);

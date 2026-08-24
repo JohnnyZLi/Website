@@ -39,6 +39,7 @@
             <button class="jl-site-switcher__button" type="button" aria-expanded="false" aria-controls="owned-sites-menu" data-site-switcher-button>Sites <span aria-hidden="true">⌄</span></button>
             <ul class="jl-site-menu" id="owned-sites-menu" aria-label="Johnny Li sites" data-site-switcher-menu hidden>
               <li><a href="https://johnnyli.dev" aria-current="page">Portfolio</a></li>
+              <li><a href="https://hopscotch.johnnyli.dev">HOPSCOTCH</a></li>
               <li><a href="https://network.johnnyli.dev">Network Diagnostics</a></li>
               <li><a href="https://rolepacket.johnnyli.dev">RolePacket</a></li>
             </ul>
@@ -49,7 +50,7 @@
 
     <main>
       <section class="case-hero shell" aria-labelledby="case-title">
-        <p class="eyebrow">Case study 03 / Network diagnostics</p>
+        <p class="eyebrow">Case study 02 / Network diagnostics</p>
         <div class="case-hero-grid">
           <h1 id="case-title">Network Diagnostics<br><em>Suite</em></h1>
           <div class="case-summary">
@@ -65,7 +66,7 @@
         <dl class="case-facts">
           <div><dt>Role</dt><dd>Architecture and implementation</dd></div>
           <div><dt>Clients</dt><dd>Browser · Desktop · CLI</dd></div>
-          <div><dt>Native stack</dt><dd>.NET 10 · Avalonia</dd></div>
+          <div><dt>Native stack</dt><dd>.NET 10 · Photino + React</dd></div>
           <div><dt>Status</dt><dd>Active · Public source</dd></div>
         </dl>
       </section>
@@ -86,7 +87,7 @@
         <div class="case-section-content">
           <ol class="process-list" aria-label="Network Diagnostics Suite clients and report model">
             <li><span>Browser</span><strong>Immediate measurement</strong><p>First-party transfer, responsiveness under load, request loss, connection scaling, and endpoint evidence.</p></li>
-            <li><span>Desktop</span><strong>Native workbench</strong><p>Connection Check, Quick, Full, and Stress with deep operating-system and local-network views.</p></li>
+            <li><span>Desktop</span><strong>Native workbench</strong><p>Connection Check, Quick, Full, and Stress with passive monitoring and deep operating-system and local-network views.</p></li>
             <li><span>CLI</span><strong>Scriptable probe</strong><p>Repeatable diagnostics, optional Internet transfer, interface selection, and two-machine LAN testing.</p></li>
             <li><span>Report</span><strong>Compatible evidence</strong><p>Schema 2.0 combines plans, context, measurements, findings, and optional native or LAN sections.</p></li>
           </ol>
@@ -158,16 +159,16 @@
       </section>
 
       <section class="case-section shell" aria-labelledby="results-heading">
-        <div class="case-section-label"><span>06</span><h2 id="results-heading">Current system</h2></div>
+        <div class="case-section-label"><span>06</span><h2 id="results-heading">Evidence over feature count</h2></div>
         <div class="case-section-content">
           <div class="metric-grid">
+            <div><strong>~½</strong><span>early browser download vs M-Lab</span></div>
             <div><strong>3</strong><span>compatible clients</span></div>
-            <div><strong>4</strong><span>native profiles</span></div>
             <div><strong>5</strong><span>native build targets</span></div>
             <div><strong>0</strong><span>project-retained results</span></div>
           </div>
           <div class="validation-copy">
-            <p>Shared contracts define profiles and findings. TypeScript and C# parity fixtures keep interpretations aligned, while schema 2.0 preserves endpoint, capability, interface, HTTP/3, Internet, deep-diagnostic, LAN, and recommendation evidence.</p>
+            <p>The useful result was not hiding the initial discrepancy. The project isolated a delivery-path bottleneck, changed the architecture based on an A/B test, and preserved the comparison path so future measurements can distinguish endpoint delivery from the access network being measured. Shared contracts and TypeScript/C# parity fixtures keep findings aligned across clients.</p>
           </div>
         </div>
       </section>
@@ -178,7 +179,7 @@
           <p class="case-lead">Deeper evidence belongs in a native engine, <em>not behind browser-shaped approximations</em>.</p>
           <div class="case-body-copy">
             <p>NetworkDiagnostics.Core owns planning, endpoint selection, Internet transfer, ICMP, routes, DNS, MTU, TLS, interfaces, Wi-Fi, LAN testing, findings, capability reporting, and serialization.</p>
-            <p>Avalonia provides the Windows, macOS, and Linux desktop host. The command-line probe preserves scriptable deep diagnostics and can opt into the same Internet-transfer plans when needed.</p>
+            <p>Photino.NET hosts a React + TypeScript workbench on Windows, macOS, and Linux and bridges it to the shared .NET engine. The command-line probe preserves scriptable deep diagnostics and can opt into the same Internet-transfer plans when needed.</p>
           </div>
         </div>
       </section>
@@ -197,8 +198,8 @@
       <section class="case-next">
         <div class="shell case-next-inner">
           <p>Next project</p>
-          <h2>Reliability above UDP,<br><em>made visible.</em></h2>
-          <a href="reliable-udp-transport.html">Read UDP transport case study <span aria-hidden="true">↗</span></a>
+          <h2>Routing failure,<br><em>measured.</em></h2>
+          <a href="ospf-resiliency-lab.html">Read OSPF resiliency case study <span aria-hidden="true">↗</span></a>
         </div>
       </section>
     </main>
