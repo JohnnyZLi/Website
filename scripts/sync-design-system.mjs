@@ -96,7 +96,7 @@ const rewriteWrapperImport = async (path, marker, exportName) => {
 
 await rewriteWrapperImport(
   "site-switcher.js",
-  'for (const root of document.querySelectorAll("[data-site-switcher]")) {',
+  "const HOPSCOTCH_SITE = Object.freeze({",
   "installSiteSwitcher",
 );
 await rewriteWrapperImport(
