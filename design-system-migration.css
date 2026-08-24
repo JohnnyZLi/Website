@@ -84,17 +84,27 @@ body {
 }
 
 /* On the homepage, treat the sticky header as a translucent layer over the
-   hero instead of an opaque cap. The hero's warm field remains continuous
-   through the bar while the package-owned controls keep their solid surfaces
-   and contrast. */
+   hero instead of an opaque cap. Put the blur on a decorative pseudo-layer so
+   the package's fixed disclosure geometry keeps using the viewport as its
+   containing block. The Sites/settings controls retain their solid package
+   surfaces and contrast above it. */
 .hero > .jl-global-header {
   border-bottom-color: color-mix(in srgb, var(--jl-color-rule) 72%, transparent);
+  background: transparent;
+}
+
+.hero > .jl-global-header::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
   background: color-mix(in srgb, var(--jl-color-canvas) 80%, transparent);
   -webkit-backdrop-filter: blur(10px) saturate(1.06);
   backdrop-filter: blur(10px) saturate(1.06);
+  content: "";
+  pointer-events: none;
 }
 
-:root[data-theme="dark"] .hero > .jl-global-header {
+:root[data-theme="dark"] .hero > .jl-global-header::before {
   background: color-mix(in srgb, var(--jl-color-canvas) 72%, transparent);
 }
 
