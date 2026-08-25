@@ -137,13 +137,11 @@ workflow_path.write_text(workflow)
 # silently disappear while local header CSS remains forbidden.
 validator_path = root / 'scripts/validate-design-system-integration.mjs'
 validator = validator_path.read_text()
-old = '''  'class="jl-global-header"', 'class="jl-global-header__inner"', 'class="jl-site-identity"',
-'''
-new = '''  'class="jl-global-header jl-global-header--compact-utility"', 'class="jl-global-header__inner"', 'class="jl-site-identity"',
-'''
-if old not in validator:
-    raise SystemExit('Portfolio header integration marker drifted.')
-validator = validator.replace(old, new, 1)
+old_marker = ''''class="jl-global-header"'''
+new_marker = ''''class="jl-global-header jl-global-header--compact-utility"'''
+if old_marker not in validator:
+    raise SystemExit('Portfolio header integration markers drifted.')
+validator = validator.replace(old_marker, new_marker)
 
 anchor = '''if (!attachedHeaderGeometry) fail("Shared header geometry is not the approved attached-width Sites contract.");
 '''
