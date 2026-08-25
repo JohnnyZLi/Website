@@ -3,8 +3,8 @@
   "runner": "ubuntu-24.04",
   "playwright": "1.54.1",
   "hashes": {
-    "desktop": "bc7c78f5c5ca55ec773693cc114d1940334da3b299160534bab5b3c340fda7d7",
-    "narrow-desktop": "b1de3d95ef5623ac062084419dbd99b1efff69b6235581010c2f73a136e99914",
+    "desktop": "bf0cd5343aea793dca0c77f5102fc5513f148876fd815ecc8e212b3fdda7dc33",
+    "narrow-desktop": "299668641751273fbaf5e6a13ec71df2846b6383b4156c4986cb4c482254198a",
     "mobile": "3f780013233caf79f688fb05ae5a9e7a8864b8127b8710471142a5bfeaf26086",
     "minimum": "a97f67456d24d975479b315d6357b104084b3e74523f77d8babf0df32478e99a",
     "forced-colors": "e67c5443f132db356c36308ba3542c31c22b7084a135a24e78cdc8253b1e05a5"
