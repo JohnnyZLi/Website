@@ -1,0 +1,104 @@
+name: Patch centered Sites chevron
+
+on:
+  push:
+    branches:
+      - ui/center-sites-chevron
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ui/center-sites-chevron
+          persist-credentials: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+      - name: Update to reviewed shared design system
+        run: |
+          npm install --no-audit --no-fund
+          npm run design-system:update
+          npm install --no-audit --no-fund
+          npm run design-system:sync
+      - name: Adopt canonical SVG chevron markup
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          pattern = re.compile(r'Sites\s*<span aria-hidden="true">⌄</span>')
+          replacement = '''Sites
+                  <svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                    <path d="M2.5 4.25 6 7.75 9.5 4.25"></path>
+                  </svg>'''
+          changed = []
+          for path in sorted(root.rglob('*.html')):
+              if '.git' in path.parts or 'node_modules' in path.parts:
+                  continue
+              text = path.read_text()
+              updated, count = pattern.subn(replacement, text)
+              if count:
+                  path.write_text(updated)
+                  changed.append((str(path), count))
+          if not changed:
+              raise SystemExit('No legacy Sites indicators were found to replace.')
+          print('Updated canonical Sites chevron markup:', changed)
+
+          validator_path = Path('scripts/validate-design-system-integration.mjs')
+          validator = validator_path.read_text()
+          old_css = '''  "font-weight: 700;", "line-height: 1;", '.jl-site-switcher__button > [aria-hidden="true"]',
+  "border-right: 2px solid currentColor;", "border-bottom: 2px solid currentColor;",
+'''
+          new_css = '''  "font-weight: 700;", "line-height: 1;", ".jl-site-switcher__chevron {",
+  "width: 12px;", "height: 12px;", "stroke: currentColor;", "stroke-linecap: round;", "stroke-linejoin: round;",
+  "transform: rotate(0deg);", "transform: rotate(180deg);",
+'''
+          if validator.count(old_css) != 1:
+              raise SystemExit(f'Expected one legacy chevron CSS contract, found {validator.count(old_css)}')
+          validator = validator.replace(old_css, new_css, 1)
+
+          index_marker = '''  'class="jl-header-menu-toggle"', 'class="jl-site-switcher__button"',
+  'aria-controls="portfolio-navigation"', 'aria-controls="owned-sites-menu"',
+'''
+          index_replacement = '''  'class="jl-header-menu-toggle"', 'class="jl-site-switcher__button"',
+  'class="jl-site-switcher__chevron"', 'viewBox="0 0 12 12"', 'd="M2.5 4.25 6 7.75 9.5 4.25"',
+  'aria-controls="portfolio-navigation"', 'aria-controls="owned-sites-menu"',
+'''
+          if validator.count(index_marker) != 1:
+              raise SystemExit('Homepage shared-header contract insertion point changed.')
+          validator = validator.replace(index_marker, index_replacement, 1)
+
+          project_marker = '''    'class="jl-global-header__nav jl-header-menu"', 'class="jl-header-menu-toggle"',
+    "data-header-menu", "data-header-menu-button", "data-site-switcher", "data-site-switcher-button",
+'''
+          project_replacement = '''    'class="jl-global-header__nav jl-header-menu"', 'class="jl-header-menu-toggle"',
+    'class="jl-site-switcher__chevron"', 'viewBox="0 0 12 12"', 'd="M2.5 4.25 6 7.75 9.5 4.25"',
+    "data-header-menu", "data-header-menu-button", "data-site-switcher", "data-site-switcher-button",
+'''
+          if validator.count(project_marker) != 1:
+              raise SystemExit('Project shared-header contract insertion point changed.')
+          validator = validator.replace(project_marker, project_replacement, 1)
+
+          validator_path.write_text(validator)
+          PY
+      - name: Validate Portfolio consumer
+        run: |
+          npm run design-system:integration
+          npm run design-system:conformance
+          npm run lint
+      - name: Commit consumer update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git reset .github/workflows/patch-centered-sites-chevron.yml
+          git commit -m "Center the Portfolio Sites chevron"
+          git push origin HEAD:ui/center-sites-chevron
