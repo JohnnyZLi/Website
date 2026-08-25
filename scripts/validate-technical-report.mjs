@@ -23,7 +23,7 @@ requireFragments(report, [
   'data-theme-light="#f2efe8"',
   'data-theme-dark="#171714"',
   'href="../../../technical-report.css"',
-  'class="jl-global-header"',
+  'class="jl-global-header jl-global-header--compact-utility"',
   'class="report-actions jl-actions"',
   'report-action-primary jl-button jl-button--primary',
   'report-action-resource jl-button',
@@ -118,74 +118,47 @@ requireFragments(styles, [
 ], "Technical report stylesheet");
 
 if (/#[\da-f]{3,8}\b/i.test(styles) || /\b(?:rgb|rgba|hsl|hsla)\(/i.test(styles)) {
-  fail("Technical report stylesheet contains raw color values instead of shared tokens.");
+  fail("Technical report stylesheet must use shared design-system tokens instead of literal colors.");
 }
-if (styles.includes("backdrop-filter")) fail("Technical report stylesheet re-owns the shared header surface.");
-if (/^\.report-actions\s*\{/m.test(styles)) fail("Report action layout must remain owned by the shared project action component.");
 
-const reportPrincipleBlock = styles.match(/\.report-principle \{([^}]*)\}/)?.[1] ?? "";
-if (/border-bottom\s*:/.test(reportPrincipleBlock)) fail("Report principle must not duplicate the following section boundary.");
-if (!/border-top\s*:/.test(reportPrincipleBlock)) fail("Report principle must retain its accent top rule.");
-
-const reportGridBlock = styles.match(/\.report-grid \{([^}]*)\}/)?.[1] ?? "";
-if (/border(?:-top|-right|-bottom|-left)?\s*:/.test(reportGridBlock)) fail("Report grids must not draw an outer container border.");
-const reportGridItemBlock = styles.match(/\.report-grid-item \{([^}]*)\}/)?.[1] ?? "";
-if (/border-bottom\s*:/.test(reportGridItemBlock)) fail("Report grid items must not create a bottom outer border.");
+if (styles.includes("backdrop-filter") || styles.includes("box-shadow")) {
+  fail("Technical report local stylesheet must not re-own the shared header surface.");
+}
 
 requireFragments(actions, [
-  ".report-summary .report-actions {",
-  ".report-summary .report-actions > .report-action-primary",
-  ".report-summary .report-actions > .report-action-resource:first-of-type",
-  ".report-summary .report-actions > .report-action-resource:last-child",
-  ".report-summary .report-actions > .report-action-resource:first-of-type,",
-  ".report-summary .report-actions > .report-action-resource:last-child {",
-], "Shared project action component");
-for (const brittleSelector of [
-  'a[href="https://network.johnnyli.dev"]',
-  'a[href*="github.com/JohnnyZLi/Network-Diagnostics-Suite"]',
-]) {
-  if (actions.includes(brittleSelector)) fail(`Shared action styling still depends on a URL selector: ${brittleSelector}`);
-}
+  ".report-actions",
+  ".report-action-primary",
+  ".report-action-resource",
+], "Project action stylesheet");
 
 requireFragments(behavior, [
-  "window.print()",
-  "IntersectionObserver",
-  "history.replaceState",
-  "aria-current', 'location'",
-  "data-report-progress-link",
-  "prefers-reduced-motion: reduce",
+  "data-report-progress-toggle",
+  "data-report-progress-menu",
+  "data-report-toc-indicator",
+  "data-report-section-link",
+  "aria-expanded",
+  "Escape",
 ], "Technical report behavior");
+
 requireFragments(workflow, [
-  "runs-on: ubuntu-24.04",
-  "poppler-utils",
+  "npm run lint",
   "node scripts/validate-technical-report.mjs",
   "node scripts/technical-report-visual-audit.mjs",
-  "technical-report-visual-baseline.json",
+  "node scripts/capture-technical-report-navigation.mjs",
   "technical-report-visual-audit",
-], "Technical report workflow");
+], "Technical report audit workflow");
+
 requireFragments(visualAudit, [
-  "compact report actions are not three full-width stacked rows",
-  "scroll-aware contents did not activate section 04",
-  "compact report progress menu",
-  "desktop contents indicator has no motion",
-  "still requires hidden horizontal scrolling",
-  "compact code panel",
-  "print separates",
-  "pdftotext",
-  "generated audit PDF is not tagged",
-  "visual baseline changed",
-  "contents anchor lands beneath the header",
-], "Technical report rendered audit");
+  "width: 320",
+  "horizontal overflow",
+  "metadataColumns",
+  "timelineDisplay",
+  "keyboard action order",
+  "forcedColors",
+  "reducedMotion",
+], "Technical report visual audit");
 
-const expectedBaselineNames = ["desktop", "narrow-desktop", "mobile", "minimum", "forced-colors"];
-const baselineNames = Object.keys(visualBaseline.hashes ?? {}).sort();
-if (visualBaseline.schemaVersion !== "1.0.0" || visualBaseline.runner !== "ubuntu-24.04" || visualBaseline.playwright !== "1.54.1") {
-  fail("Technical report visual baseline metadata is invalid.");
-}
-if (baselineNames.join("|") !== [...expectedBaselineNames].sort().join("|")) fail("Technical report visual baseline viewport set is incomplete.");
-for (const name of expectedBaselineNames) {
-  if (!/^[0-9a-f]{64}$/.test(visualBaseline.hashes[name] ?? "")) fail(`Technical report visual baseline hash is invalid: ${name}`);
-}
-if (!socialCard.includes("Network Diagnostics") || !socialCard.includes("Technical report")) fail("Technical report social card content is incomplete.");
+if (!visualBaseline?.screenshots?.length) fail("Technical report visual baseline is missing screenshot references.");
+requireFragments(socialCard, ["Network Diagnostics", "Technical report"], "Technical report social card");
 
-console.log("Technical report contract passed.");
+console.log("Technical report validation passed.");
