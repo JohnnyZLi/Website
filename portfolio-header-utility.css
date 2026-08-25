@@ -1,0 +1,48 @@
+/* Portfolio-specific compact header expression.
+   Keep the shorter shared header and its current translucent control color,
+   but restore the original detached Sites and Settings button geometry. */
+@media (min-width: 561px) {
+  .jl-global-header--compact-utility .jl-site-switcher {
+    width: calc(104px + var(--jl-space-2) + var(--jl-control-height-md));
+    grid-template-columns: 104px var(--jl-control-height-md);
+    column-gap: var(--jl-space-2);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .jl-global-header--compact-utility .jl-site-disclosure,
+  .jl-global-header--compact-utility .jl-settings-disclosure {
+    border-radius: var(--jl-radius-md);
+    background: color-mix(in srgb, var(--jl-color-surface) 42%, transparent);
+    box-shadow: inset 0 0 0 1px var(--jl-color-rule);
+  }
+
+  .jl-global-header--compact-utility .jl-site-disclosure,
+  .jl-global-header--compact-utility .jl-site-switcher__button,
+  .jl-global-header--compact-utility .jl-site-menu {
+    width: 104px;
+    min-width: 104px;
+  }
+
+  .jl-global-header--compact-utility .jl-settings-disclosure {
+    border-left: 0;
+  }
+
+  .jl-global-header--compact-utility .jl-site-disclosure:has(> .jl-site-switcher__button:hover:not([aria-expanded="true"])),
+  .jl-global-header--compact-utility .jl-settings-disclosure:has(> .jl-settings-button:hover:not([aria-expanded="true"])) {
+    background: color-mix(in srgb, var(--jl-color-surface-strong) 38%, transparent);
+    box-shadow: inset 0 0 0 1px var(--jl-color-accent);
+  }
+
+  .jl-global-header--compact-utility .jl-site-disclosure:has(> .jl-site-switcher__button:focus-visible),
+  .jl-global-header--compact-utility .jl-settings-disclosure:has(> .jl-settings-button:focus-visible) {
+    box-shadow: inset 0 0 0 2px var(--jl-color-focus-ring);
+  }
+
+  .jl-global-header--compact-utility .jl-site-disclosure:has(> .jl-site-switcher__button[aria-expanded="true"]),
+  .jl-global-header--compact-utility .jl-settings-disclosure:has(> .jl-settings-button[aria-expanded="true"]) {
+    background: var(--jl-color-surface);
+    box-shadow: inset 0 0 0 1px var(--jl-color-rule-strong);
+  }
+}
