@@ -71,25 +71,56 @@ jobs:
                 const style = getComputedStyle(element);
                 return { width: rect.width, height: rect.height, fontSize: style.fontSize, fontWeight: style.fontWeight };
               })(),
+              utilityCluster: (() => {
+                const cluster = document.querySelector('.jl-global-header--compact-utility .jl-site-switcher');
+                const sites = document.querySelector('.jl-global-header--compact-utility .jl-site-disclosure');
+                const settings = document.querySelector('.jl-global-header--compact-utility .jl-settings-disclosure');
+                if (!(cluster instanceof HTMLElement) || !(sites instanceof HTMLElement) || !(settings instanceof HTMLElement)) return null;
+                const clusterRect = cluster.getBoundingClientRect();
+                const sitesRect = sites.getBoundingClientRect();
+                const settingsRect = settings.getBoundingClientRect();
+                const style = getComputedStyle(cluster);
+                return {
+                  width: clusterRect.width,
+                  columnGap: style.columnGap,
+                  sitesRight: sitesRect.right,
+                  settingsLeft: settingsRect.left,
+                };
+              })(),
             }));
 
             const problems = [];
             const compactHeader = viewportName === 'mobile' || viewportName === 'minimum';
-            const expectedInnerHeight = compactHeader ? 68 : 82;
-            const expectedOuterHeight = compactHeader ? 69 : 83;
+            const expectedInnerHeights = compactHeader
+              ? [68]
+              : screenshotPrefix === 'local' ? [72] : [72, 82];
+            const expectedOuterHeights = compactHeader
+              ? [69]
+              : screenshotPrefix === 'local' ? [73] : [73, 83];
             const expectedButtonHeight = compactHeader ? 40 : 44;
-            const fittedSitesWidth = metrics.viewportWidth <= 360 ? 96 : 104;
+            const fittedSitesWidth = metrics.viewportWidth <= 360
+              ? 96
+              : metrics.viewportWidth > 560 ? 96 : 104;
             const legacySitesWidth = metrics.viewportWidth <= 420 ? 116 : 136;
             if (metrics.overflow) problems.push('document overflow');
             if (metrics.h1Count !== 1) problems.push(`expected one h1, found ${metrics.h1Count}`);
-            if (!near(metrics.headerInnerHeight, expectedInnerHeight)) problems.push(`header inner ${metrics.headerInnerHeight}, expected ${expectedInnerHeight}`);
-            if (!near(metrics.headerHeight, expectedOuterHeight)) problems.push(`header outer ${metrics.headerHeight}, expected ${expectedOuterHeight}`);
+            if (!expectedInnerHeights.some((value) => near(metrics.headerInnerHeight, value))) problems.push(`header inner ${metrics.headerInnerHeight}, expected ${expectedInnerHeights.join(' or ')}`);
+            if (!expectedOuterHeights.some((value) => near(metrics.headerHeight, value))) problems.push(`header outer ${metrics.headerHeight}, expected ${expectedOuterHeights.join(' or ')}`);
+            if (screenshotPrefix === 'local' && !compactHeader) {
+              if (!metrics.utilityCluster) {
+                problems.push('compact utility cluster missing');
+              } else {
+                if (!near(metrics.utilityCluster.width, 142)) problems.push(`utility cluster width ${metrics.utilityCluster.width}, expected 142`);
+                if (metrics.utilityCluster.columnGap !== '0px') problems.push(`utility cluster gap ${metrics.utilityCluster.columnGap}`);
+                if (!near(metrics.utilityCluster.sitesRight, metrics.utilityCluster.settingsLeft)) problems.push('Sites and Settings are not directly adjacent');
+              }
+            }
             if (!metrics.sitesButton) {
               problems.push('Sites button missing');
             } else {
               const widthAllowed = screenshotPrefix === 'local'
                 ? near(metrics.sitesButton.width, fittedSitesWidth)
-                : near(metrics.sitesButton.width, fittedSitesWidth) || near(metrics.sitesButton.width, legacySitesWidth) || near(metrics.sitesButton.width, 88);
+                : near(metrics.sitesButton.width, fittedSitesWidth) || near(metrics.sitesButton.width, 104) || near(metrics.sitesButton.width, legacySitesWidth) || near(metrics.sitesButton.width, 88);
               if (!widthAllowed) problems.push(`Sites width ${metrics.sitesButton.width}`);
               if (!near(metrics.sitesButton.height, expectedButtonHeight)) problems.push(`Sites height ${metrics.sitesButton.height}, expected ${expectedButtonHeight}`);
               if (metrics.sitesButton.fontSize !== '13px') problems.push(`Sites font size ${metrics.sitesButton.fontSize}`);
@@ -123,7 +154,9 @@ jobs:
               };
             });
             if (screenshotPrefix === 'local') {
-              const expectedOpenSitesWidth = sitesOpenGeometry.viewportWidth <= 360 ? 96 : 104;
+              const expectedOpenSitesWidth = sitesOpenGeometry.viewportWidth <= 360
+                ? 96
+                : sitesOpenGeometry.viewportWidth > 560 ? 96 : 104;
               if (!near(sitesOpenGeometry.buttonWidth, expectedOpenSitesWidth)) problems.push(`Sites trigger width ${sitesOpenGeometry.buttonWidth}, expected ${expectedOpenSitesWidth}`);
               if (!near(sitesOpenGeometry.menuWidth, expectedOpenSitesWidth)) problems.push(`Sites dropdown width ${sitesOpenGeometry.menuWidth}, expected ${expectedOpenSitesWidth}`);
               if (!near(sitesOpenGeometry.menuLeft, sitesOpenGeometry.buttonLeft) || !near(sitesOpenGeometry.menuRight, sitesOpenGeometry.buttonRight)) problems.push('Sites dropdown is not attached directly beneath its trigger');
