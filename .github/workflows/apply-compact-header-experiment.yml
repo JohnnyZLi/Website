@@ -28,6 +28,7 @@ jobs:
       - name: Apply Portfolio compact expression
         run: |
           python3 .github/scripts/apply-portfolio-compact-header.py
+          python3 .github/scripts/patch-compact-header-conformance.py
           npm run design-system:integration
           npm run design-system:conformance
           npm run lint:html
@@ -36,7 +37,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git rm .github/workflows/apply-compact-header-experiment.yml .github/scripts/apply-portfolio-compact-header.py
-          git add design-system.lock.json package.json assets/design-system index.html projects site-switcher.js portfolio-navigation.js .github/workflows/visual-audit.yml scripts/validate-design-system-integration.mjs
+          git rm .github/workflows/apply-compact-header-experiment.yml .github/scripts/apply-portfolio-compact-header.py .github/scripts/patch-compact-header-conformance.py
+          git add design-system.lock.json design-system.conformance.json package.json assets/design-system index.html projects site-switcher.js portfolio-navigation.js .github/workflows/visual-audit.yml scripts/validate-design-system-integration.mjs
           git commit -m "Use compact shared utility header"
           git push origin HEAD:ui/compact-header-utility-cluster
