@@ -23,7 +23,7 @@ requireFragments(report, [
   'data-theme-light="#f2efe8"',
   'data-theme-dark="#171714"',
   'href="../../../technical-report.css"',
-  'class="jl-global-header"',
+  'class="jl-global-header jl-global-header--compact-utility"',
   'class="report-actions jl-actions"',
   'report-action-primary jl-button jl-button--primary',
   'report-action-resource jl-button',

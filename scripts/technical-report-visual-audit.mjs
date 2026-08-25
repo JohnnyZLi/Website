@@ -119,7 +119,7 @@ try {
     if (metrics.documentWidth > metrics.innerWidth + 1) problems.push("horizontal overflow");
     if (metrics.h1Count !== 1) problems.push(`expected one h1, found ${metrics.h1Count}`);
     const compactHeader = viewport.width <= 560;
-    const expectedHeader = compactHeader ? 69 : 83;
+    const expectedHeader = compactHeader ? 69 : 73;
     if (metrics.headerHeight === null || Math.abs(metrics.headerHeight - expectedHeader) > 1) problems.push(`header height ${metrics.headerHeight}, expected ${expectedHeader}`);
     if (metrics.markerFontSize === null || metrics.markerFontSize > 13) problems.push(`abstract marker is oversized at ${metrics.markerFontSize}px`);
     if (!metrics.markerFontFamily?.toLowerCase().includes("mono")) problems.push("abstract marker is not monospace");

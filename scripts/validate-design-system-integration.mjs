@@ -86,7 +86,7 @@ requireFragments(index, [
   `<script src="assets/design-system/theme-bootstrap.js?v=${expectedCommit}"></script>`,
   `href="assets/design-system/theme-control.css?v=${expectedCommit}"`,
   'data-theme-light="#f2efe8"', 'data-theme-dark="#171714"',
-  'class="jl-global-header"', 'class="jl-global-header__inner"', 'class="jl-site-identity"',
+  'class="jl-global-header jl-global-header--compact-utility"', 'class="jl-global-header__inner"', 'class="jl-site-identity"',
   'class="jl-site-identity__owner"', 'class="jl-site-identity__product"',
   'class="jl-global-header__nav jl-header-menu"', 'class="jl-global-header__actions"',
   'class="jl-header-menu-toggle"', 'class="jl-site-switcher__button"',
@@ -152,6 +152,9 @@ const attachedHeaderGeometry = identityStyles.includes("grid-template-columns: 1
   && !identityStyles.includes("width: 144px;")
   && !identityStyles.includes("--_jl-site-menu-trigger-offset");
 if (!attachedHeaderGeometry) fail("Shared header geometry is not the approved attached-width Sites contract.");
+if (!identityStyles.includes(".jl-global-header--compact-utility") || !identityStyles.includes("grid-template-columns: 96px var(--jl-control-height-md);")) {
+  fail("Shared compact utility header expression is missing from the synced package assets.");
+}
 
 requireFragments(primitives, [
   ".jl-actions {", "display: flex;", "flex-wrap: wrap;", ".jl-button {", "display: inline-flex;",
@@ -208,7 +211,7 @@ for (const page of projectPages) {
     `<script src="../assets/design-system/theme-bootstrap.js?v=${expectedCommit}"></script>`,
     'data-theme-light=', 'data-theme-dark=',
     'href="../design-system-migration.css"',
-    'href="../case-study-fixes.css"', 'class="jl-global-header"', 'class="jl-global-header__inner"',
+    'href="../case-study-fixes.css"', 'class="jl-global-header jl-global-header--compact-utility"', 'class="jl-global-header__inner"',
     'class="jl-global-header__nav jl-header-menu"', 'class="jl-header-menu-toggle"',
     "data-header-menu", "data-header-menu-button", "data-site-switcher", "data-site-switcher-button",
     "data-site-switcher-menu", 'class="case-actions jl-actions"', "jl-button jl-button--primary",

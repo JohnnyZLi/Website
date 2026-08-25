@@ -62,15 +62,15 @@
           "file": ".github/workflows/visual-audit.yml",
           "values": [
             "headerInnerHeight",
-            "expectedInnerHeight",
-            "expectedOuterHeight"
+            "expectedInnerHeights",
+            "expectedOuterHeights"
           ]
         },
         {
           "type": "contains",
           "file": "projects/network-diagnostics-suite/report/index.html",
           "values": [
-            "class=\"jl-global-header\"",
+            "class=\"jl-global-header jl-global-header--compact-utility\"",
             "jl-global-header__inner",
             "jl-site-identity"
           ]
