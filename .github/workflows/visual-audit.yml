@@ -98,9 +98,7 @@ jobs:
               ? [69]
               : screenshotPrefix === 'local' ? [73] : [73, 83];
             const expectedButtonHeight = compactHeader ? 40 : 44;
-            const fittedSitesWidth = metrics.viewportWidth <= 360
-              ? 96
-              : metrics.viewportWidth > 560 ? 96 : 104;
+            const fittedSitesWidth = metrics.viewportWidth <= 360 ? 96 : 104;
             const legacySitesWidth = metrics.viewportWidth <= 420 ? 116 : 136;
             if (metrics.overflow) problems.push('document overflow');
             if (metrics.h1Count !== 1) problems.push(`expected one h1, found ${metrics.h1Count}`);
@@ -110,9 +108,9 @@ jobs:
               if (!metrics.utilityCluster) {
                 problems.push('compact utility cluster missing');
               } else {
-                if (!near(metrics.utilityCluster.width, 140)) problems.push(`utility cluster width ${metrics.utilityCluster.width}, expected 140`);
-                if (metrics.utilityCluster.columnGap !== '0px') problems.push(`utility cluster gap ${metrics.utilityCluster.columnGap}`);
-                if (!near(metrics.utilityCluster.sitesRight, metrics.utilityCluster.settingsLeft)) problems.push('Sites and Settings are not directly adjacent');
+                if (!near(metrics.utilityCluster.width, 156)) problems.push(`utility cluster width ${metrics.utilityCluster.width}, expected 156`);
+                if (metrics.utilityCluster.columnGap !== '8px') problems.push(`utility cluster gap ${metrics.utilityCluster.columnGap}`);
+                if (!near(metrics.utilityCluster.settingsLeft - metrics.utilityCluster.sitesRight, 8)) problems.push('Sites and Settings do not preserve the detached 8px spacing');
               }
             }
             if (!metrics.sitesButton) {
@@ -154,9 +152,7 @@ jobs:
               };
             });
             if (screenshotPrefix === 'local') {
-              const expectedOpenSitesWidth = sitesOpenGeometry.viewportWidth <= 360
-                ? 96
-                : sitesOpenGeometry.viewportWidth > 560 ? 96 : 104;
+              const expectedOpenSitesWidth = sitesOpenGeometry.viewportWidth <= 360 ? 96 : 104;
               if (!near(sitesOpenGeometry.buttonWidth, expectedOpenSitesWidth)) problems.push(`Sites trigger width ${sitesOpenGeometry.buttonWidth}, expected ${expectedOpenSitesWidth}`);
               if (!near(sitesOpenGeometry.menuWidth, expectedOpenSitesWidth)) problems.push(`Sites dropdown width ${sitesOpenGeometry.menuWidth}, expected ${expectedOpenSitesWidth}`);
               if (!near(sitesOpenGeometry.menuLeft, sitesOpenGeometry.buttonLeft) || !near(sitesOpenGeometry.menuRight, sitesOpenGeometry.buttonRight)) problems.push('Sites dropdown is not attached directly beneath its trigger');
