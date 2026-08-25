@@ -110,7 +110,7 @@ jobs:
               if (!metrics.utilityCluster) {
                 problems.push('compact utility cluster missing');
               } else {
-                if (!near(metrics.utilityCluster.width, 142)) problems.push(`utility cluster width ${metrics.utilityCluster.width}, expected 142`);
+                if (!near(metrics.utilityCluster.width, 140)) problems.push(`utility cluster width ${metrics.utilityCluster.width}, expected 140`);
                 if (metrics.utilityCluster.columnGap !== '0px') problems.push(`utility cluster gap ${metrics.utilityCluster.columnGap}`);
                 if (!near(metrics.utilityCluster.sitesRight, metrics.utilityCluster.settingsLeft)) problems.push('Sites and Settings are not directly adjacent');
               }
