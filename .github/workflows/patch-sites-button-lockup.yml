@@ -33,12 +33,8 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import re
-
           root = Path('.')
-          pattern = re.compile(
-              r'(?P<indent>[ \t]*)Sites\s*\n(?P=indent)<svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">\s*\n(?P=indent)\s*<path d="M2\.5 4\.25 6 7\.75 9\.5 4\.25"></path>\s*\n(?P=indent)</svg>'
-          )
-
+          pattern = re.compile(r'(?P<indent>[ \t]*)Sites\s*\n(?P=indent)<svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">\s*\n(?P=indent)\s*<path d="M2\.5 4\.25 6 7\.75 9\.5 4\.25"></path>\s*\n(?P=indent)</svg>')
           changed = []
           for path in sorted(root.rglob('*.html')):
               if '.git' in path.parts or 'node_modules' in path.parts:
@@ -47,18 +43,17 @@ jobs:
               def replacement(match):
                   indent = match.group('indent')
                   return '\n'.join([
-                      f'{indent}<span class="jl-site-switcher__content">',
-                      f'{indent}  <span class="jl-site-switcher__label">Sites</span>',
-                      f'{indent}  <svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">',
-                      f'{indent}    <path d="M2.5 5.25 6 8.75 9.5 5.25"></path>',
-                      f'{indent}  </svg>',
-                      f'{indent}</span>',
+                      indent + '<span class="jl-site-switcher__content">',
+                      indent + '  <span class="jl-site-switcher__label">Sites</span>',
+                      indent + '  <svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">',
+                      indent + '    <path d="M2.5 5.25 6 8.75 9.5 5.25"></path>',
+                      indent + '  </svg>',
+                      indent + '</span>',
                   ])
               updated, count = pattern.subn(replacement, text)
               if count:
                   path.write_text(updated)
                   changed.append((str(path), count))
-
           expected_files = {
               'index.html',
               'projects/concurrent-c2s-proxy.html',
@@ -72,44 +67,24 @@ jobs:
           actual_files = {path for path, count in changed if count == 1}
           if actual_files != expected_files:
               raise SystemExit(f'Unexpected Sites markup migration set: {sorted(changed)}')
-
           validator_path = Path('scripts/validate-design-system-integration.mjs')
           validator = validator_path.read_text()
-          old_index = """  'class=\"jl-header-menu-toggle\"', 'class=\"jl-site-switcher__button\"',
-  'class=\"jl-site-switcher__chevron\"', 'viewBox=\"0 0 12 12\"', 'd=\"M2.5 4.25 6 7.75 9.5 4.25\"',
-"""
-          new_index = """  'class=\"jl-header-menu-toggle\"', 'class=\"jl-site-switcher__button\"',
-  'class=\"jl-site-switcher__content\"', 'class=\"jl-site-switcher__label\"',
-  'class=\"jl-site-switcher__chevron\"', 'viewBox=\"0 0 12 12\"', 'd=\"M2.5 5.25 6 8.75 9.5 5.25\"',
-"""
-          if validator.count(old_index) != 1:
-              raise SystemExit(f'Expected one homepage Sites validator block, found {validator.count(old_index)}')
-          validator = validator.replace(old_index, new_index, 1)
-
-          old_css = """  \"font-weight: 700;\", \"line-height: 1;\", \".jl-site-switcher__chevron {\",
-  \"width: 12px;\", \"height: 12px;\", \"stroke: currentColor;\", \"stroke-linecap: round;\", \"stroke-linejoin: round;\",
-  \"transform: rotate(0deg);\", \"transform: rotate(180deg);\",
-"""
-          new_css = """  \"font-weight: 700;\", \"line-height: 1;\", \".jl-site-switcher__content {\",
-  \"display: inline-grid;\", \"grid-template-columns: max-content 12px;\", \"column-gap: 0.55em;\", \".jl-site-switcher__label {\",
-  \".jl-site-switcher__chevron {\", \"width: 12px;\", \"height: 12px;\", \"overflow: visible;\", \"stroke: currentColor;\",
-  \"stroke-linecap: round;\", \"stroke-linejoin: round;\", \".jl-site-switcher__chevron path {\",
-  \"transform-box: fill-box;\", \"transform-origin: center;\", \"transform: rotate(0deg);\", \"transform: rotate(180deg);\",
-"""
-          if validator.count(old_css) != 1:
-              raise SystemExit(f'Expected one shared Sites CSS validator block, found {validator.count(old_css)}')
-          validator = validator.replace(old_css, new_css, 1)
-
-          project_marker = """    'class=\"jl-global-header__nav jl-header-menu\"', 'class=\"jl-header-menu-toggle\"',
-    'class=\"jl-site-switcher__chevron\"', 'viewBox=\"0 0 12 12\"', 'd=\"M2.5 4.25 6 7.75 9.5 4.25\"',
-"""
-          project_replacement = """    'class=\"jl-global-header__nav jl-header-menu\"', 'class=\"jl-header-menu-toggle\"',
-    'class=\"jl-site-switcher__content\"', 'class=\"jl-site-switcher__label\"',
-    'class=\"jl-site-switcher__chevron\"', 'viewBox=\"0 0 12 12\"', 'd=\"M2.5 5.25 6 8.75 9.5 5.25\"',
-"""
-          if project_marker in validator:
-              validator = validator.replace(project_marker, project_replacement)
-
+          old_markup_contract = "'class=\"jl-site-switcher__chevron\"', 'viewBox=\"0 0 12 12\"', 'd=\"M2.5 4.25 6 7.75 9.5 4.25\"'"
+          new_markup_contract = "'class=\"jl-site-switcher__content\"', 'class=\"jl-site-switcher__label\"',\n  'class=\"jl-site-switcher__chevron\"', 'viewBox=\"0 0 12 12\"', 'd=\"M2.5 5.25 6 8.75 9.5 5.25\"'"
+          count = validator.count(old_markup_contract)
+          if count < 1:
+              raise SystemExit('No canonical Sites markup validator contract found.')
+          validator = validator.replace(old_markup_contract, new_markup_contract)
+          old_css_head = '"font-weight: 700;", "line-height: 1;", ".jl-site-switcher__chevron {"'
+          new_css_head = '"font-weight: 700;", "line-height: 1;", ".jl-site-switcher__content {",\n  "display: inline-grid;", "grid-template-columns: max-content 12px;", "column-gap: 0.55em;", ".jl-site-switcher__label {", ".jl-site-switcher__chevron {"'
+          if validator.count(old_css_head) != 1:
+              raise SystemExit(f'Expected one shared Sites CSS header contract, found {validator.count(old_css_head)}')
+          validator = validator.replace(old_css_head, new_css_head, 1)
+          old_css_geometry = '"width: 12px;", "height: 12px;", "stroke: currentColor;", "stroke-linecap: round;", "stroke-linejoin: round;",\n  "transform: rotate(0deg);", "transform: rotate(180deg);"'
+          new_css_geometry = '"width: 12px;", "height: 12px;", "overflow: visible;", "stroke: currentColor;", "stroke-linecap: round;", "stroke-linejoin: round;",\n  ".jl-site-switcher__chevron path {", "transform-box: fill-box;", "transform-origin: center;", "transform: rotate(0deg);", "transform: rotate(180deg);"'
+          if validator.count(old_css_geometry) != 1:
+              raise SystemExit(f'Expected one shared Sites CSS geometry contract, found {validator.count(old_css_geometry)}')
+          validator = validator.replace(old_css_geometry, new_css_geometry, 1)
           if 'M2.5 4.25 6 7.75 9.5 4.25' in validator:
               raise SystemExit('Stale Sites chevron path remains in Portfolio validator.')
           validator_path.write_text(validator)
