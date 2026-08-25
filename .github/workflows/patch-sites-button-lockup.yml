@@ -34,21 +34,24 @@ jobs:
           from pathlib import Path
           import re
           root = Path('.')
-          pattern = re.compile(r'(?P<indent>[ \t]*)Sites\s*\n(?P=indent)<svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">\s*\n(?P=indent)\s*<path d="M2\.5 4\.25 6 7\.75 9\.5 4\.25"></path>\s*\n(?P=indent)</svg>')
+          pattern = re.compile(r'Sites\s*<svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">\s*<path d="M2\.5 4\.25 6 7\.75 9\.5 4\.25"></path>\s*</svg>')
           changed = []
           for path in sorted(root.rglob('*.html')):
               if '.git' in path.parts or 'node_modules' in path.parts:
                   continue
               text = path.read_text()
               def replacement(match):
-                  indent = match.group('indent')
+                  line_start = text.rfind('\n', 0, match.start()) + 1
+                  prefix = text[line_start:match.start()]
+                  leading = re.match(r'[ \t]*', prefix).group(0)
+                  base = leading if not prefix.strip() else leading + '  '
                   return '\n'.join([
-                      indent + '<span class="jl-site-switcher__content">',
-                      indent + '  <span class="jl-site-switcher__label">Sites</span>',
-                      indent + '  <svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">',
-                      indent + '    <path d="M2.5 5.25 6 8.75 9.5 5.25"></path>',
-                      indent + '  </svg>',
-                      indent + '</span>',
+                      '<span class="jl-site-switcher__content">',
+                      base + '  <span class="jl-site-switcher__label">Sites</span>',
+                      base + '  <svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">',
+                      base + '    <path d="M2.5 5.25 6 8.75 9.5 5.25"></path>',
+                      base + '  </svg>',
+                      base + '</span>',
                   ])
               updated, count = pattern.subn(replacement, text)
               if count:
