@@ -232,8 +232,27 @@
   background: transparent;
 }
 
-.jl-site-switcher__chevron,
-.jl-site-switcher__button > [aria-hidden="true"] {
+.jl-site-switcher__chevron {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+}
+
+.jl-site-switcher__button[aria-expanded="true"] .jl-site-switcher__chevron {
+  transform: rotate(180deg);
+}
+
+/* Backward-compatible fallback for consumers that still provide the
+   former text span. Canonical markup uses the centered inline SVG. */
+.jl-site-switcher__button > [aria-hidden="true"]:not(svg) {
   width: 7px;
   height: 7px;
   flex: 0 0 7px;
@@ -244,8 +263,7 @@
   transform-origin: center;
 }
 
-.jl-site-switcher__button[aria-expanded="true"] .jl-site-switcher__chevron,
-.jl-site-switcher__button[aria-expanded="true"] > [aria-hidden="true"] {
+.jl-site-switcher__button[aria-expanded="true"] > [aria-hidden="true"]:not(svg) {
   transform: translateY(2px) rotate(-135deg);
 }
 
@@ -284,7 +302,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .jl-site-switcher__chevron,
-  .jl-site-switcher__button > [aria-hidden="true"],
+  .jl-site-switcher__button > [aria-hidden="true"]:not(svg),
   .jl-settings-button__icon {
     transition: transform var(--jl-motion-base) var(--jl-motion-ease-out);
   }
