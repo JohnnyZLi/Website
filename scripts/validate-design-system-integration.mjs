@@ -90,6 +90,7 @@ requireFragments(index, [
   'class="jl-site-identity__owner"', 'class="jl-site-identity__product"',
   'class="jl-global-header__nav jl-header-menu"', 'class="jl-global-header__actions"',
   'class="jl-header-menu-toggle"', 'class="jl-site-switcher__button"',
+  'class="jl-site-switcher__chevron"', 'viewBox="0 0 12 12"', 'd="M2.5 4.25 6 7.75 9.5 4.25"',
   'aria-controls="portfolio-navigation"', 'aria-controls="owned-sites-menu"',
   'id="owned-sites-menu"', "data-header-menu", "data-header-menu-button",
   "data-site-switcher", "data-site-switcher-button", "data-site-switcher-menu",
@@ -136,8 +137,9 @@ if (/^\s*@layer\b/m.test(identityStyles)) fail("Shared header must remain unlaye
 requireFragments(identityStyles, [
   ".jl-global-header__inner", "grid-template-columns: auto minmax(0, 1fr) auto",
   "height: var(--jl-control-height-md);", "font-family: var(--jl-font-ui);", "font-size: 13px;",
-  "font-weight: 700;", "line-height: 1;", '.jl-site-switcher__button > [aria-hidden="true"]',
-  "border-right: 2px solid currentColor;", "border-bottom: 2px solid currentColor;",
+  "font-weight: 700;", "line-height: 1;", ".jl-site-switcher__chevron {",
+  "width: 12px;", "height: 12px;", "stroke: currentColor;", "stroke-linecap: round;", "stroke-linejoin: round;",
+  "transform: rotate(0deg);", "transform: rotate(180deg);",
   ".jl-header-menu-toggle", ".jl-global-header__nav.jl-header-menu--open",
   "right: var(--jl-layout-gutter);", "left: var(--jl-layout-gutter);", "@media (forced-colors: active)",
 ], "Shared header and compact-menu contract");
@@ -213,6 +215,7 @@ for (const page of projectPages) {
     'href="../design-system-migration.css"',
     'href="../case-study-fixes.css"', 'class="jl-global-header jl-global-header--compact-utility"', 'class="jl-global-header__inner"',
     'class="jl-global-header__nav jl-header-menu"', 'class="jl-header-menu-toggle"',
+    'class="jl-site-switcher__chevron"', 'viewBox="0 0 12 12"', 'd="M2.5 4.25 6 7.75 9.5 4.25"',
     "data-header-menu", "data-header-menu-button", "data-site-switcher", "data-site-switcher-button",
     "data-site-switcher-menu", 'class="case-actions jl-actions"', "jl-button jl-button--primary",
     'class="case-action jl-button"',
