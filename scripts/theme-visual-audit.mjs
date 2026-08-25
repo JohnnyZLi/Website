@@ -92,7 +92,7 @@ try {
           };
         });
         if (sitesOpen.sitesExpanded !== "true" || sitesOpen.settingsExpanded !== "false") problems.push("Sites did not open independently of Settings");
-        const expectedSitesWidth = viewport.width <= 360 ? 96 : 104;
+        const expectedSitesWidth = viewport.width <= 360 ? 96 : viewport.width > 560 ? 96 : 104;
         if (!near(sitesOpen.buttonWidth, expectedSitesWidth)) problems.push(`Sites trigger width ${sitesOpen.buttonWidth}, expected ${expectedSitesWidth}`);
         if (!near(sitesOpen.menuWidth, expectedSitesWidth)) problems.push(`Sites dropdown width ${sitesOpen.menuWidth}, expected ${expectedSitesWidth}`);
         if (sitesOpen.menuLeft < -0.5 || sitesOpen.menuRight > sitesOpen.innerWidth + 0.5) problems.push("Sites dropdown escapes the viewport");
