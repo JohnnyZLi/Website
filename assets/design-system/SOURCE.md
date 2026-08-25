@@ -4,6 +4,6 @@ Do not edit these files directly.
 
 Package: @johnnyzli/web-design-system
 Version: 1.9.0
-Source commit: 5a2ecf94bdf7ced2d53c103e7aa2ff74331b211e
+Source commit: db349fe587d22cef7d8af4ad90cfdb03ac3e4e96
 
 Regenerate with `npm run design-system:sync`.
