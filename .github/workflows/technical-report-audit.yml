@@ -7,6 +7,8 @@ on:
       - "technical-report.css"
       - "technical-report.js"
       - "project-actions.css"
+      - "design-system-migration.css"
+      - "portfolio-header-utility.css"
       - "scripts/validate-technical-report.mjs"
       - "scripts/technical-report-visual-audit.mjs"
       - "scripts/capture-technical-report-navigation.mjs"
