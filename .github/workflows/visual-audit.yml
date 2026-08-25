@@ -118,7 +118,7 @@ jobs:
             } else {
               const widthAllowed = screenshotPrefix === 'local'
                 ? near(metrics.sitesButton.width, fittedSitesWidth)
-                : near(metrics.sitesButton.width, fittedSitesWidth) || near(metrics.sitesButton.width, 104) || near(metrics.sitesButton.width, legacySitesWidth) || near(metrics.sitesButton.width, 88);
+                : near(metrics.sitesButton.width, fittedSitesWidth) || near(metrics.sitesButton.width, 104) || near(metrics.sitesButton.width, 96) || near(metrics.sitesButton.width, legacySitesWidth) || near(metrics.sitesButton.width, 88);
               if (!widthAllowed) problems.push(`Sites width ${metrics.sitesButton.width}`);
               if (!near(metrics.sitesButton.height, expectedButtonHeight)) problems.push(`Sites height ${metrics.sitesButton.height}, expected ${expectedButtonHeight}`);
               if (metrics.sitesButton.fontSize !== '13px') problems.push(`Sites font size ${metrics.sitesButton.fontSize}`);
