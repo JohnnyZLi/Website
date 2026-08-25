@@ -1,0 +1,129 @@
+name: Patch Sites button lockup
+
+on:
+  push:
+    branches:
+      - ui/sites-button-lockup
+    paths:
+      - .github/workflows/patch-sites-button-lockup.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ui/sites-button-lockup
+          persist-credentials: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Sync reviewed design-system release
+        run: |
+          npm pkg set 'dependencies.@johnnyzli/web-design-system=github:JohnnyZLi/Web-Design-System#db349fe587d22cef7d8af4ad90cfdb03ac3e4e96'
+          npm install --no-audit --no-fund
+          npm run design-system:update
+          npm run design-system:sync
+      - name: Adopt centered Sites content lockup
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          pattern = re.compile(
+              r'(?P<indent>[ \t]*)Sites\s*\n(?P=indent)<svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">\s*\n(?P=indent)\s*<path d="M2\.5 4\.25 6 7\.75 9\.5 4\.25"></path>\s*\n(?P=indent)</svg>'
+          )
+
+          changed = []
+          for path in sorted(root.rglob('*.html')):
+              if '.git' in path.parts or 'node_modules' in path.parts:
+                  continue
+              text = path.read_text()
+              def replacement(match):
+                  indent = match.group('indent')
+                  return '\n'.join([
+                      f'{indent}<span class="jl-site-switcher__content">',
+                      f'{indent}  <span class="jl-site-switcher__label">Sites</span>',
+                      f'{indent}  <svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">',
+                      f'{indent}    <path d="M2.5 5.25 6 8.75 9.5 5.25"></path>',
+                      f'{indent}  </svg>',
+                      f'{indent}</span>',
+                  ])
+              updated, count = pattern.subn(replacement, text)
+              if count:
+                  path.write_text(updated)
+                  changed.append((str(path), count))
+
+          expected_files = {
+              'index.html',
+              'projects/concurrent-c2s-proxy.html',
+              'projects/hopscotch.html',
+              'projects/network-config-auditor.html',
+              'projects/network-diagnostics-suite.html',
+              'projects/network-diagnostics-suite/report/index.html',
+              'projects/ospf-resiliency-lab.html',
+              'projects/reliable-udp-transport.html',
+          }
+          actual_files = {path for path, count in changed if count == 1}
+          if actual_files != expected_files:
+              raise SystemExit(f'Unexpected Sites markup migration set: {sorted(changed)}')
+
+          validator_path = Path('scripts/validate-design-system-integration.mjs')
+          validator = validator_path.read_text()
+          old_index = """  'class=\"jl-header-menu-toggle\"', 'class=\"jl-site-switcher__button\"',
+  'class=\"jl-site-switcher__chevron\"', 'viewBox=\"0 0 12 12\"', 'd=\"M2.5 4.25 6 7.75 9.5 4.25\"',
+"""
+          new_index = """  'class=\"jl-header-menu-toggle\"', 'class=\"jl-site-switcher__button\"',
+  'class=\"jl-site-switcher__content\"', 'class=\"jl-site-switcher__label\"',
+  'class=\"jl-site-switcher__chevron\"', 'viewBox=\"0 0 12 12\"', 'd=\"M2.5 5.25 6 8.75 9.5 5.25\"',
+"""
+          if validator.count(old_index) != 1:
+              raise SystemExit(f'Expected one homepage Sites validator block, found {validator.count(old_index)}')
+          validator = validator.replace(old_index, new_index, 1)
+
+          old_css = """  \"font-weight: 700;\", \"line-height: 1;\", \".jl-site-switcher__chevron {\",
+  \"width: 12px;\", \"height: 12px;\", \"stroke: currentColor;\", \"stroke-linecap: round;\", \"stroke-linejoin: round;\",
+  \"transform: rotate(0deg);\", \"transform: rotate(180deg);\",
+"""
+          new_css = """  \"font-weight: 700;\", \"line-height: 1;\", \".jl-site-switcher__content {\",
+  \"display: inline-grid;\", \"grid-template-columns: max-content 12px;\", \"column-gap: 0.55em;\", \".jl-site-switcher__label {\",
+  \".jl-site-switcher__chevron {\", \"width: 12px;\", \"height: 12px;\", \"overflow: visible;\", \"stroke: currentColor;\",
+  \"stroke-linecap: round;\", \"stroke-linejoin: round;\", \".jl-site-switcher__chevron path {\",
+  \"transform-box: fill-box;\", \"transform-origin: center;\", \"transform: rotate(0deg);\", \"transform: rotate(180deg);\",
+"""
+          if validator.count(old_css) != 1:
+              raise SystemExit(f'Expected one shared Sites CSS validator block, found {validator.count(old_css)}')
+          validator = validator.replace(old_css, new_css, 1)
+
+          project_marker = """    'class=\"jl-global-header__nav jl-header-menu\"', 'class=\"jl-header-menu-toggle\"',
+    'class=\"jl-site-switcher__chevron\"', 'viewBox=\"0 0 12 12\"', 'd=\"M2.5 4.25 6 7.75 9.5 4.25\"',
+"""
+          project_replacement = """    'class=\"jl-global-header__nav jl-header-menu\"', 'class=\"jl-header-menu-toggle\"',
+    'class=\"jl-site-switcher__content\"', 'class=\"jl-site-switcher__label\"',
+    'class=\"jl-site-switcher__chevron\"', 'viewBox=\"0 0 12 12\"', 'd=\"M2.5 5.25 6 8.75 9.5 5.25\"',
+"""
+          if project_marker in validator:
+              validator = validator.replace(project_marker, project_replacement)
+
+          if 'M2.5 4.25 6 7.75 9.5 4.25' in validator:
+              raise SystemExit('Stale Sites chevron path remains in Portfolio validator.')
+          validator_path.write_text(validator)
+          PY
+      - name: Validate Portfolio consumer
+        run: |
+          npm run design-system:integration
+          npm run design-system:conformance
+          npm run lint
+      - name: Commit consumer update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git reset .github/workflows/patch-sites-button-lockup.yml
+          git commit -m "Refine the Portfolio Sites button lockup"
+          git push origin HEAD:ui/sites-button-lockup
