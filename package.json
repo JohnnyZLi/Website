@@ -23,7 +23,7 @@
     "@johnnyzli/web-design-system": "github:JohnnyZLi/Web-Design-System#db349fe587d22cef7d8af4ad90cfdb03ac3e4e96"
   },
   "devDependencies": {
-    "html-validate": "11.5.6",
+    "html-validate": "11.10.0",
     "pa11y": "9.1.1",
     "stylelint": "17.14.1"
   }
