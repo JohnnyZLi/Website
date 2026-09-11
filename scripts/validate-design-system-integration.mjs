@@ -15,7 +15,6 @@ const caseStyles = await read("case-study.css");
 const caseFixes = await read("case-study-fixes.css");
 const adapter = await read("design-system-migration.css");
 const identityStyles = await read("assets/design-system/site-identity.css");
-const updater = await read("scripts/update-design-system.mjs");
 const sync = await read("scripts/sync-design-system.mjs");
 const syncWorkflow = await read(".github/workflows/design-system-sync.yml");
 const conformanceWorkflow = await read(".github/workflows/design-system-conformance.yml");
@@ -48,6 +47,7 @@ if (String(packageMetadata.dependencies?.["@johnnyzli/web-design-system"] ?? "")
 if (packageMetadata.scripts?.["design-system:conformance"] !== "node node_modules/@johnnyzli/web-design-system/scripts/conformance-runner.mjs") {
   fail("Portfolio conformance command drifted.");
 }
+if (packageMetadata.scripts?.["design-system:update"] !== undefined) fail("Portfolio still exposes the retired local design-system resolver command.");
 if (!String(packageMetadata.scripts?.["design-system:check"] ?? "").includes("index.html projects site-switcher.js portfolio-navigation.js")) {
   fail("Portfolio design-system check does not enforce generated browser cache keys.");
 }
@@ -183,18 +183,14 @@ requireFragments(motion, [
 ], "Portfolio reveal-motion contract");
 requireFragments(caseFixes, [".case-hero", "overflow: clip;", "@supports not (overflow: clip)", "overflow: hidden;", "overflow-wrap: anywhere;"], "Case-study correction");
 
-requireFragments(updater, [
-  'import { resolveConsumerRelease } from "@johnnyzli/web-design-system/consumer-release.js"',
-  'resolveConsumerRelease({ packageJson: "package.json" })', "release.version", "release.sourceCommit",
-], "Shared design-system release resolver");
 requireFragments(sync, [
   'readFile(resolve("design-system.lock.json")', 'styles/content-primitives.css', 'styles/theme-control.css', 'scripts/theme-bootstrap.js',
   'assets/design-system', "dependency.endsWith(`#${sourceCommit}`)", "versionReference", "projectEntries",
   'site-switcher.js', 'portfolio-navigation.js',
 ], "Design-system synchronizer");
 requireFragments(syncWorkflow, [
-  "workflow_dispatch:", "schedule:", "contents: write", "pull-requests: write",
-  'node-version: "24"', "npm run design-system:integration", "npm run design-system:conformance", "assets/design-system", "product-name: portfolio",
+  "workflow_dispatch:", "schedule:", "push:", "design-system.lock.json", "contents: write", "pull-requests: write",
+  'node-version: "24"', "package-json: package.json", "npm run design-system:integration", "npm run design-system:conformance", "assets/design-system", "product-name: portfolio",
 ], "Shared design-system update workflow caller");
 requireImmutableWorkflow(syncWorkflow, "consumer-design-system-sync\\.yml", "Shared design-system update workflow caller");
 if (syncWorkflow.includes("gh pr create") || syncWorkflow.includes("git push")) fail("Portfolio workflow still duplicates shared publication behavior.");
@@ -218,7 +214,7 @@ for (const page of projectPages) {
     'href="../case-study-fixes.css"', 'class="jl-global-header jl-global-header--compact-utility"', 'class="jl-global-header__inner"',
     'class="jl-global-header__nav jl-header-menu"', 'class="jl-header-menu-toggle"',
     'class="jl-site-switcher__content"', 'class="jl-site-switcher__label"',
-  'class="jl-site-switcher__chevron"', 'viewBox="0 0 12 12"', 'd="M2.5 5.25 6 8.75 9.5 5.25"',
+    'class="jl-site-switcher__chevron"', 'viewBox="0 0 12 12"', 'd="M2.5 5.25 6 8.75 9.5 5.25"',
     "data-header-menu", "data-header-menu-button", "data-site-switcher", "data-site-switcher-button",
     "data-site-switcher-menu", 'class="case-actions jl-actions"', "jl-button jl-button--primary",
     'class="case-action jl-button"',
