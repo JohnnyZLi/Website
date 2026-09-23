@@ -157,11 +157,12 @@ requireFragments(editorialStyles, [
   "@media (max-width: 900px)", "@media (max-width: 560px)",
 ], "Shared Portfolio editorial primitives");
 for (const [label, content, forbidden] of [
-  ["Privacy", privacyStyles, [".privacy-section-label {", ".privacy-copy-grid {", ".privacy-lead {", ".privacy-body {"]],
-  ["Case study", caseStyles, [".case-section-label {", ".case-copy-grid {", ".case-lead {", ".case-body-copy {"]],
+  ["Privacy", privacyStyles, ["privacy-section-label", "privacy-copy-grid", "privacy-lead", "privacy-body"]],
+  ["Case study", caseStyles, ["case-section-label", "case-copy-grid", "case-lead", "case-body-copy"]],
 ]) {
   for (const selector of forbidden) {
-    if (content.includes(selector)) fail(`${label} stylesheet re-owns shared editorial primitive: ${selector}.`);
+    const baseRule = new RegExp(`(?:^|\\n)\\.${selector}\\s*\\{`, "m");
+    if (baseRule.test(content)) fail(`${label} stylesheet re-owns shared editorial primitive: .${selector}.`);
   }
 }
 const privacyLeadEmphasisCount = [...privacy.matchAll(/<p class="privacy-lead[^"]*"[^>]*>(.*?)<\/p>/gs)]
