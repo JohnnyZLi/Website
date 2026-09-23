@@ -61,62 +61,10 @@
   padding-bottom: 122px;
 }
 
-.privacy-section-label {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  min-height: 62px;
-  border-top: 1px solid var(--rule);
-}
-
-.privacy-section-label span {
-  color: var(--clay);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.76rem;
-}
-
-.privacy-section-label h2 {
-  margin: 0;
-  font-size: 0.72rem;
-  font-weight: 650;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.privacy-section-content {
-  padding-top: 68px;
-}
-
-.privacy-copy-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 24px;
-}
-
-.privacy-lead {
-  grid-column: 1 / span 7;
-  max-width: 770px;
-  margin: 0;
-  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-  font-size: clamp(2.1rem, 3.45vw, 3.35rem);
-  letter-spacing: -0.045em;
-  line-height: 1.08;
-}
-
-.privacy-lead em {
-  color: var(--clay);
-  font-weight: 400;
-}
-
 .privacy-lead-wide {
   max-width: 980px;
 }
 
-.privacy-body {
-  grid-column: 9 / -1;
-}
-
-.privacy-body p,
 .privacy-note p,
 .privacy-boundaries p,
 .privacy-contact > p {
@@ -126,7 +74,6 @@
   line-height: 1.7;
 }
 
-.privacy-body p + p,
 .privacy-note p + p {
   margin-top: 24px;
 }
@@ -202,8 +149,7 @@
 }
 
 @media (max-width: 900px) {
-  .privacy-hero-grid,
-  .privacy-copy-grid {
+  .privacy-hero-grid {
     display: block;
   }
 
@@ -214,11 +160,6 @@
   .privacy-intro {
     max-width: 590px;
     margin: 58px 0 0 auto;
-  }
-
-  .privacy-body {
-    max-width: 590px;
-    margin: 50px 0 0 auto;
   }
 
   .privacy-boundaries {
@@ -252,14 +193,6 @@
 
   .privacy-section {
     padding-bottom: 92px;
-  }
-
-  .privacy-section-content {
-    padding-top: 48px;
-  }
-
-  .privacy-lead {
-    font-size: clamp(1.9rem, 9vw, 2.65rem);
   }
 
   .privacy-boundaries {
