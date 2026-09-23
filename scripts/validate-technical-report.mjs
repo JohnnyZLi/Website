@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(path, "utf8");
 const report = await read("projects/network-diagnostics-suite/report/index.html");
+const lock = JSON.parse(await read("design-system.lock.json"));
+const expectedCommit = String(lock.sourceCommit ?? "");
 const styles = await read("technical-report.css");
 const actions = await read("project-actions.css");
 const behavior = await read("technical-report.js");
@@ -17,9 +19,13 @@ const requireFragments = (content, fragments, label) => {
   }
 };
 
+if (!/^[0-9a-f]{40}$/.test(expectedCommit)) fail("Technical report design-system lock commit is invalid.");
+
 requireFragments(report, [
-  '<script src="../../../assets/design-system/theme-bootstrap.js"></script>',
-  'href="../../../assets/design-system/theme-control.css"',
+  `<script src="../../../assets/design-system/theme-bootstrap.js?v=${expectedCommit}"></script>`,
+  `href="../../../assets/design-system/theme-control.css?v=${expectedCommit}"`,
+  `<script type="module" src="../../../site-switcher.js?v=${expectedCommit}"></script>`,
+  `<script type="module" src="../../../portfolio-navigation.js?v=${expectedCommit}"></script>`,
   'data-theme-light="#f2efe8"',
   'data-theme-dark="#171714"',
   'href="../../../technical-report.css"',
