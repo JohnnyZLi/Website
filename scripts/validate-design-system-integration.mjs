@@ -228,6 +228,7 @@ requireFragments(caseFixes, [".case-hero", "overflow: clip;", "@supports not (ov
 requireFragments(sync, [
   'readFile(resolve("design-system.lock.json")', 'styles/content-primitives.css', 'styles/theme-control.css', 'scripts/theme-bootstrap.js',
   'assets/design-system', "dependency.endsWith(`#${sourceCommit}`)", "versionReference", "projectEntries",
+  'resolve("privacy", "index.html")', 'resolve("projects", "network-diagnostics-suite", "report", "index.html")',
   'site-switcher.js', 'portfolio-navigation.js',
 ], "Design-system synchronizer");
 requireFragments(syncWorkflow, [
