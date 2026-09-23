@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="How johnnyli.dev and its public projects handle browser storage, network requests, diagnostic data, and infrastructure processing.">
+    <meta name="theme-color" content="#f2efe8" data-theme-light="#f2efe8" data-theme-dark="#171714">
+    <meta property="og:title" content="Privacy — Johnny Li">
+    <meta property="og:description" content="A plain-language explanation of the privacy boundaries across johnnyli.dev and Network Diagnostics Suite.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://johnnyli.dev/privacy/">
+    <title>Privacy — Johnny Li</title>
+    <link rel="canonical" href="https://johnnyli.dev/privacy/">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <script src="../assets/design-system/theme-bootstrap.js?v=db349fe587d22cef7d8af4ad90cfdb03ac3e4e96"></script>
+    <link rel="stylesheet" href="../assets/design-system/tokens.css?v=db349fe587d22cef7d8af4ad90cfdb03ac3e4e96">
+    <link rel="stylesheet" href="../assets/design-system/foundations.css?v=db349fe587d22cef7d8af4ad90cfdb03ac3e4e96">
+    <link rel="stylesheet" href="../assets/design-system/site-identity.css?v=db349fe587d22cef7d8af4ad90cfdb03ac3e4e96">
+    <link rel="stylesheet" href="../assets/design-system/theme-control.css?v=db349fe587d22cef7d8af4ad90cfdb03ac3e4e96">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../design-system-migration.css">
+    <link rel="stylesheet" href="../privacy.css">
+  </head>
+  <body id="top">
+    <header class="jl-global-header jl-global-header--compact-utility">
+      <div class="jl-global-header__inner">
+        <div class="jl-site-identity">
+          <a class="jl-site-identity__owner" href="../index.html">Johnny Li</a>
+          <span class="jl-site-identity__separator" aria-hidden="true">/</span>
+          <a class="jl-site-identity__product" href="../index.html" aria-current="page">Portfolio</a>
+        </div>
+        <nav class="jl-global-header__nav jl-header-menu" id="portfolio-navigation" aria-label="Privacy navigation" data-header-menu>
+          <a href="#overview">Overview</a>
+          <a href="#network-diagnostics">Network Diagnostics</a>
+          <a href="../index.html#contact">Contact</a>
+        </nav>
+        <div class="jl-global-header__actions">
+          <button class="jl-header-menu-toggle" type="button" aria-expanded="false" aria-controls="portfolio-navigation" data-header-menu-button>Menu</button>
+          <div class="jl-site-switcher" data-site-switcher>
+            <button class="jl-site-switcher__button" type="button" aria-expanded="false" aria-controls="owned-sites-menu" data-site-switcher-button>
+              <span class="jl-site-switcher__content">
+                <span class="jl-site-switcher__label">Sites</span>
+                <svg class="jl-site-switcher__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                  <path d="M2.5 5.25 6 8.75 9.5 5.25"></path>
+                </svg>
+              </span>
+            </button>
+            <ul class="jl-site-menu" id="owned-sites-menu" aria-label="Johnny Li sites" data-site-switcher-menu hidden>
+              <li><a href="https://johnnyli.dev" aria-current="page">Portfolio</a></li>
+              <li><a href="https://hopscotch.johnnyli.dev">HOPSCOTCH</a></li>
+              <li><a href="https://network.johnnyli.dev">Network Diagnostics</a></li>
+              <li><a href="https://rolepacket.johnnyli.dev">RolePacket</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="privacy-hero shell" id="overview" aria-labelledby="privacy-title">
+        <p class="eyebrow">Site information</p>
+        <div class="privacy-hero-grid">
+          <h1 id="privacy-title">Privacy,<br><em>without guesswork.</em></h1>
+          <div class="privacy-intro">
+            <p><strong>johnnyli.dev</strong> is a personal portfolio and project ecosystem. It does not use advertising, behavioral tracking, or analytics. Some features store small amounts of information in your browser, and the infrastructure needed to serve the sites necessarily processes ordinary network requests.</p>
+            <p>This page describes those boundaries in plain language.</p>
+          </div>
+        </div>
+        <div class="privacy-meta">
+          <span>Last updated</span>
+          <strong>September 23, 2026</strong>
+        </div>
+      </section>
+
+      <section class="privacy-section shell" aria-labelledby="portfolio-heading">
+        <div class="privacy-section-label"><span>01</span><h2 id="portfolio-heading">The portfolio</h2></div>
+        <div class="privacy-section-content privacy-copy-grid">
+          <p class="privacy-lead">The public portfolio is designed to <em>avoid collecting visitor profiles.</em></p>
+          <div class="privacy-body">
+            <p>The portfolio has no user accounts, advertising, behavioral trackers, analytics SDKs, or visitor database. Pages are served as static content.</p>
+            <p>Opening pages still creates ordinary network requests. The hosting, delivery, and security infrastructure involved in those requests necessarily receives technical information needed to deliver the site, such as connection addresses, requested resources, and request timing.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-section shell" id="appearance" aria-labelledby="appearance-heading">
+        <div class="privacy-section-label"><span>02</span><h2 id="appearance-heading">Appearance preference</h2></div>
+        <div class="privacy-section-content privacy-copy-grid">
+          <p class="privacy-lead">A functional preference can follow you across <em>supported johnnyli.dev sites.</em></p>
+          <div class="privacy-body">
+            <p>If you choose System, Light, or Dark in Settings, the selection is stored in your browser's local storage and in a functional <code>jl-theme</code> cookie scoped to <code>.johnnyli.dev</code>. The cookie expires after up to one year.</p>
+            <p>The stored value is only the appearance choice. It is not an advertising identifier, analytics identifier, or behavioral profile. If you never change the appearance preference, the default System setting does not need to be written.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-section shell" id="network-diagnostics" aria-labelledby="network-heading">
+        <div class="privacy-section-label"><span>03</span><h2 id="network-heading">Network Diagnostics</h2></div>
+        <div class="privacy-section-content">
+          <p class="privacy-lead privacy-lead-wide">Network Diagnostics is built around <em>local result storage and explicit measurement traffic.</em></p>
+          <div class="privacy-boundaries">
+            <article>
+              <span>In your browser</span>
+              <h3>Recent results stay local.</h3>
+              <p>The browser keeps up to 12 recent diagnostic reports and remembered higher-data-test confirmations in local storage. Imported JSON reports are read in the current browser tab rather than uploaded to a project result database. Clearing site data removes the browser-side history and confirmations.</p>
+            </article>
+            <article>
+              <span>During a test</span>
+              <h3>Measurements require network traffic.</h3>
+              <p>Generated transfer traffic, timing requests, and edge/network metadata pass through project endpoints on Cloudflare. Cloudflare necessarily receives the connecting address and ordinary request metadata. The application does not return your public IP address as a result field or submit completed results back to a project-owned results database.</p>
+            </article>
+            <article>
+              <span>On your computer</span>
+              <h3>Native reports can contain more detail.</h3>
+              <p>The desktop application and command-line probe write reports locally. Native diagnostics can contain public route information, interface and system details, Wi-Fi characteristics, and other troubleshooting context. Reports created with optional local identifiers enabled can contain private network information and should be treated as sensitive diagnostic material.</p>
+            </article>
+          </div>
+          <div class="privacy-note">
+            <p>Full and Stress service checks intentionally contact the named external services shown by the application. Those providers necessarily see the originating connection for the request. Quick mode does not run that service battery.</p>
+            <p>Project-level Worker observability is disabled. That prevents project-level Worker request logs from being enabled, but it does not make the underlying infrastructure traffic invisible.</p>
+            <a class="text-link" href="https://github.com/JohnnyZLi/Network-Diagnostics-Suite/blob/main/docs/privacy.md" target="_blank" rel="noreferrer">Read the technical privacy model <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-section shell" id="infrastructure" aria-labelledby="infrastructure-heading">
+        <div class="privacy-section-label"><span>04</span><h2 id="infrastructure-heading">Infrastructure and external services</h2></div>
+        <div class="privacy-section-content privacy-copy-grid">
+          <p class="privacy-lead">No application can be served over the Internet without <em>network infrastructure processing traffic.</em></p>
+          <div class="privacy-body">
+            <p>Cloudflare provides delivery, security, and compute for applicable project subdomains and therefore processes the network traffic and request metadata required to provide those services.</p>
+            <p>Links to services such as GitHub and LinkedIn leave johnnyli.dev. When a project deliberately contacts another service as part of a requested feature, that interaction is described in the relevant product interface or documentation. Those services operate under their own privacy practices.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-section shell" id="restricted-services" aria-labelledby="restricted-heading">
+        <div class="privacy-section-label"><span>05</span><h2 id="restricted-heading">Restricted services</h2></div>
+        <div class="privacy-section-content privacy-copy-grid">
+          <p class="privacy-lead">Private tools have <em>different storage requirements</em> from the public portfolio.</p>
+          <div class="privacy-body">
+            <p>Some authenticated or private services under <code>johnnyli.dev</code> process information intentionally supplied by their authorized user and may store that information to provide the requested application functionality.</p>
+            <p>Statements on this page about a specific public tool—such as Network Diagnostics not retaining completed results in a project results database—should not be read as a blanket claim that every private application under the domain stores no user-provided data.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-contact shell" aria-labelledby="privacy-contact-heading">
+        <p class="eyebrow">Questions</p>
+        <h2 id="privacy-contact-heading">Want to know how something is handled?</h2>
+        <p>If a privacy boundary here is unclear, contact me and I can explain the implementation behind it.</p>
+        <a class="text-link" href="mailto:johnny.li2003@gmail.com?subject=Privacy%20question">johnny.li2003@gmail.com <span aria-hidden="true">↗</span></a>
+      </section>
+    </main>
+
+    <footer class="site-footer site-footer--inverse">
+      <div class="site-footer__inner shell">
+        <p>Johnny Li</p>
+        <div class="site-footer__links">
+          <a href="../index.html">Portfolio</a>
+          <a href="#top">Back to top ↑</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="../motion.js" defer></script>
+    <script type="module" src="../site-switcher.js?v=db349fe587d22cef7d8af4ad90cfdb03ac3e4e96"></script>
+    <script type="module" src="../portfolio-navigation.js?v=db349fe587d22cef7d8af4ad90cfdb03ac3e4e96"></script>
+  </body>
+</html>

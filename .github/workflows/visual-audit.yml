@@ -38,6 +38,7 @@ jobs:
 
           const pages = [
             ['home', '/'],
+            ['privacy', '/privacy/'],
             ['hopscotch', '/projects/hopscotch.html'],
             ['network-config-auditor', '/projects/network-config-auditor.html'],
             ['ospf-resiliency-lab', '/projects/ospf-resiliency-lab.html'],
@@ -219,7 +220,10 @@ jobs:
               for (const [name, path] of pages) {
                 const page = await context.newPage();
                 const response = await page.goto(`${baseUrl}${path}`, { waitUntil: 'networkidle' });
-                if (screenshotPrefix === 'production' && name === 'hopscotch' && response?.status() === 404) {
+                if (screenshotPrefix === 'production' && response?.status() === 404 && (
+                  name === 'hopscotch' ||
+                  (name === 'privacy' && process.env.GITHUB_EVENT_NAME === 'pull_request')
+                )) {
                   await page.close();
                   continue;
                 }

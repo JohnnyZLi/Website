@@ -4,6 +4,8 @@ import { resolve } from "node:path";
 const root = resolve(".");
 const read = (path) => readFile(resolve(root, path), "utf8");
 const index = await read("index.html");
+const privacy = await read("privacy/index.html");
+const privacyStyles = await read("privacy.css");
 const motion = await read("motion.js");
 const navigation = await read("portfolio-navigation.js");
 const switcher = await read("site-switcher.js");
@@ -48,8 +50,8 @@ if (packageMetadata.scripts?.["design-system:conformance"] !== "node node_module
   fail("Portfolio conformance command drifted.");
 }
 if (packageMetadata.scripts?.["design-system:update"] !== undefined) fail("Portfolio still exposes the retired local design-system resolver command.");
-if (!String(packageMetadata.scripts?.["design-system:check"] ?? "").includes("index.html projects site-switcher.js portfolio-navigation.js")) {
-  fail("Portfolio design-system check does not enforce generated browser cache keys.");
+if (!String(packageMetadata.scripts?.["design-system:check"] ?? "").includes("index.html projects privacy privacy.css site-switcher.js portfolio-navigation.js")) {
+  fail("Portfolio design-system check does not enforce generated browser cache keys and privacy-page drift.");
 }
 if (conformanceManifest.schemaVersion !== "1.0.0" || conformanceManifest.product !== "portfolio") {
   fail("Portfolio conformance manifest metadata drifted.");
@@ -101,6 +103,22 @@ requireFragments(index, [
 for (const legacy of ["site-header shell", "wordmark", "site-header__actions", "primary-nav", "portfolio-nav-toggle"]) {
   if (index.includes(legacy)) fail(`Legacy portfolio header hook remains: ${legacy}.`);
 }
+
+requireFragments(privacy, [
+  `<script src="../assets/design-system/theme-bootstrap.js?v=${expectedCommit}"></script>`,
+  `href="../assets/design-system/site-identity.css?v=${expectedCommit}"`,
+  `href="../assets/design-system/theme-control.css?v=${expectedCommit}"`,
+  'class="jl-global-header jl-global-header--compact-utility"',
+  'data-header-menu', 'data-header-menu-button',
+  'data-site-switcher', 'data-site-switcher-button', 'data-site-switcher-menu',
+  'id="network-diagnostics"', 'id="appearance"', 'id="infrastructure"',
+  `<script type="module" src="../site-switcher.js?v=${expectedCommit}"></script>`,
+  `<script type="module" src="../portfolio-navigation.js?v=${expectedCommit}"></script>`,
+], "Privacy page contract");
+requireFragments(privacyStyles, [
+  ".privacy-hero", ".privacy-section", ".privacy-boundaries", ".privacy-contact",
+  "@media (max-width: 900px)", "@media (max-width: 560px)",
+], "Privacy page styles");
 
 requireFragments(siteControls, [
   "export const OWNED_SITES", "export const THEME_PREFERENCES", "export function installThemeControl", 'id: "portfolio"', 'id: "network"', 'id: "rolepacket"',
@@ -228,4 +246,4 @@ for (const page of projectPages) {
   if (!html.includes("../index.html")) fail(`${page} cannot return to the portfolio.`);
 }
 
-console.log(`Design-system integration passed for ${projectPages.length + 1} pages.`);
+console.log(`Design-system integration passed for ${projectPages.length + 2} pages.`);

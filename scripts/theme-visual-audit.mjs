@@ -6,6 +6,7 @@ const baseUrl = process.env.THEME_AUDIT_BASE_URL ?? "http://127.0.0.1:4173";
 const output = "theme-visual-audit";
 const routes = [
   ["home", "/"],
+  ["privacy", "/privacy/"],
   ["case-study", "/projects/network-diagnostics-suite.html"],
   ["report", "/projects/network-diagnostics-suite/report/"],
 ];
