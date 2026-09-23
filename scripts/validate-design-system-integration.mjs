@@ -50,8 +50,8 @@ if (packageMetadata.scripts?.["design-system:conformance"] !== "node node_module
   fail("Portfolio conformance command drifted.");
 }
 if (packageMetadata.scripts?.["design-system:update"] !== undefined) fail("Portfolio still exposes the retired local design-system resolver command.");
-if (!String(packageMetadata.scripts?.["design-system:check"] ?? "").includes("index.html projects site-switcher.js portfolio-navigation.js")) {
-  fail("Portfolio design-system check does not enforce generated browser cache keys.");
+if (!String(packageMetadata.scripts?.["design-system:check"] ?? "").includes("index.html projects privacy privacy.css site-switcher.js portfolio-navigation.js")) {
+  fail("Portfolio design-system check does not enforce generated browser cache keys and privacy-page drift.");
 }
 if (conformanceManifest.schemaVersion !== "1.0.0" || conformanceManifest.product !== "portfolio") {
   fail("Portfolio conformance manifest metadata drifted.");
