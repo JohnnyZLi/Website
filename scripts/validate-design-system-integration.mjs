@@ -8,6 +8,7 @@ const privacy = await read("privacy/index.html");
 const report = await read("projects/network-diagnostics-suite/report/index.html");
 const styles = await read("styles.css");
 const privacyStyles = await read("privacy.css");
+const editorialStyles = await read("portfolio-editorial.css");
 const motion = await read("motion.js");
 const navigation = await read("portfolio-navigation.js");
 const switcher = await read("site-switcher.js");
@@ -85,6 +86,9 @@ for (const stylesheet of [...sharedStyles, ...productStyles]) {
 if (!adapter.startsWith('@import url("assets/design-system/content-primitives.css");')) {
   fail("Portfolio adapter does not load the standalone content-primitives asset first.");
 }
+requireFragments(adapter, [
+  '@import url("portfolio-editorial.css");',
+], "Portfolio editorial primitive import");
 
 requireFragments(index, [
   `<script src="assets/design-system/theme-bootstrap.js?v=${expectedCommit}"></script>`,
@@ -142,6 +146,30 @@ requireFragments(privacyStyles, [
   ".privacy-hero", ".privacy-section", ".privacy-boundaries", ".privacy-contact",
   "@media (max-width: 900px)", "@media (max-width: 560px)",
 ], "Privacy page styles");
+
+requireFragments(editorialStyles, [
+  ".portfolio-section-label", ".case-section-label", ".privacy-section-label",
+  ".portfolio-section-content", ".case-section-content", ".privacy-section-content",
+  ".portfolio-copy-grid", ".case-copy-grid", ".privacy-copy-grid",
+  ".portfolio-lead", ".case-lead", ".privacy-lead",
+  ".portfolio-body-copy", ".case-body-copy", ".privacy-body",
+  "color: var(--jl-color-accent);",
+  "@media (max-width: 900px)", "@media (max-width: 560px)",
+], "Shared Portfolio editorial primitives");
+for (const [label, content, forbidden] of [
+  ["Privacy", privacyStyles, [".privacy-section-label {", ".privacy-copy-grid {", ".privacy-lead {", ".privacy-body {"]],
+  ["Case study", caseStyles, [".case-section-label {", ".case-copy-grid {", ".case-lead {", ".case-body-copy {"]],
+]) {
+  for (const selector of forbidden) {
+    if (content.includes(selector)) fail(`${label} stylesheet re-owns shared editorial primitive: ${selector}.`);
+  }
+}
+const privacyLeadEmphasisCount = [...privacy.matchAll(/<p class="privacy-lead[^"]*"[^>]*>(.*?)<\/p>/gs)]
+  .reduce((count, match) => count + ((match[1].match(/<em\b/g) ?? []).length), 0);
+if (privacyLeadEmphasisCount !== 1 || !privacy.includes("<em>local result storage</em>")) {
+  fail(`Privacy must keep one deliberate large terracotta lead emphasis; found ${privacyLeadEmphasisCount}.`);
+}
+
 
 requireFragments(siteControls, [
   "export const OWNED_SITES", "export const THEME_PREFERENCES", "export function installThemeControl", 'id: "portfolio"', 'id: "network"', 'id: "rolepacket"',
