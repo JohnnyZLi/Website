@@ -54,8 +54,7 @@
 
 /* Keep terracotta visible but restrained: primary accent for readable text on
    light surfaces, decorative accent for markers, and soft accent on inverse surfaces. */
-.case-hero h1 em,
-.case-lead em {
+.case-hero h1 em {
   color: var(--clay-text);
 }
 

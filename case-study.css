@@ -79,48 +79,18 @@
 }
 .case-facts dd { margin: 10px 0 0; font-size: 0.92rem; line-height: 1.4; }
 .case-section { padding: 0 0 124px; }
-.case-section-label {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  min-height: 62px;
-  border-top: 1px solid var(--rule);
-}
-.case-section-label span {
-  color: var(--clay);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.76rem;
-}
-.case-section-label h2 {
-  margin: 0;
-  font-size: 0.72rem;
-  font-weight: 650;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-.case-section-content { padding-top: 72px; }
-.case-copy-grid, .output-grid {
+.output-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 24px;
 }
-.case-lead {
-  grid-column: 1 / span 7;
-  max-width: 760px;
+.validation-copy p,
+.output-note {
   margin: 0;
-  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-  font-size: clamp(2.1rem, 3.5vw, 3.4rem);
-  letter-spacing: -0.045em;
-  line-height: 1.08;
-}
-.case-body-copy { grid-column: 9 / -1; }
-.case-body-copy p, .validation-copy p, .output-note {
-  margin: 0;
-  color: #3f3d38;
+  color: var(--jl-color-text);
   font-size: 1rem;
   line-height: 1.68;
 }
-.case-body-copy p + p { margin-top: 24px; }
 .process-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -197,8 +167,8 @@
   .case-hero h1 { font-size: clamp(4rem, 12vw, 6.4rem); }
   .case-summary { max-width: 540px; margin: 58px 0 0 auto; }
   .case-facts { grid-template-columns: 1fr 1fr; gap: 30px 24px; }
-  .case-copy-grid, .output-grid { display: block; }
-  .case-body-copy, .output-grid pre { max-width: 620px; margin: 56px 0 0 auto; }
+  .output-grid { display: block; }
+  .output-grid pre { max-width: 620px; margin: 56px 0 0 auto; }
   .process-list { grid-template-columns: 1fr 1fr; }
   .process-list li:nth-child(3) { border-left: 0; border-top: 1px solid var(--rule); }
   .process-list li:nth-child(4) { border-top: 1px solid var(--rule); }
@@ -213,8 +183,6 @@
   .case-hero h1 { font-size: clamp(3.25rem, 15vw, 4.8rem); }
   .case-facts { grid-template-columns: 1fr; margin-top: 68px; }
   .case-section { padding-bottom: 92px; }
-  .case-section-content { padding-top: 48px; }
-  .case-lead { font-size: clamp(1.85rem, 9vw, 2.6rem); }
   .process-list, .decision-grid { display: block; }
   .process-list li { min-height: 0; border-top: 1px solid var(--rule); border-left: 0; }
   .process-list li:first-child { border-top: 0; }
