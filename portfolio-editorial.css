@@ -1,0 +1,114 @@
+/* Shared editorial composition for Portfolio narrative pages.
+   Product/content-specific classes remain as compatibility hooks while the
+   geometry and typography live here as one reusable Portfolio contract. */
+
+.portfolio-section-label,
+.case-section-label,
+.privacy-section-label {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  min-height: 62px;
+  border-top: 1px solid var(--rule);
+}
+
+.portfolio-section-label > span,
+.case-section-label > span,
+.privacy-section-label > span {
+  color: var(--clay);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.76rem;
+}
+
+.portfolio-section-label > h2,
+.case-section-label > h2,
+.privacy-section-label > h2 {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.portfolio-section-content,
+.case-section-content,
+.privacy-section-content {
+  padding-top: 72px;
+}
+
+.portfolio-copy-grid,
+.case-copy-grid,
+.privacy-copy-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.portfolio-lead,
+.case-lead,
+.privacy-lead {
+  grid-column: 1 / span 7;
+  max-width: 760px;
+  margin: 0;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: clamp(2.1rem, 3.5vw, 3.4rem);
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+}
+
+.portfolio-lead em,
+.case-lead em,
+.privacy-lead em {
+  color: var(--jl-color-accent);
+  font-weight: 400;
+}
+
+.portfolio-body-copy,
+.case-body-copy,
+.privacy-body {
+  grid-column: 9 / -1;
+}
+
+.portfolio-body-copy p,
+.case-body-copy p,
+.privacy-body p {
+  margin: 0;
+  color: var(--jl-color-text);
+  font-size: 1rem;
+  line-height: 1.68;
+}
+
+.portfolio-body-copy p + p,
+.case-body-copy p + p,
+.privacy-body p + p {
+  margin-top: 24px;
+}
+
+@media (max-width: 900px) {
+  .portfolio-copy-grid,
+  .case-copy-grid,
+  .privacy-copy-grid {
+    display: block;
+  }
+
+  .portfolio-body-copy,
+  .case-body-copy,
+  .privacy-body {
+    max-width: 620px;
+    margin: 56px 0 0 auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .portfolio-section-content,
+  .case-section-content,
+  .privacy-section-content {
+    padding-top: 48px;
+  }
+
+  .portfolio-lead,
+  .case-lead,
+  .privacy-lead {
+    font-size: clamp(1.85rem, 9vw, 2.6rem);
+  }
+}
