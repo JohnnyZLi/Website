@@ -60,6 +60,8 @@ await writeFile(
 const projectEntries = await readdir(resolve("projects"), { withFileTypes: true });
 const htmlFiles = [
   resolve("index.html"),
+  resolve("privacy", "index.html"),
+  resolve("projects", "network-diagnostics-suite", "report", "index.html"),
   ...projectEntries
     .filter((entry) => entry.isFile() && entry.name.endsWith(".html"))
     .map((entry) => resolve("projects", entry.name)),
