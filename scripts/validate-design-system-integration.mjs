@@ -5,6 +5,8 @@ const root = resolve(".");
 const read = (path) => readFile(resolve(root, path), "utf8");
 const index = await read("index.html");
 const privacy = await read("privacy/index.html");
+const report = await read("projects/network-diagnostics-suite/report/index.html");
+const styles = await read("styles.css");
 const privacyStyles = await read("privacy.css");
 const motion = await read("motion.js");
 const navigation = await read("portfolio-navigation.js");
@@ -115,6 +117,27 @@ requireFragments(privacy, [
   `<script type="module" src="../site-switcher.js?v=${expectedCommit}"></script>`,
   `<script type="module" src="../portfolio-navigation.js?v=${expectedCommit}"></script>`,
 ], "Privacy page contract");
+
+const portfolioFooterFragments = [
+  'class="portfolio-footer jl-surface-inverse"',
+  'class="portfolio-footer__inner shell"',
+  'class="portfolio-footer__links"',
+  "<p>Johnny Li</p>",
+];
+requireFragments(index, portfolioFooterFragments, "Homepage shared footer");
+requireFragments(privacy, portfolioFooterFragments, "Privacy shared footer");
+requireFragments(report, portfolioFooterFragments, "Technical report shared footer");
+for (const [label, content] of [["homepage", index], ["privacy", privacy], ["technical report", report]]) {
+  if (content.includes("site-footer")) fail(`${label} retains the superseded standalone footer implementation.`);
+}
+requireFragments(styles, [
+  ".portfolio-footer {", ".portfolio-footer__inner {", ".portfolio-footer__links {",
+  "background: var(--jl-color-surface-inverse);",
+], "Portfolio shared footer styles");
+for (const obsolete of [".site-footer {", ".site-footer__inner", ".site-footer__links"]) {
+  if (styles.includes(obsolete)) fail(`Superseded footer style remains: ${obsolete}.`);
+}
+
 requireFragments(privacyStyles, [
   ".privacy-hero", ".privacy-section", ".privacy-boundaries", ".privacy-contact",
   "@media (max-width: 900px)", "@media (max-width: 560px)",
@@ -148,6 +171,7 @@ for (const alias of ["--paper", "--ink", "--muted", "--clay", "--rule", "--ease-
 if (!/--shell:\s*min\(var\(--jl-layout-portfolio-max\)/.test(adapter)) fail("Portfolio shell is not shared-token-derived.");
 if (!adapter.includes("var(--jl-color-focus-ring)")) fail("Shared focus ring token is not active.");
 if (!adapter.includes(".contact-section .contact-links a:nth-child(n)")) fail("Contact links can be hidden by legacy navigation CSS.");
+if (!adapter.includes(':root[data-theme="dark"] .portfolio-footer')) fail("Shared Portfolio footer is missing its approved dark inverse surface.");
 for (const forbidden of [".portfolio-nav-toggle", "@media (max-width: 900px)", ".jl-global-header__nav.portfolio-nav--open", ".jl-site-switcher__button", ".jl-site-menu,", ".site-header__actions"]) {
   if (adapter.includes(forbidden)) fail(`Portfolio adapter re-owns shared header behavior: ${forbidden}.`);
 }
@@ -244,6 +268,12 @@ for (const page of projectPages) {
   }
   if (!html.includes('src="../motion.js"')) fail(`${page} does not load reveal motion.`);
   if (!html.includes("../index.html")) fail(`${page} cannot return to the portfolio.`);
+  if (page === "hopscotch.html") {
+    if (html.includes("portfolio-footer")) fail("HOPSCOTCH is an explicit footer-contract exception during its redesign.");
+  } else {
+    requireFragments(html, portfolioFooterFragments, `${page} shared footer`);
+    if (html.includes("site-footer")) fail(`${page} retains the superseded standalone footer implementation.`);
+  }
 }
 
 console.log(`Design-system integration passed for ${projectPages.length + 2} pages.`);
