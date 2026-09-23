@@ -464,7 +464,10 @@ footer a:hover, footer a:focus-visible { color: var(--paper); }
 
 
 .site-footer {
+  display: block;
+  justify-content: initial;
   padding: 0 0 30px;
+  border-top: 0;
   background: var(--ink);
   color: rgba(242, 239, 232, 0.72);
 }
