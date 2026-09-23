@@ -1,6 +1,7 @@
 @import url("assets/design-system/content-primitives.css");
 @import url("project-actions.css");
 @import url("portfolio-header-utility.css");
+@import url("portfolio-editorial.css");
 
 /* Portfolio expression of the shared Johnny Li design system.
    Shared header structure, controls, and compact menu geometry are package-owned. */
@@ -78,7 +79,6 @@ body {
 
 .work-description,
 .experience-description,
-.case-body-copy p,
 .validation-copy p,
 .output-note,
 .knowledge-group-secondary h3,
