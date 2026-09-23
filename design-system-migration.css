@@ -52,7 +52,8 @@ body {
 }
 
 :root[data-theme="dark"] .contact-section,
-:root[data-theme="dark"] .case-next {
+:root[data-theme="dark"] .case-next,
+:root[data-theme="dark"] .portfolio-footer {
   background: #000000;
 }
 
@@ -63,12 +64,13 @@ body {
 .contact-title em,
 .contact-links a:hover,
 .contact-links a:focus-visible,
-.contact-section footer a:hover,
-.contact-section footer a:focus-visible {
+.portfolio-footer a:hover,
+.portfolio-footer a:focus-visible {
   color: var(--jl-color-text-inverse);
 }
 
 .contact-section :focus-visible,
+.portfolio-footer :focus-visible,
 .case-next :focus-visible,
 .output-grid pre :focus-visible {
   box-shadow: 0 0 0 5px var(--jl-color-focus-gap-dark);

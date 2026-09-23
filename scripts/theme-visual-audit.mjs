@@ -39,6 +39,10 @@ try {
           const root = document.documentElement;
           const body = getComputedStyle(document.body);
           const meta = document.querySelector('meta[name="theme-color"]');
+          const footer = document.querySelector(".portfolio-footer");
+          const footerInner = document.querySelector(".portfolio-footer__inner");
+          const footerStyle = footer ? getComputedStyle(footer) : null;
+          const footerInnerStyle = footerInner ? getComputedStyle(footerInner) : null;
           return {
             preference: root.dataset.themePreference,
             theme: root.dataset.theme,
@@ -53,6 +57,12 @@ try {
             selectedButton: document.querySelector('[data-theme-preference][aria-pressed="true"]')?.getAttribute("data-theme-preference") ?? null,
             settingsButtons: document.querySelectorAll("[data-settings-button]").length,
             settingsMenus: document.querySelectorAll("[data-settings-menu]").length,
+            footer: footer && footerInner ? {
+              background: footerStyle?.backgroundColor ?? null,
+              color: footerStyle?.color ?? null,
+              borderTopWidth: footerInnerStyle?.borderTopWidth ?? null,
+              linkCount: footer.querySelectorAll(".portfolio-footer__links a").length,
+            } : null,
           };
         });
         const problems = [];
@@ -64,6 +74,14 @@ try {
         if (state.themeButtons !== 3) problems.push(`Appearance has ${state.themeButtons} options`);
         if (state.selectedButton !== theme) problems.push(`selected option is ${state.selectedButton}`);
         if (state.settingsButtons !== 1 || state.settingsMenus !== 1) problems.push("Settings control was not installed exactly once");
+        if (!state.footer) {
+          problems.push("shared Portfolio footer is missing");
+        } else {
+          const expectedFooterBackground = theme === "dark" ? "rgb(0, 0, 0)" : "rgb(23, 23, 20)";
+          if (state.footer.background !== expectedFooterBackground) problems.push(`footer background is ${state.footer.background}, expected ${expectedFooterBackground}`);
+          if (state.footer.borderTopWidth !== "1px") problems.push(`footer boundary is ${state.footer.borderTopWidth}`);
+          if (state.footer.linkCount < 2) problems.push(`footer exposes only ${state.footer.linkCount} destination(s)`);
+        }
         const expectedThemeColor = theme === "dark" ? "#171714" : "#f2efe8";
         if (state.themeColor?.toLowerCase() !== expectedThemeColor) problems.push(`theme-color is ${state.themeColor}`);
 

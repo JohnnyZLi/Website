@@ -296,7 +296,7 @@ h1 em, .about-statement em {
 .contact-section {
   width: 100%;
   max-width: none;
-  padding: 0 max(52px, calc((100vw - 1328px) / 2)) 30px;
+  padding: 0 max(52px, calc((100vw - 1328px) / 2));
   background: var(--ink);
   color: var(--paper);
 }
@@ -340,16 +340,6 @@ h1 em, .about-statement em {
 }
 .contact-links a:hover, .contact-links a:focus-visible { border-color: var(--paper); }
 .contact-links a:hover span, .contact-links a:focus-visible span { transform: translate(3px, -3px); }
-footer {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 24px;
-  border-top: 1px solid rgba(242, 239, 232, 0.24);
-  color: rgba(242, 239, 232, 0.72);
-  font-size: 0.8rem;
-}
-footer p { margin: 0; }
-footer a:hover, footer a:focus-visible { color: var(--paper); }
 :focus-visible { outline: 2px solid var(--clay); outline-offset: 4px; }
 
 @media (hover: hover) {
@@ -463,16 +453,16 @@ footer a:hover, footer a:focus-visible { color: var(--paper); }
 }
 
 
-.site-footer {
+.portfolio-footer {
+  --_jl-focus-gap-color: var(--jl-color-focus-gap-dark);
   display: block;
-  justify-content: initial;
+  width: 100%;
   padding: 0 0 30px;
-  border-top: 0;
-  background: var(--ink);
+  background: var(--jl-color-surface-inverse);
   color: rgba(242, 239, 232, 0.72);
 }
 
-.site-footer__inner {
+.portfolio-footer__inner {
   display: flex;
   gap: 28px;
   align-items: center;
@@ -482,43 +472,29 @@ footer a:hover, footer a:focus-visible { color: var(--paper); }
   font-size: 0.8rem;
 }
 
-.site-footer__inner p {
+.portfolio-footer__inner p {
   margin: 0;
 }
 
-.site-footer__links {
+.portfolio-footer__links {
   display: flex;
   flex-wrap: wrap;
   gap: 18px 26px;
   align-items: center;
 }
 
-.site-footer__links a {
+.portfolio-footer__links a {
   transition: color 180ms ease;
 }
 
-.site-footer__links a:hover,
-.site-footer__links a:focus-visible {
-  color: var(--paper);
-}
-
-.contact-section footer .site-footer__links {
-  justify-content: flex-end;
+.portfolio-footer__links a:hover,
+.portfolio-footer__links a:focus-visible {
+  color: var(--jl-color-text-inverse);
 }
 
 @media (max-width: 560px) {
-  .site-footer__inner {
+  .portfolio-footer__inner {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .contact-section footer {
-    gap: 24px;
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .contact-section footer .site-footer__links {
-    justify-content: flex-start;
   }
 }
