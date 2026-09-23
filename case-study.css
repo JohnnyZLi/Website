@@ -84,6 +84,13 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 24px;
 }
+.validation-copy p,
+.output-note {
+  margin: 0;
+  color: var(--jl-color-text);
+  font-size: 1rem;
+  line-height: 1.68;
+}
 .process-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
