@@ -79,7 +79,7 @@
       <section class="case-section shell" aria-labelledby="problem-heading">
         <div class="case-section-label"><span>01</span><h2 id="problem-heading">The problem</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">A single download number can look healthy <em>while calls stall, games spike, or uploads make the connection unusable</em>.</p>
+          <p class="case-lead">A single download number can look healthy while <em>calls stall</em>, games spike, or uploads make the connection unusable.</p>
           <div class="case-body-copy">
             <p>The browser measures idle and loaded latency, request failures, throughput stability, and the difference between one connection and several parallel connections.</p>
             <p>Native clients add evidence a webpage cannot collect honestly: ICMP packet loss, gateway latency, traceroute, resolver timing, path MTU, interfaces, routes, Wi-Fi, protocol phases, and isolated LAN throughput.</p>
@@ -154,7 +154,7 @@
       <section class="case-section shell" aria-labelledby="mlab-heading">
         <div class="case-section-label"><span>05</span><h2 id="mlab-heading">M-Lab benchmark investigation</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">A large gap with Google’s M-Lab test became <em>an investigation into the project’s own delivery path</em>.</p>
+          <p class="case-lead">A large gap with Google’s M-Lab test became an investigation into the project’s own <em>delivery path</em>.</p>
           <div class="case-body-copy">
             <p>Upload results were already close, but early browser downloads could report roughly half the M-Lab result. Research into NDT7 showed a single long-lived WebSocket flow to a nearby measurement server with BBR where available and server-side TCP instrumentation.</p>
             <p>A direct R2-versus-Worker A/B test then showed the project’s Worker stream materially limiting download delivery. The browser adopted validated direct range delivery, retained the Worker as a fallback and comparison, and expanded transport evidence rather than adding connections merely to produce a larger number.</p>
@@ -181,7 +181,7 @@
       <section class="case-section shell" aria-labelledby="native-heading">
         <div class="case-section-label"><span>07</span><h2 id="native-heading">Native core</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Deeper evidence belongs in a native engine, <em>not behind browser-shaped approximations</em>.</p>
+          <p class="case-lead">Deeper evidence belongs in a <em>native engine</em>, not behind browser-shaped approximations.</p>
           <div class="case-body-copy">
             <p>NetworkDiagnostics.Core owns planning, endpoint selection, Internet transfer, ICMP, routes, DNS, MTU, TLS, interfaces, Wi-Fi, LAN testing, findings, capability reporting, and serialization.</p>
             <p>Photino.NET hosts a React + TypeScript workbench on Windows, macOS, and Linux and bridges it to the shared .NET engine. The command-line probe preserves scriptable deep diagnostics and can opt into the same Internet-transfer plans when needed.</p>
@@ -192,7 +192,7 @@
       <section class="case-section case-section-last shell" aria-labelledby="limits-heading">
         <div class="case-section-label"><span>08</span><h2 id="limits-heading">Privacy and limits</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">No retained result <em>does not mean invisible traffic</em>.</p>
+          <p class="case-lead">No retained result <em>does not mean</em> invisible traffic.</p>
           <div class="case-body-copy">
             <p>Cloudflare still processes requests sent to the default endpoints. Full and Stress service checks contact the named providers. User-supplied endpoints and LAN targets remain outside the project’s trust boundary.</p>
             <p>Every result describes one device, software stack, route, endpoint, and moment. VPNs, Wi-Fi contention, security software, power saving, browser scheduling, and background traffic can all affect a run. Repeated comparisons are more useful than one permanent rating.</p>
