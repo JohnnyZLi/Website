@@ -165,10 +165,15 @@ for (const [label, content, forbidden] of [
     if (baseRule.test(content)) fail(`${label} stylesheet re-owns shared editorial primitive: .${selector}.`);
   }
 }
-const privacyLeadEmphasisCount = [...privacy.matchAll(/<p class="privacy-lead[^"]*"[^>]*>(.*?)<\/p>/gs)]
-  .reduce((count, match) => count + ((match[1].match(/<em\b/g) ?? []).length), 0);
-if (privacyLeadEmphasisCount !== 1 || !privacy.includes("<em>local result storage</em>")) {
-  fail(`Privacy must keep one deliberate large terracotta lead emphasis; found ${privacyLeadEmphasisCount}.`);
+// Protect the emphasis within each lead without imposing a page-wide quota or
+// a fixed word limit on future editorial copy.
+for (const [, lead] of privacy.matchAll(/<p class="privacy-lead[^"]*"[^>]*>(.*?)<\/p>/gs)) {
+  const emphasis = [...lead.matchAll(/<em\b[^>]*>(.*?)<\/em>/gs)];
+  if (emphasis.length > 1) fail("A Privacy lead must use one concise emphasis phrase rather than scattered accents.");
+  const plainText = (content) => content.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  const neutralText = plainText(lead.replace(/<em\b[^>]*>.*?<\/em>/gs, ""));
+  const accentedText = plainText(emphasis.map(([, content]) => content).join(" "));
+  if (accentedText.length >= neutralText.length) fail("Privacy lead emphasis must leave the surrounding neutral prose dominant.");
 }
 
 

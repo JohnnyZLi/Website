@@ -33,12 +33,18 @@ Page-specific styles retain only page-specific composition such as Privacy bound
 
 Existing `.case-*` and `.privacy-*` hooks remain supported compatibility selectors, while new Portfolio narrative work can use the `.portfolio-*` aliases directly.
 
-### Terracotta restraint
+### Terracotta emphasis and cadence
 
-Terracotta is a hierarchy signal, not a default treatment for editorial leads.
+Large editorial leads stay predominantly neutral, with a small, meaningful terracotta phrase creating emphasis inside the sentence.
 
-- Section numbers, compact markers, arrows, and similar metadata use the decorative accent role.
-- Large lead text remains neutral by default.
-- A lead MAY contain a source-authored primary-accent phrase when that phrase carries a specific semantic emphasis.
-- Multiple consecutive leads SHOULD NOT each contain terracotta emphasis; repeated highlighting weakens hierarchy.
-- Privacy intentionally uses one large lead accent—`local result storage` in the Network Diagnostics section—while its remaining lead sentences stay neutral.
+- A lead SHOULD emphasize one concise phrase when it helps identify the section's promise, behavior, result, or limitation. Usually one to three words is enough; grammar or meaning MAY justify a slightly longer phrase. This is an editorial guide, not a fixed word quota.
+- Emphasis is authored in the source around the actual idea. Entire lead or body sentences MUST NOT be colored as a shortcut, and a long clause SHOULD be reduced to its semantic core. Negation and qualifications MUST retain their meaning; include them in the accent when omitting them would reverse the emphasized claim.
+- Consecutive leads MAY each contain a short accent when they mark distinct ideas. Review the colored extent and line wrapping within each lead rather than imposing a page-wide accent quota. A lead MAY remain entirely neutral when emphasis adds no useful distinction.
+- Prominent text uses `--jl-color-accent` or the Portfolio alias `--clay-text`. Section numbers and compact metadata on the canvas use the decorative accent role; secondary inverse-surface arrows, underlines, and borders use the soft role under the inverse-section contract.
+- Hero headlines and contact compositions retain their own display treatment. The homepage About statement's short connected list of `evidence`, `state`, and `failure` is also a deliberate editorial expression, rather than three unrelated accents.
+
+Privacy's selected phrases are `visitor profiles`, `functional preference`, `local result storage`, `processing traffic`, and `different storage requirements`. Each marks a different privacy boundary while its surrounding sentence remains neutral.
+
+The shared editorial layer supplies geometry, typography, and the emphasis style. Content selects the phrase; the primitive MUST NOT inject emphasis or force every section into the same composition. Privacy's wider Network Diagnostics lead and boundary columns remain page-owned.
+
+Validation protects shared primitive ownership and checks that authored Privacy emphasis stays inside predominantly neutral leads. It does not impose a fixed accent count across the page.

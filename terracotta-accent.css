@@ -1,7 +1,10 @@
 /* Restrained brand accents for the portfolio. */
 
 .hero-line em,
-.about-statement em,
+.about-statement em {
+  color: var(--clay-text);
+}
+
 .work-number {
   color: var(--clay);
 }
@@ -15,7 +18,7 @@ h1 .hero-line em {
 }
 
 .contact-title {
-  color: var(--clay);
+  color: var(--clay-text);
 }
 
 .contact-title em {

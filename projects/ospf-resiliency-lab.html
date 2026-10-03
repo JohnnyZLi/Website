@@ -79,7 +79,7 @@
       <section class="case-section shell" aria-labelledby="problem-heading">
         <div class="case-section-label"><span>01</span><h2 id="problem-heading">The problem</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Redundant paths on a topology diagram <em>do not prove that routing will survive a failure</em>.</p>
+          <p class="case-lead">Redundant paths on a topology diagram <em>do not prove</em> that routing will survive a failure.</p>
           <div class="case-body-copy">
             <p>A useful resiliency test needs a known baseline, a controlled fault, route and adjacency evidence, a reachability check, and a verified return to normal.</p>
             <p>This lab makes that sequence repeatable. The same command builds the topology, checks both forwarding paths, pauses one core router, measures convergence, and confirms recovery.</p>
@@ -90,7 +90,7 @@
       <section class="case-section shell" aria-labelledby="design-heading">
         <div class="case-section-label"><span>02</span><h2 id="design-heading">Topology and policy</h2></div>
         <div class="case-section-content case-copy-grid">
-          <p class="case-lead">Two edge routers communicate through independent core routers, with <em>equal OSPF cost through either side</em>.</p>
+          <p class="case-lead">Two edge routers communicate through independent core routers, with <em>equal OSPF cost</em> through either side.</p>
           <div class="case-body-copy">
             <p>All links participate in OSPF area 0. Router IDs are explicit, transit interfaces use the point-to-point network type, and interfaces are passive unless an adjacency is required.</p>
             <p>A higher-cost link joins the core routers. It remains available to OSPF but stays outside the normal equal-cost forwarding path between the edges.</p>
