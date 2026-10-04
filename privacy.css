@@ -15,6 +15,11 @@
   font-size: clamp(4.7rem, 8vw, 7.4rem);
 }
 
+.privacy-hero h1 em,
+.privacy-contact h2 em {
+  color: var(--clay-text);
+}
+
 .privacy-intro {
   grid-column: 9 / -1;
   padding-bottom: 7px;
@@ -142,6 +147,12 @@
   font-weight: 400;
   letter-spacing: -0.06em;
   line-height: 0.96;
+}
+
+.privacy-contact h2 em {
+  font-family: var(--jl-font-editorial);
+  font-weight: 400;
+  letter-spacing: -0.055em;
 }
 
 .privacy-contact > p {
