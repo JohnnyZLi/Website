@@ -41,9 +41,11 @@ Large editorial leads stay predominantly neutral, with a small, meaningful terra
 - Emphasis is authored in the source around the actual idea. Entire lead or body sentences MUST NOT be colored as a shortcut, and a long clause SHOULD be reduced to its semantic core. Negation and qualifications MUST retain their meaning; include them in the accent when omitting them would reverse the emphasized claim.
 - Consecutive leads MAY each contain a short accent when they mark distinct ideas. Review the colored extent and line wrapping within each lead rather than imposing a page-wide accent quota. A lead MAY remain entirely neutral when emphasis adds no useful distinction.
 - Prominent text uses `--jl-color-accent` or the Portfolio alias `--clay-text`. Section numbers and compact metadata on the canvas use the decorative accent role; secondary inverse-surface arrows, underlines, and borders use the soft role under the inverse-section contract.
-- Hero headlines and contact compositions retain their own display treatment. The homepage About statement's short connected list of `evidence`, `state`, and `failure` is also a deliberate editorial expression, rather than three unrelated accents.
+- Hero headlines and closing contact compositions follow the homepage's hierarchy: keep surrounding headline text neutral and use the primary accent for a short meaningful phrase or action. Their serif/display treatment remains page-owned. The homepage About statement's short connected list of `evidence`, `state`, and `failure` is also a deliberate editorial expression, rather than three unrelated accents.
 
 Privacy's selected phrases are `visitor profiles`, `functional preference`, `local result storage`, `processing traffic`, and `different storage requirements`. Each marks a different privacy boundary while its surrounding sentence remains neutral.
+
+Privacy's opening keeps `Privacy,` neutral and emphasizes the promise `without guesswork.` in terracotta editorial serif. Its closing question keeps the surrounding text neutral and emphasizes `handled?` with the same accent and serif treatment. These display accents give the page an opening and closing rhythm alongside its section leads.
 
 The shared editorial layer supplies geometry, typography, and the emphasis style. Content selects the phrase; the primitive MUST NOT inject emphasis or force every section into the same composition. Privacy's wider Network Diagnostics lead and boundary columns remain page-owned.
 
